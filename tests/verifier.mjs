@@ -1,19 +1,20 @@
 // Vérifications automatiques du portfolio, lancées à chaque envoi sur GitHub (voir .github/workflows/qualite.yml).
 // Sert le dépôt comme GitHub Pages (sous /portfolio2026/), puis contrôle dans Chromium :
-// erreurs JavaScript, règle de sécurité (CSP), accessibilité (axe), liens de partage, fichiers annexes.
-// Usage local : npm i --no-save playwright axe-core && npx playwright install chromium && node tests/verifier.mjs
+// erreurs JavaScript, règle de sécurité (CSP), accessibilité (axe), thème, partage, ChahéOS, fichiers annexes ;
+// puis un passage rapide dans Firefox et WebKit (Safari) quand ils sont installés (toujours en CI).
+// Usage local : npm i --no-save playwright axe-core && npx playwright install chromium firefox webkit && node tests/verifier.mjs
 import http from 'node:http';
 import { readFile, mkdir, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { chromium } from 'playwright';
+import { chromium, firefox, webkit } from 'playwright';
 
 const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'tests', 'captures');
 const AXE = await readFile(require.resolve('axe-core/axe.min.js'), 'utf8');
-const TYPES = { '.html': 'text/html; charset=utf-8', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8' };
+const TYPES = { '.woff2': 'font/woff2', '.html': 'text/html; charset=utf-8', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8' };
 
 // --- petit serveur statique, comme GitHub Pages
 const server = http.createServer(async (req, res) => {
@@ -46,8 +47,8 @@ const CSP_SPY = "window.__csp=[];document.addEventListener('securitypolicyviolat
 
 // hors ligne : CDN_LOCAL=<dossier> sert les bibliothèques npm exactes depuis le disque (mêmes octets, mêmes empreintes)
 const CDN_LOCAL = process.env.CDN_LOCAL;
-async function open(opts, query = '') {
-  const ctx = await browser.newContext(opts);
+async function open(opts, query = '', br = browser) {
+  const ctx = await br.newContext(opts);
   if (CDN_LOCAL) await ctx.route('https://cdn.jsdelivr.net/npm/**', async route => {
     const rel = new URL(route.request().url()).pathname.replace('/npm/', '');
     try { await route.fulfill({ body: await readFile(path.join(CDN_LOCAL, rel)), contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' } }); } catch { await route.abort(); }
@@ -78,6 +79,25 @@ async function open(opts, query = '') {
   const libs = await page.evaluate(() => [!!window.gsap, !!window.ScrollTrigger, !!window.Lenis]);
   check(libs.every(Boolean), 'bibliothèques externes chargées (empreintes SRI acceptées)');
   await page.screenshot({ path: path.join(OUT, 'accueil-ordinateur.png') });
+  const fonts = await page.evaluate(async () => { await document.fonts.ready; return [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family); });
+  check(fonts.includes('Archivo') && fonts.includes('IBM Plex Sans'), 'polices chargées depuis les fichiers du site');
+  await ctx.close();
+}
+
+// 1 bis. thème clair / sombre : le choix s’applique, se garde au rechargement, sans erreur ; partage d’un projet
+{
+  const { ctx, page, errors } = await open({ viewport: { width: 1440, height: 900 }, colorScheme: 'light', locale: 'fr-FR', permissions: ['clipboard-read', 'clipboard-write'] });
+  await page.click('#theme-btn'); await page.waitForTimeout(1600);
+  const t1 = await page.evaluate(() => [document.documentElement.dataset.theme, getComputedStyle(document.body).backgroundColor, document.getElementById('theme-btn').getAttribute('aria-pressed')]);
+  check(t1[0] === 'dark' && t1[1] === 'rgb(20, 33, 61)' && t1[2] === 'true', `bouton de thème : passage au sombre (${t1.join(', ')})`);
+  await page.reload(); await page.waitForFunction(() => document.documentElement.classList.contains('ready'), null, { timeout: 45000 });
+  check(await page.evaluate(() => document.documentElement.dataset.theme) === 'dark', 'bouton de thème : choix gardé au rechargement');
+  await page.screenshot({ path: path.join(OUT, 'accueil-sombre.png') });
+  await page.evaluate(() => document.querySelector('.pill-btn[data-open="0"]').click()); await page.waitForTimeout(1600);
+  await page.click('#ov-share'); await page.waitForTimeout(400);
+  const shared = await page.evaluate(() => navigator.clipboard.readText());
+  check(shared === 'https://chaheennsi.github.io/portfolio2026/p/vigie/', `partager un projet : lien copié (${shared})`);
+  check(errors.length === 0, `thème et partage sans erreur (${errors.join(' | ') || 'rien'})`);
   await ctx.close();
 }
 
@@ -103,8 +123,8 @@ for (const scheme of ['light', 'dark']) {
 }
 {
   const { ctx, page } = await open({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce', locale: 'fr-FR' }, '?projet=vigie');
-  await page.waitForTimeout(1200);
-  check(await page.evaluate(() => !document.getElementById('ov').hidden), '?projet=vigie ouvre directement la fiche du projet');
+  const ouvert = await page.waitForFunction(() => !document.getElementById('ov').hidden, null, { timeout: 8000 }).then(() => true, () => false);
+  check(ouvert, '?projet=vigie ouvre directement la fiche du projet');
   await page.screenshot({ path: path.join(OUT, 'partage-vigie.png') });
   await ctx.close();
 }
@@ -145,6 +165,33 @@ for (const scheme of ['light', 'dark']) {
   check(exp - new Date() > 30 * 864e5, 'security.txt : plus d’un mois avant expiration (sinon, le renouveler)');
   check((await readFile(path.join(ROOT, 'sitemap.xml'), 'utf8')).includes('<loc>https://chaheennsi.github.io/portfolio2026/</loc>'), 'plan du site présent');
   await ctx.close();
+}
+
+// 6. autres moteurs : Firefox et WebKit (le moteur de Safari) — affichage, CSP, thème, fiche projet
+for (const [nom, type] of [['Firefox', firefox], ['WebKit (Safari)', webkit]]) {
+  let br;
+  try { br = await type.launch(); } catch {
+    if (process.env.CI) check(false, `${nom} : navigateur absent en CI`); else console.log(`--    ${nom} non installé ici (vérifié en CI)`);
+    continue;
+  }
+  for (const vp of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    const mob = vp.width < 700;
+    const { ctx, page, errors } = await open({ viewport: vp, locale: 'fr-FR', ...(mob && type !== firefox ? { isMobile: true, hasTouch: true } : {}) }, '', br);
+    const csp = await page.evaluate(() => window.__csp);
+    check(errors.length === 0 && csp.length === 0, `${nom} ${vp.width}px : aucune erreur ni violation CSP (${[...errors, ...csp].join(' | ') || 'rien'})`);
+    const vis = await page.evaluate(() => { const h = document.querySelector('.hero-name'); const r = h && h.getBoundingClientRect(); return !!r && r.width > 100 && getComputedStyle(h).visibility !== 'hidden'; });
+    check(vis, `${nom} ${vp.width}px : le nom s’affiche en haut de page`);
+    await page.screenshot({ path: path.join(OUT, `${nom.split(' ')[0].toLowerCase()}-${vp.width}.png`) });
+    if (!mob) {
+      await page.click('#theme-btn'); await page.waitForTimeout(1200);
+      check(await page.evaluate(() => document.documentElement.dataset.theme) === 'dark', `${nom} : bouton de thème`);
+      await page.evaluate(() => document.querySelector('.pill-btn[data-open="1"]').click()); await page.waitForTimeout(1800);
+      check(await page.evaluate(() => !document.getElementById('ov').hidden && /Silverfort/.test(document.getElementById('ov-title').textContent)), `${nom} : la fiche d’un projet s’ouvre`);
+      await page.screenshot({ path: path.join(OUT, `${nom.split(' ')[0].toLowerCase()}-fiche.png`) });
+    }
+    await ctx.close();
+  }
+  await br.close();
 }
 
 await browser.close(); server.close();

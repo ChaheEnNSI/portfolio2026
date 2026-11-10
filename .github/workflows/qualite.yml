@@ -1,5 +1,6 @@
-# Vérifie le portfolio à chaque envoi : erreurs JavaScript, règle de sécurité (CSP),
-# accessibilité (axe), liens de partage, page 404, security.txt. Captures d’écran en pièce jointe.
+# Vérifie le portfolio à chaque envoi : erreurs JavaScript, règle de sécurité (CSP), accessibilité (axe),
+# thème, partage, ChahéOS, page 404, security.txt, et un passage dans Firefox et WebKit (Safari).
+# Captures d’écran en pièce jointe.
 name: Qualité
 
 on:
@@ -20,7 +21,7 @@ concurrency:
 jobs:
   verifier:
     runs-on: ubuntu-24.04 # version figée : Playwright 1.56 ne gère pas encore Ubuntu 26.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       # actions épinglées par empreinte de commit (une étiquette peut être déplacée, une empreinte non)
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -31,8 +32,8 @@ jobs:
           node-version: 22
       - name: Outils de test (versions figées)
         run: npm install --no-save --no-audit --no-fund --ignore-scripts playwright@1.56.0 axe-core@4.10.2
-      - name: Navigateur Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Navigateurs Chromium, Firefox et WebKit (Safari)
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Vérifications
         run: node tests/verifier.mjs
       - name: Captures d’écran
