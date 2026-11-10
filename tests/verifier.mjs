@@ -14,7 +14,7 @@ const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'tests', 'captures');
 const AXE = await readFile(require.resolve('axe-core/axe.min.js'), 'utf8');
-const TYPES = { '.woff2': 'font/woff2', '.html': 'text/html; charset=utf-8', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8' };
+const TYPES = { '.webp': 'image/webp', '.woff2': 'font/woff2', '.html': 'text/html; charset=utf-8', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8' };
 
 // --- petit serveur statique, comme GitHub Pages
 const server = http.createServer(async (req, res) => {
@@ -98,6 +98,24 @@ async function open(opts, query = '', br = browser) {
   const shared = await page.evaluate(() => navigator.clipboard.readText());
   check(shared === 'https://chaheennsi.github.io/portfolio2026/p/vigie/', `partager un projet : lien copié (${shared})`);
   check(errors.length === 0, `thème et partage sans erreur (${errors.join(' | ') || 'rien'})`);
+  await ctx.close();
+}
+
+// 1 ter. visuels : avatar haute définition pour le plein écran, bandeau illustré de chaque fiche projet
+{
+  const { ctx, page, errors } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' });
+  const hd = await page.waitForFunction(() => { const i = document.getElementById('xp-img'); return /v\/avatar(-1280)?\.webp$/.test(i.src) && i.naturalWidth >= 1280; }, null, { timeout: 10000 }).then(() => true, () => false);
+  check(hd, 'avatar haute définition chargé pour l’ouverture plein écran');
+  for (const [i, id] of [[0, 'vigie'], [1, 'silverfort'], [2, 'smsi'], [3, 'hackathon']]) {
+    await page.evaluate(n => document.querySelector(`.pill-btn[data-open="${n}"]`).click(), i);
+    const ok = await page.waitForFunction(n => { const a = document.getElementById('ov-art'), im = document.getElementById('ov-art-img'); return !a.hidden && a.classList.contains('on') && im.src.includes('/v/' + n) && im.naturalWidth >= 1200; }, id, { timeout: 8000 }).then(() => true, () => false);
+    check(ok, `fiche ${id} : bandeau illustré affiché`);
+    if (i === 0) await page.screenshot({ path: path.join(OUT, 'fiche-vigie.png') });
+    await page.evaluate(() => document.getElementById('ov-close').click()); await page.waitForTimeout(300);
+  }
+  await page.waitForTimeout(1200);
+  check(await page.evaluate(() => document.getElementById('ov').hidden), 'ouvrir puis fermer des fiches à la suite : tout se referme bien');
+  check(errors.length === 0, `visuels sans erreur (${errors.join(' | ') || 'rien'})`);
   await ctx.close();
 }
 
