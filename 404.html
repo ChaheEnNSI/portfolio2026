@@ -6,23 +6,25 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex">
 <title>Page introuvable · Chahé Papazian</title>
-<link rel="icon" href="data:,">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%2314213D%27/%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2710%27 fill=%27%23FF6B5B%27/%3E%3C/svg%3E">
 <style>
-  :root{--bg:#0B0C1F;--ink:#F2F2FA;--ink2:#A3A5C2;--acc:#A9A7FF;--hot:#FF8A66}
+  /* palette du portfolio : crème, marine, corail */
+  :root{--bg:#F4EDE0;--ink:#14213D;--ink2:#3D4860;--acc:#FF6B5B;--hot:#B4382A;--code:#B4382A}
+  @media (prefers-color-scheme: dark){:root{--bg:#14213D;--ink:#F4EDE0;--ink2:#D2CABB;--hot:#FF8174;--code:#FF8174}}
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:grid;place-items:center;padding:24px}
   main{width:min(560px,100%)}
-  .code{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+  .code{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;color:var(--code)}
   h1{margin:14px 0 0;font-size:clamp(56px,16vw,120px);line-height:.9;letter-spacing:-.05em;font-weight:700}
   h1 span{color:var(--hot)}
   p{margin:18px 0 0;font-size:18px;line-height:1.55;color:var(--ink2)}
   .en{font-size:15px}
-  a{display:inline-flex;align-items:center;gap:10px;margin-top:28px;height:48px;padding:0 22px;border-radius:999px;background:var(--acc);color:#0B0C1F;font-weight:600;text-decoration:none}
-  a:hover{background:#fff}
-  a:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+  a{display:inline-flex;align-items:center;gap:10px;margin-top:28px;height:48px;padding:0 22px;border-radius:999px;background:var(--acc);color:#14213D;font-weight:600;text-decoration:none;transition:transform .16s ease-out}
+  a:active{transform:scale(.97)}
+  a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   pre{margin:30px 0 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.6;color:var(--ink2);white-space:pre-wrap}
-  pre b{color:var(--acc);font-weight:500}
+  pre b{color:var(--code);font-weight:500}
 </style>
 </head>
 <body>

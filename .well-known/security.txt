@@ -1,0 +1,6 @@
+# Signaler une faille de sécurité sur ce portfolio.
+# Report a security issue on this portfolio.
+Contact: mailto:papazian.chahe@gmail.com
+Expires: 2027-10-31T23:00:00.000Z
+Preferred-Languages: fr, en
+Canonical: https://chaheennsi.github.io/portfolio2026/.well-known/security.txt
