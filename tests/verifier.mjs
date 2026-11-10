@@ -109,7 +109,24 @@ for (const scheme of ['light', 'dark']) {
   await ctx.close();
 }
 
-// 4. pages de partage, page 404, security.txt, plan du site
+// 4. ChahéOS : s’ouvre, Touch ID déverrouille, le site derrière est inerte, puis tout revient à la fermeture
+{
+  const { ctx, page, errors } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' });
+  await page.evaluate(() => { window.__site.term.open(); window.__site.term.exec('vrai richesse'); });
+  await page.waitForFunction(() => { const b = document.querySelector('.os-boot2'); return b && b.classList.contains('gone'); }, null, { timeout: 15000 });
+  await page.waitForTimeout(500);
+  check(await page.evaluate(() => [...document.body.children].filter(e => e.id !== 'rx').every(e => e.inert)), 'ChahéOS ouvert : le site derrière est inerte');
+  await page.click('.os-lk-tid'); await page.waitForTimeout(1600);
+  check(await page.evaluate(() => document.querySelector('.os-lock').classList.contains('gone')), 'ChahéOS : Touch ID déverrouille la session');
+  await page.screenshot({ path: path.join(OUT, 'chaheos.png') });
+  await page.click('.os-logo'); await page.click('.os-mb >> text=Verrouiller'); await page.waitForTimeout(600);
+  await page.keyboard.press('Escape'); await page.waitForTimeout(900);
+  check(await page.evaluate(() => document.getElementById('rx').hidden && ![...document.body.children].some(e => e.inert)), 'ChahéOS fermé : le site redevient utilisable');
+  check(errors.length === 0, `ChahéOS sans erreur JavaScript (${errors.join(' | ') || 'rien'})`);
+  await ctx.close();
+}
+
+// 5. pages de partage, page 404, security.txt, plan du site
 {
   const ctx = await browser.newContext(); const page = await ctx.newPage();
   for (const id of ['vigie', 'silverfort', 'smsi', 'hackathon']) {
