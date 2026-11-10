@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   verifier:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # version figée : Playwright 1.56 ne gère pas encore Ubuntu 26.04
     timeout-minutes: 15
     steps:
       # actions épinglées par empreinte de commit (une étiquette peut être déplacée, une empreinte non)
