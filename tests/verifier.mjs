@@ -189,8 +189,10 @@ for (const scheme of ['light', 'dark']) {
   check(await page.evaluate(() => document.querySelector('.os-lock').classList.contains('gone')), 'ChahéOS : Touch ID déverrouille la session');
   await page.screenshot({ path: path.join(OUT, 'chaheos.png') });
   await page.click('.os-logo'); await page.click('.os-mb >> text=Verrouiller'); await page.waitForTimeout(600);
-  await page.keyboard.press('Escape'); await page.waitForTimeout(900);
-  check(await page.evaluate(() => document.getElementById('rx').hidden && ![...document.body.children].some(e => e.inert)), 'ChahéOS fermé : le site redevient utilisable');
+  await page.keyboard.press('Escape');
+  // on attend la fin réelle de la fermeture plutôt qu’une durée fixe (le décor 3D en rendu logiciel ralentit les machines de test)
+  const rendu = await page.waitForFunction(() => document.getElementById('rx').hidden && ![...document.body.children].some(e => e.inert), null, { timeout: 10000 }).then(() => true, () => false);
+  check(rendu, 'ChahéOS fermé : le site redevient utilisable');
   check(errors.length === 0, `ChahéOS sans erreur JavaScript (${errors.join(' | ') || 'rien'})`);
   await ctx.close();
 }
