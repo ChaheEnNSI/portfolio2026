@@ -5,6 +5,7 @@
 // Usage local : npm i --no-save playwright axe-core && npx playwright install chromium firefox webkit && node tests/verifier.mjs
 import http from 'node:http';
 import { readFile, mkdir, stat } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,7 +15,7 @@ const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'tests', 'captures');
 const AXE = await readFile(require.resolve('axe-core/axe.min.js'), 'utf8');
-const TYPES = { '.webp': 'image/webp', '.woff2': 'font/woff2', '.html': 'text/html; charset=utf-8', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8' };
+const TYPES = { '.mp4': 'video/mp4', '.webm': 'video/webm', '.webp': 'image/webp', '.woff2': 'font/woff2', '.html': 'text/html; charset=utf-8', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8' };
 
 // --- petit serveur statique, comme GitHub Pages
 const server = http.createServer(async (req, res) => {
@@ -59,7 +60,8 @@ async function open(opts, query = '', br = browser) {
   page.on('console', m => { if (m.type() === 'error' && !/GL|WebGL|GPU|Failed to load resource/i.test(m.text())) errors.push(m.text().slice(0, 200)); });
   // fichiers introuvables (sauf la lecture anticipée de Chrome qui prend parfois un modèle JS « ${PHOTO} » pour une image)
   page.on('response', r => { if (r.status() >= 400 && !r.url().includes('%7BPHOTO%7D')) errors.push(`${r.status()} ${r.url().slice(0, 120)}`); });
-  page.on('requestfailed', r => errors.push(`échec ${r.url().slice(0, 120)}`));
+  // une vidéo dont on interrompt le chargement en fermant la fiche n’est pas une erreur
+  page.on('requestfailed', r => { if (/\/v\/[\w-]+\.(mp4|webm)$/.test(r.url()) && /abort|cancel/i.test((r.failure() || {}).errorText || '')) return; errors.push(`échec ${r.url().slice(0, 120)}`); });
   await page.goto(BASE + query);
   await page.waitForFunction(() => document.documentElement.classList.contains('ready'), null, { timeout: 45000 });
   await page.waitForTimeout(1200);
@@ -110,13 +112,32 @@ async function open(opts, query = '', br = browser) {
     await page.evaluate(n => document.querySelector(`.pill-btn[data-open="${n}"]`).click(), i);
     const ok = await page.waitForFunction(n => { const a = document.getElementById('ov-art'), im = document.getElementById('ov-art-img'); return !a.hidden && a.classList.contains('on') && im.src.includes('/v/' + n) && im.naturalWidth >= 1200; }, id, { timeout: 8000 }).then(() => true, () => false);
     check(ok, `fiche ${id} : bandeau illustré affiché`);
+    // boucle animée : seulement pour les fiches dont les fichiers vidéo sont dans v/ (les quatre : grand et petit écran, MP4 et WebM)
+    if (existsSync(path.join(ROOT, 'v', id + '.mp4'))) {
+      check(['.webm', '-s.mp4', '-s.webm'].every(x => existsSync(path.join(ROOT, 'v', id + x))), `fiche ${id} : les quatre fichiers de la boucle sont présents`);
+      const joue = await page.waitForFunction(n => { const v = document.getElementById('ov-art-vid'); return document.getElementById('ov-art').classList.contains('play') && !v.paused && v.currentTime > 0.2 && v.videoWidth >= 1000 && v.currentSrc.includes('/v/' + n + '.'); }, id, { timeout: 12000 }).then(() => true, () => false);
+      check(joue, `fiche ${id} : la boucle animée se lance`);
+    }
     if (i === 0) await page.screenshot({ path: path.join(OUT, 'fiche-vigie.png') });
     await page.evaluate(() => document.getElementById('ov-close').click()); await page.waitForTimeout(300);
   }
   await page.waitForTimeout(1200);
-  check(await page.evaluate(() => document.getElementById('ov').hidden), 'ouvrir puis fermer des fiches à la suite : tout se referme bien');
+  check(await page.evaluate(() => document.getElementById('ov').hidden && document.getElementById('ov-art-vid').paused), 'ouvrir puis fermer des fiches à la suite : tout se referme, la vidéo s’arrête');
   check(errors.length === 0, `visuels sans erreur (${errors.join(' | ') || 'rien'})`);
   await ctx.close();
+}
+// sur téléphone : la version légère de la boucle, et rien du tout si le visiteur a demandé moins d’animations
+if (existsSync(path.join(ROOT, 'v', 'vigie.mp4'))) {
+  const tel = await open({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: 'fr-FR' });
+  await tel.page.evaluate(() => document.querySelector('.pill-btn[data-open="0"]').click());
+  const leger = await tel.page.waitForFunction(() => { const v = document.getElementById('ov-art-vid'); return document.getElementById('ov-art').classList.contains('play') && !v.paused && /\/v\/vigie-s\.(mp4|webm)$/.test(v.currentSrc); }, null, { timeout: 12000 }).then(() => true, () => false);
+  check(leger, 'téléphone : la fiche Vigie joue la version légère de la boucle');
+  check(tel.errors.length === 0, `boucle sur téléphone sans erreur (${tel.errors.join(' | ') || 'rien'})`);
+  await tel.ctx.close();
+  const calme = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR', reducedMotion: 'reduce' });
+  await calme.page.evaluate(() => document.querySelector('.pill-btn[data-open="0"]').click()); await calme.page.waitForTimeout(3000);
+  check(await calme.page.evaluate(() => { const a = document.getElementById('ov-art'), v = document.getElementById('ov-art-vid'); return a.classList.contains('on') && !a.classList.contains('play') && !v.firstChild; }), 'animations réduites : image fixe, aucune vidéo chargée');
+  await calme.ctx.close();
 }
 
 // 2. accessibilité (axe) : clair et sombre, ordinateur et téléphone
