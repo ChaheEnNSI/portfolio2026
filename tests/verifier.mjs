@@ -131,8 +131,9 @@ async function open(opts, query = '', br = browser) {
     if (i === 0) await page.screenshot({ path: path.join(OUT, 'fiche-vigie.png') });
     await page.evaluate(() => document.getElementById('ov-close').click()); await page.waitForTimeout(300);
   }
-  await page.waitForTimeout(1200);
-  check(await page.evaluate(() => document.getElementById('ov').hidden && document.getElementById('ov-art-vid').paused), 'ouvrir puis fermer des fiches à la suite : tout se referme, la vidéo s’arrête');
+  // la fermeture est animée : on attend son terme au lieu d'un délai fixe (le rendu logiciel des tests est lent)
+  const ferme = await page.waitForFunction(() => document.getElementById('ov').hidden && document.getElementById('ov-art-vid').paused, null, { timeout: 9000 }).then(() => true, () => false);
+  check(ferme, 'ouvrir puis fermer des fiches à la suite : tout se referme, la vidéo s’arrête');
   check(errors.length === 0, `visuels sans erreur (${errors.join(' | ') || 'rien'})`);
   await ctx.close();
 }
