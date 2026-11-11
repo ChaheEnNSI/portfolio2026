@@ -5,37 +5,52 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#070C1C">
 <title>Page introuvable · Chahé Papazian</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%2314213D%27/%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2710%27 fill=%27%23FF6B5B%27/%3E%3C/svg%3E">
 <style>
-  /* palette du portfolio : crème, marine, corail */
-  :root{--bg:#F4EDE0;--ink:#14213D;--ink2:#3D4860;--acc:#FF6B5B;--hot:#B4382A;--code:#B4382A}
-  @media (prefers-color-scheme: dark){:root{--bg:#14213D;--ink:#F4EDE0;--ink2:#D2CABB;--hot:#FF8174;--code:#FF8174}}
+  /* nuit de veille : la même nuit que le portfolio, sans script. Un phare, un faisceau qui balaie, rien à l'horizon. */
+  :root{--nuit:#070C1C;--ink:#F4EDE0;--ink2:#D2CABB;--acc:#FF6B5B;--hot:#FF8174}
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:grid;place-items:center;padding:24px}
-  main{width:min(560px,100%)}
-  .code{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;color:var(--code)}
-  h1{margin:14px 0 0;font-size:clamp(56px,16vw,120px);line-height:.9;letter-spacing:-.05em;font-weight:700}
-  h1 span{color:var(--hot)}
-  p{margin:18px 0 0;font-size:18px;line-height:1.55;color:var(--ink2)}
+  body{margin:0;overflow:hidden;background:linear-gradient(180deg,#050A18 0%,#0B1530 58%,#14224A 71%,#0A1226 71.2%,#070C1C 100%);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .mer{position:fixed;left:0;right:0;top:71.2%;bottom:0;background:repeating-linear-gradient(180deg,transparent 0 13px,rgba(130,148,196,.16) 13px 14px);-webkit-mask-image:linear-gradient(180deg,transparent,#000 40%);mask-image:linear-gradient(180deg,transparent,#000 40%)}
+  .phare{position:fixed;right:clamp(24px,16vw,260px);top:71.2%;width:120px;height:300px;transform:translateY(-100%)}
+  .faisceau{position:fixed;right:calc(clamp(24px,16vw,260px) + 60px);top:calc(71.2% - 262px);width:0;height:0}
+  .faisceau i{position:absolute;right:0;top:0;width:150vmax;height:150vmax;margin:-75vmax -75vmax 0 0;border-radius:50%;background:conic-gradient(from 258deg,transparent 0deg,rgba(255,236,204,.34) 7deg,rgba(255,236,204,.34) 11deg,transparent 18deg);-webkit-mask-image:radial-gradient(closest-side,#000 0,rgba(0,0,0,.5) 45%,transparent 100%);mask-image:radial-gradient(closest-side,#000 0,rgba(0,0,0,.5) 45%,transparent 100%);animation:balaie 9s ease-in-out infinite alternate}
+  @keyframes balaie{from{transform:rotate(-16deg)}to{transform:rotate(24deg)}}
+  main{position:relative;z-index:1;display:grid;align-content:center;min-height:100%;width:min(620px,100%);padding:24px max(24px,6vw)}
+  .heure{margin:0;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--hot)}
+  .heure span{margin-left:12px;font-weight:500;color:var(--ink2)}
+  h1{margin:16px 0 0;font-size:clamp(52px,13vw,128px);line-height:.9;letter-spacing:-.045em;font-weight:700}
+  p{margin:20px 0 0;max-width:44ch;font-size:18px;line-height:1.55;color:var(--ink2);text-shadow:0 1px 20px var(--nuit)}
   .en{font-size:15px}
-  a{display:inline-flex;align-items:center;gap:10px;margin-top:28px;height:48px;padding:0 22px;border-radius:999px;background:var(--acc);color:#14213D;font-weight:600;text-decoration:none;transition:transform .16s ease-out}
+  a{display:inline-flex;align-items:center;justify-self:start;gap:10px;margin-top:30px;height:48px;padding:0 22px;border-radius:999px;background:var(--acc);color:#14213D;font-weight:600;text-decoration:none;transition:transform .16s ease-out}
   a:active{transform:scale(.97)}
   a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-  pre{margin:30px 0 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.6;color:var(--ink2);white-space:pre-wrap}
-  pre b{color:var(--code);font-weight:500}
+  @media (max-width:700px){.phare{right:8px;transform:translateY(-100%) scale(.7);transform-origin:100% 100%;opacity:.6}.faisceau{right:50px;top:calc(71.2% - 183px)}}
+  @media (prefers-reduced-motion: reduce){.faisceau i{animation:none}}
 </style>
 </head>
 <body>
+<div class="mer" aria-hidden="true"></div>
+<div class="faisceau" aria-hidden="true"><i></i></div>
+<svg class="phare" viewBox="0 0 120 300" aria-hidden="true">
+  <path d="M8 300 L28 268 L92 268 L112 300Z" fill="#162449"/>
+  <path d="M34 268 L45 74 L75 74 L86 268Z" fill="#8E9BC0"/>
+  <path d="M36.5 224 L84 176 L82.4 148 L38.4 192Z M40.6 150 L80.6 110 L79 84 L42 122Z M34.6 262 L86 258 L85.2 240 L52 268 L34 268Z" fill="#4D5C88"/>
+  <rect x="36" y="64" width="48" height="10" rx="2" fill="#6F7CA6"/>
+  <rect x="46" y="30" width="28" height="34" fill="#FFE9C4"/>
+  <path d="M46 30h28M46 64h28M55.3 30v34M64.6 30v34" stroke="#56648F" stroke-width="2.2"/>
+  <path d="M42 30 Q60 4 78 30Z" fill="#66739F"/>
+  <circle cx="60" cy="10" r="3.4" fill="#8E9BC0"/>
+</svg>
 <main>
-  <p class="code">Erreur 404 · Not found</p>
-  <h1>Page <span>introuvable</span>.</h1>
-  <p>Cette page n’existe pas, ou plus. Root, le chat du drone, a fouillé partout : rien.</p>
-  <p class="en" lang="en">This page doesn’t exist (anymore). Root, the drone’s cat, searched everywhere: nothing.</p>
-  <a href="/portfolio2026/">Retour au portfolio <span aria-hidden="true">→</span></a>
-  <pre aria-hidden="true"><b>visiteur@chahe:~$</b> cd page-demandee
-cd: page-demandee: dossier introuvable</pre>
+  <p class="heure">03:12<span>Erreur 404</span></p>
+  <h1>Rien à l’horizon.</h1>
+  <p>Le faisceau a balayé toute la mer : cette page n’existe pas, ou plus.</p>
+  <p class="en" lang="en">Nothing on the horizon. The beam swept the whole sea: this page doesn’t exist (anymore).</p>
+  <a href="/portfolio2026/">Retour au phare <span aria-hidden="true">→</span></a>
 </main>
 </body>
 </html>
