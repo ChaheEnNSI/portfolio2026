@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ipxUL7LQmh/A+d7CuFJo0/0o5fkqD5ErwXGTk4mkfuA=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-1qVhyBuSAzY8CXuwRa+YcGIZC90kMezfkVa6I9SHqak=' 'sha256-pYtJVJcqjk+3DLZr2xOBHZnuIMtq+r7vcPZJcy6PPC8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ipxUL7LQmh/A+d7CuFJo0/0o5fkqD5ErwXGTk4mkfuA=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-WsjA4Iw3Uoz7Haun4YFVff/gCrEOQrn3XV5cd+6dGfw=' 'sha256-pYtJVJcqjk+3DLZr2xOBHZnuIMtq+r7vcPZJcy6PPC8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -2281,6 +2281,11 @@ html.th-vt::view-transition-new(root){animation:th-reveal .6s cubic-bezier(.65,0
 .nuit.nuit-ok #nuit{opacity:1}
 .nuit-voile{position:fixed;inset:0;z-index:0;display:none;pointer-events:none;background:#070C1C;opacity:var(--voile,0)}
 .nuit .nuit-voile{display:block}
+/* sans 3D : la même nuit, immobile */
+.nuit-phare{display:none}
+.nuit-sans #nuit,.nuit-sans .nuit-voile,.nuit.nuit-sans .veille{display:none}
+html.nuit.nuit-sans body{background:linear-gradient(180deg,#050A18 0%,#0B1530 54%,#14224A 69.8%,#0A1226 70%,#070C1C 100%) fixed}
+.nuit-sans .nuit-phare{display:block;position:fixed;z-index:0;right:clamp(16px,15vw,250px);top:70vh;width:clamp(84px,9vw,130px);transform:translateY(-100%);opacity:.9;pointer-events:none}
 :root.nuit{--bg:#0A1226;--surface:#131F40;--line:#2A3A63;--c-base:#0A1226;--c-tint:#0A1226;--c-blue:#0A1226;--c-night:#0A1226;--night:#0A1226}
 html.nuit,html.nuit body,html.nuit.ld-pre{background:#070C1C}
 .nuit main{position:relative;z-index:1}
@@ -2359,7 +2364,7 @@ html.nuit,html.nuit body,html.nuit.ld-pre{background:#070C1C}
 <body>
 
 
-<canvas id="nuit" aria-hidden="true"></canvas><div class="nuit-voile" aria-hidden="true"></div>
+<canvas id="nuit" aria-hidden="true"></canvas><div class="nuit-voile" aria-hidden="true"></div><svg class="nuit-phare" viewBox="0 0 120 300" aria-hidden="true"><path d="M8 300 L28 268 L92 268 L112 300Z" fill="#162449"/><path d="M34 268 L45 74 L75 74 L86 268Z" fill="#8E9BC0"/><path d="M36.5 224 L84 176 L82.4 148 L38.4 192Z M40.6 150 L80.6 110 L79 84 L42 122Z M34.6 262 L86 258 L85.2 240 L52 268 L34 268Z" fill="#4D5C88"/><rect x="36" y="64" width="48" height="10" rx="2" fill="#6F7CA6"/><rect x="46" y="30" width="28" height="34" fill="#FFE9C4"/><path d="M46 30h28M46 64h28M55.3 30v34M64.6 30v34" stroke="#56648F" stroke-width="2.2"/><path d="M42 30 Q60 4 78 30Z" fill="#66739F"/><circle cx="60" cy="10" r="3.4" fill="#8E9BC0"/></svg>
 <div class="loader" id="loader" aria-hidden="true">
   <div class="allum" id="allum"><i class="allum-l"></i><p class="allum-t">22:00<small data-t="q0">Prise de quart</small></p><span class="allum-s" data-t="skipld2">Cliquer pour passer</span></div>
   <canvas class="ld-net" id="ld-net"></canvas>
@@ -8544,7 +8549,8 @@ function creerNuit(THREE, canvas, opt) {
 let nuitCtl = { pret: Promise.resolve(false), lanterne() { return null; } };
 function setupNuit() {
   const cv = $('#nuit'); if (!cv || !html.classList.contains('nuit')) return;
-  const abandon = () => { html.classList.remove('nuit', 'nuit-ok'); if (ST) ST.refresh(); };
+  // pas de 3D possible : on garde la nuit, en version fixe (dégradé + phare dessiné), et l’heure suit quand même le défilement
+  const abandon = () => { html.classList.add('nuit-sans'); html.classList.remove('nuit-ok'); const maj = () => { const h = heure(progDe(scrollY)); if (h !== lastH) { lastH = h; if (elH) elH.textContent = h; } }; ancres(); addEventListener('scroll', maj, { passive: true }); setTimeout(() => { ancres(); maj(); }, 1500); };
   const HEURES = [[22, 0], [22, 40], [23, 10], [24, 40], [26, 30], [28, 50], [30, 40]];   // une heure par chapitre (au-delà de 24 : après minuit)
   const elH = $('#hd-heure-t'), veille = $('#veille'), vT = $('#veille-t'), bilan = $('#bilan'), voile = $('.nuit-voile'), ovEl = $('#ov'), mainEl = $('main');
   const secs = ['#profil', '#parcours', '#projets', '#competences', '#contact'].map(s => $(s));

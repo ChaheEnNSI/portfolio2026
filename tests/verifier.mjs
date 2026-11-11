@@ -150,6 +150,25 @@ if (existsSync(path.join(ROOT, 'v', 'vigie.mp4'))) {
   await calme.ctx.close();
 }
 
+// 1 quater. sans WebGL : la nuit reste, en version fixe (dégradé, phare dessiné), et rien ne casse
+{
+  const sans = await chromium.launch({ args: ['--disable-gpu', '--disable-webgl', '--disable-webgl2', '--disable-3d-apis'] });
+  const { page, errors } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' }, '', sans);
+  const repli = await page.waitForFunction(() => document.documentElement.classList.contains('nuit-sans'), null, { timeout: 20000 }).then(() => true, () => false);
+  if (repli) {
+    await page.waitForTimeout(1500);
+    const e = await page.evaluate(() => [getComputedStyle(document.querySelector('.hero-name')).visibility, getComputedStyle(document.querySelector('.xp-media')).display, getComputedStyle(document.querySelector('.nuit-phare')).display, getComputedStyle(document.querySelector('.veille')).display]);
+    check(e[0] === 'visible' && e[1] === 'none' && e[2] === 'block' && e[3] === 'none', `sans WebGL : nuit fixe, nom visible, phare dessiné, pas de compteur (${e.join(', ')})`);
+    await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+    const h = await page.waitForFunction(() => /^0[5-7]:/.test(document.getElementById('hd-heure-t').textContent), null, { timeout: 10000 }).then(() => true, () => false);
+    check(h, 'sans WebGL : l’heure du quart avance quand même avec le défilement');
+    check(errors.length === 0, `sans WebGL : aucune erreur (${errors.join(' | ') || 'rien'})`);
+    await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(800);
+    await page.screenshot({ path: path.join(OUT, 'accueil-sans-webgl.png') });
+  } else console.log('--    WebGL impossible à couper sur cette machine (repli non vérifié ici)');
+  await sans.close();
+}
+
 // 2. accessibilité (axe) : clair et sombre, ordinateur et téléphone
 for (const scheme of ['light', 'dark']) {
   for (const vp of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
