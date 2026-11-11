@@ -1,6 +1,6 @@
 // Vérifications automatiques du portfolio, lancées à chaque envoi sur GitHub (voir .github/workflows/qualite.yml).
 // Sert le dépôt comme GitHub Pages (sous /portfolio2026/), puis contrôle dans Chromium :
-// erreurs JavaScript, règle de sécurité (CSP), accessibilité (axe), thème, partage, ChahéOS, fichiers annexes ;
+// erreurs JavaScript, règle de sécurité (CSP), accessibilité (axe), décor 3D « nuit de veille », partage, ChahéOS, fichiers annexes ;
 // puis un passage rapide dans Firefox et WebKit (Safari) quand ils sont installés (toujours en CI).
 // Usage local : npm i --no-save playwright axe-core && npx playwright install chromium firefox webkit && node tests/verifier.mjs
 import http from 'node:http';
@@ -40,7 +40,8 @@ const BASE = `http://127.0.0.1:${server.address().port}/portfolio2026/`;
 const fails = [];
 const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'ÉCHEC'}  ${what}`); if (!ok) fails.push(what); };
 await mkdir(OUT, { recursive: true });
-const browser = await chromium.launch();
+// WebGL logiciel : les machines de test n’ont pas de carte graphique, le décor 3D doit quand même tourner
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 
 // la visite guidée et l’écran de chargement ne gênent pas les tests
 const QUIET = "try{sessionStorage.setItem('ld-skip','1');localStorage.setItem('tour-offer','no')}catch(e){}";
@@ -86,28 +87,37 @@ async function open(opts, query = '', br = browser) {
   await ctx.close();
 }
 
-// 1 bis. thème clair / sombre : le choix s’applique, se garde au rechargement, sans erreur ; partage d’un projet
+// 1 bis. nuit de veille : le décor 3D tourne, le faisceau suit la souris et éclaire le nom, l’heure du quart avance avec le défilement ; partage d’un projet
 {
   const { ctx, page, errors } = await open({ viewport: { width: 1440, height: 900 }, colorScheme: 'light', locale: 'fr-FR', permissions: ['clipboard-read', 'clipboard-write'] });
-  await page.click('#theme-btn'); await page.waitForTimeout(1600);
-  const t1 = await page.evaluate(() => [document.documentElement.dataset.theme, getComputedStyle(document.body).backgroundColor, document.getElementById('theme-btn').getAttribute('aria-pressed')]);
-  check(t1[0] === 'dark' && t1[1] === 'rgb(20, 33, 61)' && t1[2] === 'true', `bouton de thème : passage au sombre (${t1.join(', ')})`);
-  await page.reload(); await page.waitForFunction(() => document.documentElement.classList.contains('ready'), null, { timeout: 45000 });
-  check(await page.evaluate(() => document.documentElement.dataset.theme) === 'dark', 'bouton de thème : choix gardé au rechargement');
-  await page.screenshot({ path: path.join(OUT, 'accueil-sombre.png') });
+  const nuit = await page.waitForFunction(() => document.documentElement.classList.contains('nuit-ok'), null, { timeout: 30000 }).then(() => true, () => false);
+  check(nuit, 'nuit de veille : le décor 3D est actif');
+  const t1 = await page.evaluate(() => [document.documentElement.dataset.theme, getComputedStyle(document.body).backgroundColor, document.getElementById('nuit').width > 300]);
+  check(t1[0] === 'dark' && t1[1] === 'rgb(7, 12, 28)' && t1[2], `nuit de veille : fond de nuit pour tous, même si l’appareil préfère le clair (${t1.join(', ')})`);
+  if (nuit) {
+    for (const x of [300, 360, 420, 480]) { await page.mouse.move(x, 300); await page.waitForTimeout(350); }
+    const tenu = await page.waitForFunction(() => /Vous tenez|You hold/.test(document.getElementById('veille-t').textContent), null, { timeout: 8000 }).then(() => true, () => false);
+    check(tenu, 'nuit de veille : la souris prend le faisceau en main');
+    const lit = await page.waitForFunction(() => { const c = [...document.querySelectorAll('.hero-name .ch')].map(e => parseFloat(e.style.getPropertyValue('--l'))); return c.some(v => v > .6) && c.some(v => v < .4); }, null, { timeout: 12000 }).then(() => true, () => false);
+    check(lit, 'nuit de veille : le faisceau éclaire les lettres du nom, pas tout le nom d’un coup');
+    await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+    const h = await page.waitForFunction(() => /^0[5-7]:/.test(document.getElementById('hd-heure-t').textContent), null, { timeout: 15000 }).then(() => true, () => false);
+    check(h, `nuit de veille : l’heure du quart avance avec le défilement (${await page.textContent('#hd-heure-t')})`);
+    check((await page.textContent('#bilan')).length > 20, 'nuit de veille : bilan du quart affiché au contact');
+    await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(1500);
+  }
+  await page.screenshot({ path: path.join(OUT, 'accueil-nuit.png') });
   await page.evaluate(() => document.querySelector('.pill-btn[data-open="0"]').click()); await page.waitForTimeout(1600);
   await page.click('#ov-share'); await page.waitForTimeout(400);
   const shared = await page.evaluate(() => navigator.clipboard.readText());
   check(shared === 'https://chaheennsi.github.io/portfolio2026/p/vigie/', `partager un projet : lien copié (${shared})`);
-  check(errors.length === 0, `thème et partage sans erreur (${errors.join(' | ') || 'rien'})`);
+  check(errors.length === 0, `nuit de veille et partage sans erreur (${errors.join(' | ') || 'rien'})`);
   await ctx.close();
 }
 
-// 1 ter. visuels : avatar haute définition pour le plein écran, bandeau illustré de chaque fiche projet
+// 1 ter. visuels : bandeau illustré et boucle animée de chaque fiche projet
 {
   const { ctx, page, errors } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' });
-  const hd = await page.waitForFunction(() => { const i = document.getElementById('xp-img'); return /v\/avatar(-1280)?\.webp$/.test(i.src) && i.naturalWidth >= 1280; }, null, { timeout: 10000 }).then(() => true, () => false);
-  check(hd, 'avatar haute définition chargé pour l’ouverture plein écran');
   for (const [i, id] of [[0, 'vigie'], [1, 'silverfort'], [2, 'smsi'], [3, 'hackathon']]) {
     await page.evaluate(n => document.querySelector(`.pill-btn[data-open="${n}"]`).click(), i);
     const ok = await page.waitForFunction(n => { const a = document.getElementById('ov-art'), im = document.getElementById('ov-art-img'); return !a.hidden && a.classList.contains('on') && im.src.includes('/v/' + n) && im.naturalWidth >= 1200; }, id, { timeout: 8000 }).then(() => true, () => false);
@@ -206,7 +216,7 @@ for (const scheme of ['light', 'dark']) {
   await ctx.close();
 }
 
-// 6. autres moteurs : Firefox et WebKit (le moteur de Safari) — affichage, CSP, thème, fiche projet
+// 6. autres moteurs : Firefox et WebKit (le moteur de Safari) — affichage, CSP, fiche projet (avec ou sans WebGL : le site doit tenir dans les deux cas)
 for (const [nom, type] of [['Firefox', firefox], ['WebKit (Safari)', webkit]]) {
   let br;
   try { br = await type.launch(); } catch {
@@ -222,8 +232,7 @@ for (const [nom, type] of [['Firefox', firefox], ['WebKit (Safari)', webkit]]) {
     check(vis, `${nom} ${vp.width}px : le nom s’affiche en haut de page`);
     await page.screenshot({ path: path.join(OUT, `${nom.split(' ')[0].toLowerCase()}-${vp.width}.png`) });
     if (!mob) {
-      await page.click('#theme-btn'); await page.waitForTimeout(1200);
-      check(await page.evaluate(() => document.documentElement.dataset.theme) === 'dark', `${nom} : bouton de thème`);
+      check(await page.evaluate(() => document.documentElement.dataset.theme) === 'dark', `${nom} : thème nuit`);
       await page.evaluate(() => document.querySelector('.pill-btn[data-open="1"]').click()); await page.waitForTimeout(1800);
       check(await page.evaluate(() => !document.getElementById('ov').hidden && /Silverfort/.test(document.getElementById('ov-title').textContent)), `${nom} : la fiche d’un projet s’ouvre`);
       await page.screenshot({ path: path.join(OUT, `${nom.split(' ')[0].toLowerCase()}-fiche.png`) });
