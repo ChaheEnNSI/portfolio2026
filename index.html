@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ipxUL7LQmh/A+d7CuFJo0/0o5fkqD5ErwXGTk4mkfuA=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-wLHc3bGr7z0F0rzcXOxKt0wld5crxNvF/gzCFqt+8nY=' 'sha256-pYtJVJcqjk+3DLZr2xOBHZnuIMtq+r7vcPZJcy6PPC8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ipxUL7LQmh/A+d7CuFJo0/0o5fkqD5ErwXGTk4mkfuA=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-1qVhyBuSAzY8CXuwRa+YcGIZC90kMezfkVa6I9SHqak=' 'sha256-pYtJVJcqjk+3DLZr2xOBHZnuIMtq+r7vcPZJcy6PPC8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -2327,6 +2327,7 @@ html.nuit,html.nuit body,html.nuit.ld-pre{background:#070C1C}
 .nuit .veille.tic{animation:veille-tic .5s cubic-bezier(.23,1,.32,1)}
 @keyframes veille-tic{30%{transform:scale(1.06)}}
 .nuit.ld-on .veille,.nuit.ld-pre .veille{opacity:0}
+.nuit.calm .veille,.nuit:not(.anim) .veille{display:none}
 @media (max-width:899px){.nuit .hero-name{font-size:clamp(46px,17vw,124px)}.nuit .veille{left:max(var(--gut), env(safe-area-inset-left, 0px));right:auto;bottom:auto;top:calc(76px + env(safe-area-inset-top, 0px));font-size:13px;padding:8px 14px 8px 12px}.nuit .hero-quart{margin-top:64px}}
 @media (max-height:640px) and (min-width:900px){.nuit .veille{display:none}}
 
@@ -8178,10 +8179,12 @@ function creerNuit(THREE, canvas, opt) {
   const NB = petit ? 8 : 12;                       // menaces cachées dans le trafic
   const U = {
     uTime: { value: 0 }, uDawn: { value: 0 }, uDim: { value: 0 }, uLamp: { value: LAMPE.clone() },
-    uBeamA: { value: 0 }, uBeamW: { value: 0.15 }, uBeamOn: { value: 1 }, uBeamSol: { value: 1 }, uBeamD: { value: 45 }, uSunA: { value: -1.62 + Math.PI + 0.08 }, uConst: { value: 0 }
+    uBeamA: { value: 0 }, uBeamW: { value: 0.15 }, uBeamOn: { value: 1 }, uBeamSol: { value: 1 }, uBeamD: { value: 45 }, uFlux: { value: 0 }, uPing: { value: new THREE.Vector3(0, 0, -100) }, uSunA: { value: -1.62 + Math.PI + 0.08 }, uConst: { value: 0 }
   };
   const COMMUN = `
-    uniform float uTime, uDawn, uDim, uBeamA, uBeamW, uBeamOn, uBeamSol, uBeamD, uSunA, uConst; uniform vec3 uLamp;
+    uniform float uTime, uDawn, uDim, uBeamA, uBeamW, uBeamOn, uBeamSol, uBeamD, uSunA, uConst, uFlux; uniform vec3 uLamp, uPing;
+    // onde du sonar : un anneau qui s'élargit depuis le point cliqué
+    float sonar(vec2 p){ float age = uTime - uPing.z; if (age < 0.0 || age > 2.6) return 0.0; float r = age * 22.0; float d = abs(length(p - uPing.xy) - r); return (1.0 - smoothstep(0.0, 1.1 + age * 0.6, d)) * (1.0 - age / 2.6); }
     float h21(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
     float h31(vec3 p){ p = fract(p * vec3(0.1031, 0.1030, 0.0973)); p += dot(p, p.yzx + 33.33); return fract((p.x + p.y) * p.z); }
     float bruit(vec3 p){ vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
@@ -8233,6 +8236,15 @@ function creerNuit(THREE, canvas, opt) {
         vec3 ax3 = normalize(vec3(0.45, 0.55, -0.7)); float bande = exp(-pow(dot(d, ax3) * 3.0, 2.0));
         float nb = bruit(d * 5.0) * 0.6 + bruit(d * 13.0) * 0.4;
         c += vec3(0.13, 0.17, 0.33) * bande * smoothstep(0.25, 0.85, nb) * nuitF * 0.8;
+        // étoile filante
+        float cyc = uTime / 9.0, kf = floor(cyc), ph = fract(cyc) / 0.1;
+        if (ph < 1.0) {
+          float r1 = h31(vec3(kf, 1.0, 7.0)), r2 = h31(vec3(kf, 5.0, 2.0));
+          vec3 a0 = normalize(vec3(cos(r1 * 6.2832) * 0.75, 0.3 + r2 * 0.5, sin(r1 * 6.2832) * 0.75)); vec3 vd = normalize(cross(a0, vec3(0.3, 1.0, 0.2)));
+          vec3 tete = normalize(a0 + vd * ph * 0.4), queue = normalize(a0 + vd * max(ph - 0.3, 0.0) * 0.4); vec3 ab = tete - queue;
+          float tt = clamp(dot(d - queue, ab) / max(dot(ab, ab), 1e-6), 0.0, 1.0); float dd = length(d - (queue + ab * tt));
+          c += vec3(1.0, 0.95, 0.85) * smoothstep(0.004, 0.0, dd) * tt * tt * sin(ph * 3.14159) * nuitF * 0.9;
+        }
         c *= 1.0 - uDim * 0.35;
         gl_FragColor = vec4(c, 1.0);
       }`
@@ -8250,7 +8262,7 @@ function creerNuit(THREE, canvas, opt) {
         vec2 p = vW.xz; vec3 toCam = cameraPosition - vW; float dc = length(toCam);
         float rowH = 0.9; float zr = (p.y + houle(p)) / rowH; float row = floor(zr); float fz = fract(zr);
         float sens = mod(row, 2.0) < 1.0 ? 1.0 : -1.0; float vit = (0.22 + h21(vec2(row, 7.0)) * 0.55) * sens;
-        float cw = 3.4; float xs = (p.x + uTime * vit + h21(vec2(row, 3.0)) * 60.0) / cw; float cx = floor(xs); float fx = fract(xs);
+        float cw = 3.4; float xs = (p.x + (uTime + uFlux) * vit + h21(vec2(row, 3.0)) * 60.0) / cw; float cx = floor(xs); float fx = fract(xs);
         float r = h21(vec2(cx, row)); float len = mix(0.22, 0.9, r); float plein = step(0.2, h21(vec2(cx + 9.0, row)));
         float ax = fwidth(xs) * 1.2 + 0.0005, az = fwidth(zr) * 1.2 + 0.0005;
         float ep = 0.085;
@@ -8274,7 +8286,8 @@ function creerNuit(THREE, canvas, opt) {
         vec3 c = fond + vec3(1.0, 0.93, 0.80) * (lum * 0.085 + col * 0.10);
         c = mix(c, ink, a * (1.0 - uDim * 0.55));
         c = mix(c, ink, smoothstep(0.2, 0.5, az) * 0.085 * (1.0 + lum * 2.5));
-        c = mix(c, vec3(1.0, 0.95, 0.86), trait * clamp(lum * 0.9 + col * 0.5, 0.0, 1.0));
+        float so = sonar(p);
+        c = mix(c, vec3(1.0, 0.95, 0.86), trait * clamp(lum * 0.9 + col * 0.5 + so * 0.85, 0.0, 1.0)); c += vec3(0.55, 0.62, 0.85) * so * 0.07;
         // reflet de l'aube
         float s = pow(max(cos(az0 - uSunA), 0.0), 8.0);
         c += vec3(1.0, 0.50, 0.38) * s * uDawn * (0.10 + 0.5 * trait) * smoothstep(20.0, 300.0, dc);
@@ -8374,7 +8387,7 @@ function creerNuit(THREE, canvas, opt) {
   const menaces = new THREE.Mesh(mg, new THREE.ShaderMaterial({
     uniforms: U, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     vertexShader: COMMUN + `attribute vec3 aPos; attribute float aPris, aLen; varying vec2 vUv; varying float vLum, vPris;
-      void main(){ vUv = uv; vPris = aPris; vLum = faisceau(aPos.xz);
+      void main(){ vUv = uv; vPris = aPris; vLum = max(faisceau(aPos.xz), sonar(aPos.xz) * 0.9);
         float e = aPris >= 0.0 ? 1.0 : 0.0; vec2 s = vec2(aLen + 5.0, 5.0);
         vec3 p = aPos + vec3(position.x * s.x, 0.0, -position.y * s.y);
         gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0); }`,
@@ -8421,7 +8434,7 @@ function creerNuit(THREE, canvas, opt) {
     const lm = new THREE.LineBasicMaterial({ color: 0xaab6dc, transparent: true, opacity: 0, depthWrite: false, depthTest: false });
     const l = new THREE.LineSegments(lg, lm); l.frustumCulled = false; l.renderOrder = -8; consts.add(l);
     const et = []; P.forEach(p => { const h = halo(15, 0xf4ede0, 0); h.position.copy(p); h.renderOrder = -7; h.material.depthTest = false; consts.add(h); et.push(h); });
-    CM.push({ l, et, f: 0 });
+    CM.push({ l, et, v: 0 });
   });
 
   /* ---------- caméra : une orbite lente autour du phare, pilotée par le défilement ---------- */
@@ -8435,7 +8448,7 @@ function creerNuit(THREE, canvas, opt) {
     { a: -1.0, r: 60, y: 4.0, ly: 46.0, lx: 0.05, dawn: 0.08, dim: 0.55 },
     { a: -1.62, r: 50, y: 2.8, ly: 6.6, lx: 0.24, dawn: 1.0, dim: 0.15 }
   ];
-  const etat = { prog: 0, cible: 0, px: 0, py: 0, actif: 0, az: 2.2, azC: 2.2, el: -0.105, elC: -0.105, d: 45, dC: 45, sol: 1, solC: 1, auto: 0, pris: 0, calme: false, aspect: 1, t0: performance.now(), dernier: 0 };
+  const etat = { prog: 0, cible: 0, px: 0, py: 0, actif: 0, az: 2.2, azC: 2.2, el: -0.105, elC: -0.105, d: 45, dC: 45, sol: 1, solC: 1, fig: -1, auto: 0, pris: 0, calme: false, aspect: 1, t0: performance.now(), dernier: 0 };
   const cr = (a, b, c, d, t) => 0.5 * ((2 * b) + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t);
   const cle = (k, p) => { const n = CLES.length - 1; p = Math.max(0, Math.min(n, p)); const i = Math.min(n - 1, Math.floor(p)), t = p - i; const g = j => CLES[Math.max(0, Math.min(n, j))][k]; return cr(g(i - 1), g(i), g(i + 1), g(i + 2), t); };
   const tmp = V3(0, 0, 0), tmp2 = V3(0, 0, 0), tmp3 = V3(0, 0, 0), ray = new THREE.Raycaster(), plan = new THREE.Plane(V3(0, 1, 0), 0), nd = new THREE.Vector2();
@@ -8496,7 +8509,7 @@ function creerNuit(THREE, canvas, opt) {
     // feux des bouées : un éclat chacun, à tour de rôle
     feux.forEach((f, i) => { const k = (t * 0.5 + i * 0.25) % 1; f.material.uniforms.uA.value = (0.25 + 0.75 * Math.pow(Math.max(0, 1 - k * 3), 2)) * (1 - jour * 0.7); });
     // constellations : visibles quand la caméra lève les yeux
-    CM.forEach((c, i) => { const v = U.uConst.value * (c.f > 0 ? 1 : 0.55) * (1 - jour * 0.6); c.l.material.opacity = v * 0.5; c.et.forEach((h, j) => { h.material.uniforms.uA.value = v * (0.7 + 0.3 * Math.sin(t * 1.3 + i + j * 2.1)); }); });
+    CM.forEach((c, i) => { const but = etat.fig < 0 ? 0.6 : (i === etat.fig ? 1 : 0.2); c.v += (but - c.v) * Math.min(1, dt * 6); const v = U.uConst.value * c.v * (1 - jour * 0.6); c.l.material.opacity = v * 0.62; c.et.forEach((h, j) => { h.material.uniforms.uA.value = v * (0.7 + 0.3 * Math.sin(t * 1.3 + i + j * 2.1)); }); });
     renderer.render(scene, cam);
   }
   function taille() {
@@ -8509,7 +8522,9 @@ function creerNuit(THREE, canvas, opt) {
     image, taille, etat, cam, U, NB,
     aller(p) { etat.cible = p; }, direct(p) { etat.cible = etat.prog = p; },
     main(x, y) { etat.mx = x; etat.my = y; etat.px += (x - etat.px) * 0.08; etat.py += (y - etat.py) * 0.08; etat.actif = 3.5; },
-    ciel(v) { U.uConst.value = v; }, figure(i) { CM.forEach((c, j) => { c.f = j === i ? 1 : 0; }); },
+    ciel(v) { U.uConst.value = v; }, figure(i) { etat.fig = i; }, flux(v) { U.uFlux.value += v; },
+    // coup de sonar au point de la mer visé à l'écran (coordonnées -1..1) ; renvoie false si on vise le ciel
+    sonar(x, y) { nd.set(x, y); ray.setFromCamera(nd, cam); if (ray.ray.direction.y > -0.01 || !ray.ray.intersectPlane(plan, tmp2) || tmp2.distanceTo(cam.position) > 260) return false; U.uPing.value.set(tmp2.x, tmp2.z, U.uTime.value); return true; },
     calme(b) { etat.calme = b; }, figer(b) { etat.fige = b; }, quandPris(f) { onPris = f; },
     qualite(k) { dpr = Math.max(0.75, Math.min(dpr * k, petit ? 1.25 : 1.5)); taille(); },
     lanterneEcran(out) { tmp.copy(LAMPE).project(cam); out.x = (tmp.x * 0.5 + 0.5); out.y = (-tmp.y * 0.5 + 0.5); out.devant = tmp.z < 1; return out; },
@@ -8565,7 +8580,7 @@ function setupNuit() {
     if (!veille) return;
     if (pris >= total) vT.innerHTML = `<b>${pris} / ${total}</b> ${esc(TT('Rien ne passe.', 'Nothing gets through.'))}`;
     else if (pris) vT.innerHTML = `<b>${pris} / ${total}</b> ${esc(TT(pris > 1 ? 'menaces repérées' : 'menace repérée', pris > 1 ? 'threats spotted' : 'threat spotted'))}`;
-    else vT.textContent = tenu ? TT('Vous tenez le faisceau. Cherchez les traits corail.', 'You hold the beam. Look for the coral dashes.') : (FINE ? TT('Bougez la souris : vous tenez le faisceau.', 'Move the mouse: you hold the beam.') : TT('Le faisceau suit votre doigt.', 'The beam follows your finger.'));
+    else vT.textContent = tenu ? TT('Vous tenez le faisceau. Un clic sur la mer : coup de sonar.', 'You hold the beam. Click the sea for a sonar ping.') : (FINE ? TT('Bougez la souris : vous tenez le faisceau.', 'Move the mouse: you hold the beam.') : TT('Le faisceau suit votre doigt.', 'The beam follows your finger.'));
     veille.classList.toggle('pris', pris > 0);
     if (bilan) bilan.innerHTML = pris ? TT(`Fin de quart. <b>${pris}</b> ${pris > 1 ? 'menaces repérées' : 'menace repérée'} sur ${total} cette nuit. Le jour se lève.`, `End of watch. <b>${pris}</b> of ${total} threats spotted tonight. Day is breaking.`)
       : TT('Fin de quart. Rien à signaler de votre côté. Le jour se lève.', 'End of watch. Nothing to report on your side. Day is breaking.');
@@ -8573,11 +8588,12 @@ function setupNuit() {
   dire();
 
   const couvert = () => document.hidden || (ovEl && !ovEl.hidden) || (mainEl && mainEl.inert);
-  let n60 = 0, t60 = 0, avant = 0, lent = 0;
+  let n60 = 0, t60 = 0, avant = 0, lent = 0, saut = false;
   function boucle(now) {
     raf = 0; if (!N) return;
     const calme = REDUCE || html.classList.contains('calm');
     if (couvert()) { if (!calme) raf = requestAnimationFrame(boucle); avant = 0; return; }
+    if (!calme && N.U.uDim.value > .45 && N.etat.actif <= 0) { saut = !saut; if (saut) { raf = requestAnimationFrame(boucle); return; } }
     N.calme(calme); N.figer(calme);
     const p = progDe(scrollY); if (calme) N.direct(p); else N.aller(p);
     N.ciel(lisse(4.5, 5, N.etat.prog) * (1 - lisse(5.5, 5.95, N.etat.prog)));
@@ -8601,10 +8617,13 @@ function setupNuit() {
     N.quandPris(n => { pris = n; dire(); if (veille) { veille.classList.remove('tic'); void veille.offsetWidth; veille.classList.add('tic'); } });
     ancres(); N.direct(progDe(scrollY)); N.figer(REDUCE || html.classList.contains('calm')); N.image(performance.now());
     html.classList.add('nuit-ok'); dire(); pretOk(true); demander();
+    // chaque famille de compétences a sa constellation : elle s’allume quand on survole (ou qu’on atteint au clavier) sa liste
+    $$('#sk-list .sk').forEach((el, i) => { const on = () => N.figure(i), off = () => N.figure(-1); el.addEventListener('pointerenter', on); el.addEventListener('pointerleave', off); el.addEventListener('focusin', on); el.addEventListener('focusout', off); });
     const tenir = (x, y) => { if (!N) return; N.main(x / innerWidth * 2 - 1, -(y / innerHeight * 2 - 1)); if (!tenu) { tenu = true; dire(); } };
     addEventListener('pointermove', e => { if (e.pointerType !== 'touch') tenir(e.clientX, e.clientY); }, { passive: true });
     addEventListener('touchmove', e => { const t = e.touches[0]; if (t) tenir(t.clientX, t.clientY); }, { passive: true });
-    addEventListener('scroll', () => { rectsAt = -1e9; demander(); }, { passive: true });
+    let yAv = scrollY; addEventListener('scroll', () => { const y = scrollY; N.flux(Math.min(6, Math.abs(y - yAv) * .012)); yAv = y; rectsAt = -1e9; demander(); }, { passive: true });
+    const hero = $('.hero'); if (hero) hero.addEventListener('pointerdown', e => { if (e.target.closest('a,button,input,[data-cv]') || REDUCE || html.classList.contains('calm')) return; N.sonar(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight * 2 - 1)); });
     let rz2; addEventListener('resize', () => { clearTimeout(rz2); rz2 = setTimeout(() => { N.taille(); ancres(); rectsAt = -1e9; demander(); }, 120); });
     document.addEventListener('visibilitychange', demander);
     new MutationObserver(demander).observe(html, { attributes: true, attributeFilter: ['class'] });
