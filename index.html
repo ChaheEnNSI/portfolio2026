@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ipxUL7LQmh/A+d7CuFJo0/0o5fkqD5ErwXGTk4mkfuA=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-xGd28gqMPfNZA04d8Wn7nSkoh8S4pP77FGKGh7Z1f+M=' 'sha256-pYtJVJcqjk+3DLZr2xOBHZnuIMtq+r7vcPZJcy6PPC8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ipxUL7LQmh/A+d7CuFJo0/0o5fkqD5ErwXGTk4mkfuA=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-ugRgmGViCsoRGzHW/BUxUtcd3uOnhtVH9gDNYGGyKUU=' 'sha256-pYtJVJcqjk+3DLZr2xOBHZnuIMtq+r7vcPZJcy6PPC8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -2343,6 +2343,8 @@ html.nuit,html.nuit body,html.nuit.ld-pre{background:#070C1C}
 .nuit.calm .sec-title{color:var(--ink);-webkit-text-stroke:0;background:none}
 .nuit .pc-card::before{content:"";position:absolute;inset:-16px -12px -18px;z-index:-1;border-radius:18px;background:rgba(8,14,32,.6);border:1px solid rgba(244,237,224,.09)}
 .nuit .pc-cmd{text-shadow:0 1px 14px rgba(7,12,28,.9)}
+html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#competences){padding-bottom:calc(118vh + 60px)}
+@media (max-width:899px){html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#competences){padding-bottom:calc(86vh + 40px)}}
 .son-btn{gap:8px;padding:0 14px}
 .son-btn[hidden]{display:none}
 .son-btn .son-on{display:none}
@@ -8216,10 +8218,10 @@ function creerNuit(THREE, canvas, opt) {
   const U = {
     uTime: { value: 0 }, uDawn: { value: 0 }, uDim: { value: 0 }, uLamp: { value: LAMPE.clone() }, uMoon: { value: LUNE.clone() },
     uBeamA: { value: 0 }, uBeamW: { value: 0.15 }, uBeamOn: { value: 1 }, uBeamSol: { value: 1 }, uBeamD: { value: 60 }, uSunA: { value: -1.62 + Math.PI + 0.08 },
-    uFlux: { value: 0 }, uPing: { value: new THREE.Vector3(0, 0, -100) }, uOrage: { value: 0 }, uEclair: { value: 0 }, uEclairA: { value: 0 }, uEclairS: { value: 0 }
+    uFlux: { value: 0 }, uPing: { value: new THREE.Vector3(0, 0, -100) }, uAcc: { value: 0 }, uCielR: { value: 0 }, uAurore: { value: 0 }, uChoc: { value: -99 }, uOrage: { value: 0 }, uEclair: { value: 0 }, uEclairA: { value: 0 }, uEclairS: { value: 0 }
   };
   const COMMUN = `
-    uniform float uTime, uDawn, uDim, uBeamA, uBeamW, uBeamOn, uBeamSol, uBeamD, uSunA, uFlux, uOrage, uEclair, uEclairA, uEclairS; uniform vec3 uLamp, uPing, uMoon;
+    uniform float uTime, uDawn, uDim, uBeamA, uBeamW, uBeamOn, uBeamSol, uBeamD, uSunA, uFlux, uOrage, uEclair, uEclairA, uEclairS, uAcc, uCielR, uAurore, uChoc; uniform vec3 uLamp, uPing, uMoon;
     #define FLASH (uEclair * max(0.0, 1.0 - uDim * 1.5))
     float h21(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
     float h31(vec3 p){ p = fract(p * vec3(0.1031, 0.1030, 0.0973)); p += dot(p, p.yzx + 33.33); return fract((p.x + p.y) * p.z); }
@@ -8283,8 +8285,9 @@ function creerNuit(THREE, canvas, opt) {
         vec3 sd = normalize(vec3(cos(uSunA), mix(-0.09, 0.016, uDawn), sin(uSunA)));
         float disc = smoothstep(0.9990, 0.9996, dot(d, sd)); c = mix(c, vec3(1.0, 0.86, 0.72), disc * step(0.0, d.y) * uDawn);
         // nuages : nappes de bruit déformées qui dérivent ; le zénith reste dégagé (constellations), sauf pendant le grain
+        float tn = uTime + uAcc; vec3 KP = vec3(0.35, 0.80, -0.49); vec3 ds = d * cos(uCielR) + cross(KP, d) * sin(uCielR) + KP * dot(KP, d) * (1.0 - cos(uCielR));
         vec2 q = d.xz / (d.y + 0.24) * 1.5; q += (vec2(n2(q * 0.8 + 3.1), n2(q * 0.8 + 9.4)) - 0.5) * 0.85;
-        float brut = fbm(q + vec2(uTime * 0.010, uTime * 0.004)) * 0.66 + fbm(q * 2.6 - vec2(uTime * 0.018, 0.0)) * 0.34;
+        float brut = fbm(q + vec2(tn * 0.010, tn * 0.004)) * 0.66 + fbm(q * 2.6 - vec2(tn * 0.018, 0.0)) * 0.34;
         float couv = 0.47 - 0.20 * uOrage;
         float nu = smoothstep(couv, couv + 0.27, brut) * smoothstep(0.0, 0.10, d.y) * (1.0 - smoothstep(0.30, 0.56, d.y) * (1.0 - uOrage));
         float lisere = 1.0 - smoothstep(couv, couv + 0.40, brut);                       // bords fins : ils prennent la lumière
@@ -8300,19 +8303,24 @@ function creerNuit(THREE, canvas, opt) {
         cn = mix(cn, mix(vec3(0.34, 0.26, 0.42), vec3(1.0, 0.52, 0.40), ss * (1.0 - smoothstep(0.0, 0.5, d.y)) * (0.55 + 0.45 * lisere)), uDawn);
         // étoiles
         float nuitF = (1.0 - uDawn * 0.94) * smoothstep(0.01, 0.2, d.y) * (1.0 - nu);
-        vec3 g = d * 170.0; vec3 ig = floor(g); vec3 fg = fract(g) - 0.5; float r = h31(ig);
+        vec3 g = ds * 170.0; vec3 ig = floor(g); vec3 fg = fract(g) - 0.5; float r = h31(ig);
         float gros = step(0.992, r);
         float dl = length(fg + (vec3(h31(ig + 3.0), h31(ig + 7.0), h31(ig + 11.0)) - 0.5) * 0.4);
         float st = (smoothstep(0.17 + gros * 0.1, 0.0, dl) + gros * 0.25 * smoothstep(0.5, 0.0, dl)) * step(0.93, r);
         st *= 0.55 + 0.45 * sin(uTime * (0.5 + r * 2.2) + r * 80.0);
         c += mix(vec3(0.80, 0.86, 1.0), vec3(1.0, 0.93, 0.82), h31(ig + 5.0)) * st * nuitF * (0.5 + gros * 0.9 + 0.5 * r);
-        vec3 ax3 = normalize(vec3(0.45, 0.55, -0.7)); float bande = exp(-pow(dot(d, ax3) * 3.0, 2.0));
-        c += vec3(0.13, 0.17, 0.33) * bande * smoothstep(0.25, 0.85, bruit(d * 5.0) * 0.6 + bruit(d * 13.0) * 0.4) * nuitF * 0.8;
+        vec3 ax3 = normalize(vec3(0.45, 0.55, -0.7)); float bande = exp(-pow(dot(ds, ax3) * 3.0, 2.0));
+        c += vec3(0.13, 0.17, 0.33) * bande * smoothstep(0.25, 0.85, bruit(ds * 5.0) * 0.6 + bruit(ds * 13.0) * 0.4) * nuitF * 0.8;
         // lune : un croissant et son halo
         float dmn = dot(d, uMoon); vec3 m2 = normalize(uMoon + normalize(cross(uMoon, vec3(0.0, 1.0, 0.0))) * 0.0125 + vec3(0.0, 0.004, 0.0));
         float lune = smoothstep(0.99962, 0.99974, dmn); float ombre = smoothstep(0.99955, 0.99970, dot(d, m2));
         vec3 cl = vec3(0.96, 0.95, 0.90) * lune * (1.0 - ombre * 0.93);
         c += (cl + vec3(0.55, 0.65, 0.95) * (pow(max(dmn, 0.0), 900.0) * 0.5 + pow(max(dmn, 0.0), 60.0) * 0.16)) * (1.0 - uDawn * 0.85) * (1.0 - nu * 0.7);
+        if (uAurore > 0.01) {   // aurore : des draperies de lumière au-dessus des constellations
+          float axa = az * 2.1 + fbm(vec2(az * 1.4, uTime * 0.05)) * 2.2; float bd = d.y * 3.0 - 2.35 - 0.34 * sin(axa) - 0.18 * sin(axa * 2.7 + uTime * 0.21);
+          float rid = exp(-bd * bd * 5.0) * smoothstep(0.02, 0.2, d.y); float ray = 0.5 + 0.5 * n2(vec2(az * 40.0 + uTime * 0.25, d.y * 2.0));
+          c += mix(vec3(0.30, 0.95, 0.72), vec3(1.0, 0.42, 0.58), smoothstep(-0.2, 0.9, bd)) * rid * ray * uAurore * 0.85 * (1.0 - uDim * 0.8);
+        }
         c = mix(c, cn, nu * 0.86);
         if (uEclair > 0.5) {
           float y = d.y; float ce = cos(asin(clamp(y, 0.0, 1.0)));
@@ -8382,6 +8390,7 @@ function creerNuit(THREE, canvas, opt) {
         vec3 encre = mix(vec3(0.34, 0.42, 0.66), vec3(0.56, 0.54, 0.70), uDawn);
         c = mix(c, encre, trait * (0.30 + 0.25 * r) * max(veine * 0.75, lum) * (1.0 - uDim * 0.5));
         c = mix(c, vec3(1.0, 0.95, 0.86), trait * clamp(lum * 0.9 + so * 0.85, 0.0, 1.0)); c += vec3(0.55, 0.62, 0.85) * so * 0.07;
+        { float ag = uTime - uChoc; if (ag > 0.0 && ag < 3.8) { float ond = exp(-pow((length(p) - ag * 62.0) / (2.4 + ag * 2.6), 2.0)) * (1.0 - ag / 3.8); c += vec3(1.0, 0.93, 0.78) * ond * (0.5 + 0.7 * fres); } }
         // moutons : les crêtes blanchissent pendant le grain
         if (uOrage > 0.02) { float crete = smoothstep(0.62, 1.35, vg.x) * smoothstep(0.42, 0.68, n2(p * 1.6 + vec2(uTime * 0.4, 0.0))) * uOrage * pres;
           c = mix(c, eclairer(vec3(0.78, 0.83, 0.92), vec3(0.0, 1.0, 0.0), vW) * 1.2, crete * 0.7); }
@@ -8539,6 +8548,56 @@ function creerNuit(THREE, canvas, opt) {
     const m = halo(s, 0xff6b5b, a, 1); m.position.set(x, y, z); m.userData = { x, y, ph: i * 1.7 }; rig.add(m); flous.push(m);
   });
 
+  /* ---------- la nuée : des milliers de grains de lumière. Ils flottent devant la caméra, s'écartent du curseur,
+     jaillissent de la lanterne à l'allumage et s'assemblent en emblème à l'ouverture de chaque chapitre ---------- */
+  const NP = petit ? 12000 : 40000;
+  const nuee = (() => {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 256; const x = cv.getContext('2d', { willReadFrequently: true });
+    const semer = dessin => {   // dessine un emblème, puis tire les grains au hasard dans le dessin
+      const out = new Float32Array(NP * 3); if (!x) return out;
+      x.clearRect(0, 0, 256, 256); x.fillStyle = x.strokeStyle = '#fff'; x.lineWidth = 7; x.lineCap = x.lineJoin = 'round'; dessin(x);
+      const d = x.getImageData(0, 0, 256, 256).data, pts = []; for (let i = 3; i < d.length; i += 4) if (d[i] > 110) pts.push(i >> 2);
+      if (!pts.length) return out;
+      for (let i = 0; i < NP; i++) { const p = pts[(Math.random() * pts.length) | 0]; out[i * 3] = (p % 256 + Math.random()) / 128 - 1; out[i * 3 + 1] = 1 - ((p / 256 | 0) + Math.random()) / 128; out[i * 3 + 2] = (Math.random() - 0.5) * 0.14; }
+      return out;
+    };
+    const EMB = [
+      c => { c.lineWidth = 5; for (let k = 0; k < 8; k++) { const r = 14 + k * 13.5; c.beginPath(); c.ellipse(128, 136, r * 0.8, r, 0, Math.PI * (1.03 + (k % 3) * 0.05), Math.PI * (1.97 - (k % 2) * 0.08)); c.stroke(); if (k > 0) { c.beginPath(); c.ellipse(128, 136, r * 0.8, r, 0, Math.PI * (0.10 + (k % 2) * 0.12), Math.PI * (0.90 - (k % 3) * 0.09)); c.stroke(); } } },   // profil : une empreinte
+      c => { c.beginPath(); c.moveTo(30, 214); c.bezierCurveTo(110, 214, 60, 150, 128, 140); c.bezierCurveTo(196, 130, 150, 70, 226, 44); c.stroke(); [[30, 214], [104, 168], [164, 112], [226, 44]].forEach(([a, b], i) => { c.beginPath(); c.arc(a, b, i === 3 ? 17 : 11, 0, 7); c.fill(); }); },   // parcours : une route et ses étapes
+      c => { c.beginPath(); c.moveTo(128, 22); c.lineTo(216, 54); c.lineTo(216, 128); c.bezierCurveTo(216, 186, 176, 220, 128, 238); c.bezierCurveTo(80, 220, 40, 186, 40, 128); c.lineTo(40, 54); c.closePath(); c.stroke(); c.beginPath(); c.arc(128, 112, 22, 0, 7); c.fill(); c.beginPath(); c.moveTo(117, 122); c.lineTo(139, 122); c.lineTo(148, 178); c.lineTo(108, 178); c.closePath(); c.fill(); },   // projets : un bouclier
+      c => { [104, 68, 32].forEach(r => { c.beginPath(); c.arc(128, 128, r, 0, 7); c.stroke(); }); c.lineWidth = 3; c.beginPath(); c.moveTo(128, 12); c.lineTo(128, 244); c.moveTo(12, 128); c.lineTo(244, 128); c.stroke(); c.lineWidth = 9; c.beginPath(); c.moveTo(128, 128); c.lineTo(198, 60); c.stroke(); },   // compétences : un radar
+      c => { c.font = '700 236px system-ui, -apple-system, Arial, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('@', 128, 118); }   // contact : une arobase
+    ];
+    const g = new THREE.BufferGeometry(), disp = new Float32Array(NP * 3), sd = new Float32Array(NP * 4);
+    for (let i = 0; i < NP; i++) { disp[i * 3] = (Math.random() - 0.5) * 10; disp[i * 3 + 1] = (Math.random() - 0.5) * 6; disp[i * 3 + 2] = -2.6 - Math.random() * 7.4; for (let k = 0; k < 4; k++) sd[i * 4 + k] = Math.random(); }
+    g.setAttribute('position', new THREE.BufferAttribute(disp, 3)); g.setAttribute('aS', new THREE.BufferAttribute(sd, 4));
+    EMB.forEach((e, k) => g.setAttribute('aE' + k, new THREE.BufferAttribute(semer(e), 3)));
+    const u = Object.assign({ uK: { value: 0 }, uF: { value: 0 }, uEmb: { value: V3(1.65, 0.12, 1.2) }, uSouris: { value: V3(0, 0, 0) }, uAsp: { value: 1 }, uPx: { value: 1 }, uJet: { value: 0 }, uLanC: { value: V3(0, 0, -6) } }, U);
+    const m = new THREE.Points(g, new THREE.ShaderMaterial({ uniforms: u, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending,
+      vertexShader: `uniform float uTime, uK, uF, uAsp, uPx, uJet, uDim; uniform vec3 uEmb, uSouris, uLanC;
+        attribute vec3 aE0, aE1, aE2, aE3, aE4; attribute vec4 aS; varying float vA, vC;
+        void main(){
+          vec3 e = uK < 0.5 ? aE0 : uK < 1.5 ? aE1 : uK < 2.5 ? aE2 : uK < 3.5 ? aE3 : aE4;
+          float ry = sin(uTime * 0.35) * 0.30 + uSouris.x * 0.25, cy = cos(ry), sy = sin(ry);
+          e = vec3(e.x * cy + e.z * sy, e.y, -e.x * sy + e.z * cy) * uEmb.z + vec3(uEmb.x, uEmb.y, -6.0);
+          e += vec3(sin(uTime * 1.7 + aS.y * 50.0), cos(uTime * 1.9 + aS.z * 50.0), 0.0) * 0.011;
+          vec3 dsp = position + vec3(sin(uTime * 0.21 + aS.y * 30.0), cos(uTime * 0.17 + aS.z * 30.0), sin(uTime * 0.13 + aS.w * 30.0)) * 0.35;
+          float f = clamp(uF * 1.7 - aS.x * 0.7, 0.0, 1.0); f = f * f * (3.0 - 2.0 * f);
+          vec3 p = mix(dsp, e, f);
+          p += vec3(sin(aS.y * 40.0 + uTime * 0.9), cos(aS.z * 37.0 + uTime * 0.8), sin(aS.w * 31.0 + uTime * 0.6)) * sin(f * 3.14159) * 0.85;
+          float j = clamp(uJet * 1.5 - aS.w * 0.5, 0.0, 1.0); p = mix(p, uLanC, j * j);
+          vec4 mv = modelViewMatrix * vec4(p, 1.0); gl_Position = projectionMatrix * mv;
+          vec2 dd = (gl_Position.xy / gl_Position.w - uSouris.xy) * vec2(uAsp, 1.0);
+          gl_Position.xy += normalize(dd + 1e-5) / vec2(uAsp, 1.0) * exp(-dot(dd, dd) * 9.0) * 0.15 * uSouris.z * gl_Position.w;
+          vA = mix(0.07 + 0.16 * aS.w, 0.9, f) * (1.0 - uDim * 0.7 * (1.0 - f)) * (0.75 + 0.25 * sin(uTime * 2.3 + aS.x * 60.0)) * (1.0 + j * 1.5);
+          vC = step(0.91, aS.z);
+          gl_PointSize = (1.3 + aS.w * 2.3) * uPx * mix(0.85, 1.1, f) * 6.0 / max(0.6, -mv.z);
+        }`,
+      fragmentShader: `varying float vA, vC; void main(){ float a = smoothstep(0.5, 0.05, length(gl_PointCoord - 0.5)) * vA; gl_FragColor = vec4(mix(vec3(1.0, 0.92, 0.76), vec3(1.0, 0.45, 0.38), vC) * a, a); }` }));
+    m.frustumCulled = false; m.renderOrder = 7; rig.add(m);
+    return { m, u };
+  })();
+
   /* ---------- pluie du grain : des traits obliques devant la caméra ---------- */
   const pluie = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 2.4), new THREE.ShaderMaterial({ uniforms: U, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending,
     vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
@@ -8618,7 +8677,7 @@ function creerNuit(THREE, canvas, opt) {
     { a: -1.15, r: 64, y: 5.0, ly: 66.0, lx: 0.05, dim: 0.34 },
     { a: -1.62, r: 86, y: 3.4, ly: 13.0, lx: 0.26, dim: 0.15 }
   ];
-  const etat = { prog: 0, cible: 0, px: 0, py: 0, actif: 0, az: 2.2, azC: 2.2, el: -0.105, elC: -0.105, d: 60, dC: 60, sol: 1, solC: 1, fig: -1, pris: 0, calme: false, aspect: 1, t0: performance.now(), dernier: 0, ciel: 0, intro: 0, t: 0, eclairT: -9, eclairN: 1e9, dimK: 1, tour: 0 };
+  const etat = { prog: 0, cible: 0, px: 0, py: 0, actif: 0, az: 2.2, azC: 2.2, el: -0.105, elC: -0.105, d: 60, dC: 60, sol: 1, solC: 1, fig: -1, pris: 0, calme: false, aspect: 1, t0: performance.now(), dernier: 0, ciel: 0, intro: 0, t: 0, eclairT: -9, eclairN: 1e9, dimK: 1, tour: 0, embK: 0, embF: 0, vit: 0, progAv: -1 };
   const cr = (a, b, c, d, t) => 0.5 * ((2 * b) + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t);
   const cle = (k, p) => { const n = CLES.length - 1; p = Math.max(0, Math.min(n, p)); const i = Math.min(n - 1, Math.floor(p)), t = p - i; const g = j => CLES[Math.max(0, Math.min(n, j))][k]; return cr(g(i - 1), g(i), g(i + 1), g(i + 2), t); };
   const tmp = V3(0, 0, 0), tmp2 = V3(0, 0, 0), tmp3 = V3(0, 0, 0), ray = new THREE.Raycaster(), plan = new THREE.Plane(V3(0, 1, 0), 0), nd = new THREE.Vector2();
@@ -8636,6 +8695,7 @@ function creerNuit(THREE, canvas, opt) {
     if (orage > 0.001) cam.rotateZ(Math.sin(etat.t * 0.62) * 0.016 * orage);   // le grain fait rouler l'horizon
     { const k = Math.max(0, Math.min(1, (p - 5.42) / 0.58)); U.uDawn.value = k * k * (3 - 2 * k) * 0.94; }
     U.uDim.value = Math.max(0, Math.min(1, cle('dim', p))) * etat.dimK;
+    U.uAurore.value = lisse(4.6, 4.98, p) * (1 - lisse(5.15, 5.5, p));
   }
 
   /* ---------- bouées du parcours : quatre feux qui s'allument l'un après l'autre, placés devant la caméra du chapitre ---------- */
@@ -8723,6 +8783,14 @@ function creerNuit(THREE, canvas, opt) {
     etat.prog += (etat.cible - etat.prog) * (etat.fige ? 1 : 1 - Math.exp(-dtv * 3.6));
     placer(etat.prog);
     cam.updateMatrixWorld();
+    { // accéléré : quand la caméra voyage vite, le ciel tourne, les nuages filent, le phare s'emballe
+      const vp = etat.progAv < 0 ? 0 : Math.abs(etat.prog - etat.progAv) / dtv; etat.progAv = etat.prog; etat.vit += (Math.min(vp, 1.6) - etat.vit) * Math.min(1, dtv * 6);
+      if (!etat.fige) U.uAcc.value += etat.vit * dtv * 260; U.uCielR.value = etat.prog * 0.36;
+      const nu = nuee.u; if (etat.embF > 0.02 && nu.uF.value < 0.04 && nu.uK.value !== etat.embK) { nu.uK.value = etat.embK; if (etat.aspect >= 0.8) { const P = [[2.15, 0.55], [1.5, 0.2], [1.55, 0.25], [1.7, 0.3], [0.95, 0.9]][etat.embK] || [1.65, 0.12]; nu.uEmb.value.x = P[0]; nu.uEmb.value.y = P[1]; } }
+      const but = nu.uK.value === etat.embK ? etat.embF : 0; nu.uF.value = etat.fige ? but : nu.uF.value + (but - nu.uF.value) * (1 - Math.exp(-dtv * 2.4));
+      nu.uSouris.value.set(etat.mx || 0, etat.my || 0, nu.uSouris.value.z + ((etat.actif > 0 ? 1 : 0) - nu.uSouris.value.z) * Math.min(1, dtv * 4));
+      nu.uJet.value = etat.intro; if (etat.intro > 0) { cam.updateMatrixWorld(); nu.uLanC.value.copy(LAMPE).applyMatrix4(cam.matrixWorldInverse); }
+    }
     { // grain : pluie, et un éclair de temps en temps (jamais en mode calme)
       const gr = U.uOrage.value; pluie.visible = gr > 0.01;
       if (gr > 0.55 && !etat.calme && !etat.fige) {
@@ -8741,7 +8809,7 @@ function creerNuit(THREE, canvas, opt) {
       etat.solC = mer ? 1 : 0; if (mer) etat.dC = hl; etat.actif -= dt;
     } else if (!etat.calme) { etat.azC = cle('a', etat.prog) + 1.0 + Math.sin(t * 0.33) * 0.8; etat.elC = -0.105; etat.solC = 1; etat.dC = 60; }
     let d = etat.azC - etat.az; d = Math.atan2(Math.sin(d), Math.cos(d)); const kf = Math.min(1, dt * 5.5);
-    if (etat.tour > 0 && !etat.calme && !etat.fige) { const v = Math.min(etat.tour, dt * 3.7); etat.az += v; etat.tour -= v; } else etat.az += d * kf;   // à chaque chapitre, le phare fait un tour complet
+    if (!etat.calme && !etat.fige && etat.vit > 0.05 && etat.actif <= 0) etat.az += etat.vit * dt * 9; else etat.az += d * kf;   // à chaque chapitre, le phare fait un tour complet
     etat.el += (etat.elC - etat.el) * kf; etat.sol += (etat.solC - etat.sol) * kf; etat.d += (etat.dC - etat.d) * kf;
     U.uBeamA.value = etat.az; U.uBeamSol.value = etat.sol; U.uBeamD.value = etat.d; pivot.rotation.y = -etat.az; incl.rotation.z = etat.el;
     const jour = U.uDawn.value; U.uBeamOn.value = 1 - Math.max(0, Math.min(1, (jour - 0.72) / 0.2));
@@ -8782,6 +8850,7 @@ function creerNuit(THREE, canvas, opt) {
   function taille() {
     const w = canvas.clientWidth || innerWidth, h = canvas.clientHeight || innerHeight;
     renderer.setPixelRatio(Math.min(dpr, Math.max(0.6, Math.sqrt(3.4e6 / Math.max(1, w * h))))); renderer.setSize(w, h, false); etat.aspect = w / h; if (post) { const s = renderer.getDrawingBufferSize(new THREE.Vector2()); post.taille(s.x, s.y); }
+    { const s = renderer.getDrawingBufferSize(new THREE.Vector2()), nu = nuee.u; nu.uAsp.value = w / h; nu.uPx.value = s.y / 900; if (etat.aspect < 0.8) nu.uEmb.value.set(0, 1.25, 0.82); else nu.uEmb.value.set(1.65, 0.12, 1.2); }
     cam.aspect = w / h; cam.fov = etat.aspect < 0.8 ? 52 : 40; cam.updateProjectionMatrix();
   }
   taille();
@@ -8789,12 +8858,12 @@ function creerNuit(THREE, canvas, opt) {
     image, taille, etat, cam, U, NB,
     aller(p) { etat.cible = p; }, direct(p) { etat.cible = etat.prog = p; },
     main(x, y) { etat.mx = x; etat.my = y; etat.px += (x - etat.px) * 0.08; etat.py += (y - etat.py) * 0.08; etat.actif = 3.5; },
-    ciel(v) { etat.ciel = v; }, entree() { if (!etat.fige && !etat.calme) etat.intro = 1; }, figure(i) { etat.fig = i; }, flux(v) { U.uFlux.value += v; },
+    ciel(v) { etat.ciel = v; }, entree() { if (!etat.fige && !etat.calme) { etat.intro = 1; U.uChoc.value = U.uTime.value + 0.5; } }, figure(i) { etat.fig = i; }, flux(v) { U.uFlux.value += v; },
     // coup de sonar au point de la mer visé à l'écran (coordonnées -1..1) ; renvoie false si on vise le ciel
     sonar(x, y) { nd.set(x, y); ray.setFromCamera(nd, cam); if (ray.ray.direction.y > -0.01 || !ray.ray.intersectPlane(plan, tmp2) || tmp2.distanceTo(cam.position) > 320) return false; U.uPing.value.set(tmp2.x, tmp2.z, U.uTime.value); return true; },
     calme(b) { etat.calme = b; }, figer(b) { etat.fige = b; }, quandPris(f) { onPris = f; }, quandEclair(f) { onEclair = f; }, attenuer(k) { etat.dimK = k; },
     qualite(k) { if (++nq >= 2 && post) post.actif = false; dpr = Math.max(0.75, Math.min(dpr * k, petit ? 1.25 : 1.5)); taille(); },
-    tour() { if (!etat.calme && !etat.fige) etat.tour = Math.PI * 2; },
+    tour() {}, choc() { if (!etat.calme && !etat.fige) U.uChoc.value = U.uTime.value; }, nuee(k, f) { etat.embK = k; etat.embF = f; },
     lanterneEcran(out) { tmp.copy(LAMPE).project(cam); out.x = (tmp.x * 0.5 + 0.5); out.y = (-tmp.y * 0.5 + 0.5); out.devant = tmp.z < 1; return out; },
     faisceauEcran(out) { const ce = Math.cos(etat.el) * 50; tmp.set(LAMPE.x + Math.cos(etat.az) * ce, LAMPE.y + Math.sin(etat.el) * 50, LAMPE.z + Math.sin(etat.az) * ce).project(cam); out.x = tmp.x * 0.5 + 0.5; out.y = -tmp.y * 0.5 + 0.5; out.devant = tmp.z < 1; return out; },
     fin() { renderer.dispose(); }
@@ -8818,12 +8887,16 @@ function setupNuit() {
   const elH = $('#hd-heure-t'), veille = $('#veille'), vT = $('#veille-t'), bilan = $('#bilan'), voile = $('.nuit-voile'), ovEl = $('#ov'), mainEl = $('main');
   const secs = ['#profil', '#parcours', '#projets', '#competences', '#contact'].map(s => $(s));
   let N = null, A = [0, 1, 2, 3, 4, 5, 6], vh = innerHeight, raf = 0, lastH = '', lastV = -1, chars = [], rects = [], rectsAt = -1e9, tenu = false, pris = 0, total = 12;
+  let YS = [0, 0, 0, 0, 0], PADH = [0, 0, 0, 0, 0], PADB = [0, 0, 0, 0, 0];
   const ancres = () => {
     vh = innerHeight; const y = el => el.getBoundingClientRect().top + scrollY, max = Math.max(1, document.documentElement.scrollHeight - vh);
-    A = [0, html.classList.contains('hero-pin') ? vh * .82 : Math.min(vh * .9, y(secs[0]) * .6), ...secs.map((s, i) => Math.min(max, y(s) - vh * (i === 4 ? .42 : .3)))];
+    YS = secs.map(y); PADH = secs.map(el => parseFloat(getComputedStyle(el).paddingTop) || 0); PADB = secs.map(el => parseFloat(getComputedStyle(el).paddingBottom) || 0);
+    A = [0, html.classList.contains('hero-pin') ? vh * .82 : Math.min(vh * .9, YS[0] * .6), ...secs.map((el, i) => Math.min(max, YS[i] + PADH[i] - vh * .62))];
     for (let i = 1; i < A.length; i++) if (A[i] <= A[i - 1]) A[i] = A[i - 1] + 1;
   };
-  const progDe = y => { let i = 0; while (i < A.length - 2 && y > A[i + 1]) i++; return i + Math.max(0, Math.min(1, (y - A[i]) / (A[i + 1] - A[i]))); };
+  // plan-séquence : la caméra fait l'essentiel du trajet pendant l'écran vide qui sépare deux chapitres (le reste du temps, elle dérive à peine)
+  const progDe = y => { let i = 0; while (i < A.length - 2 && y > A[i + 1]) i++; const L = A[i + 1] - A[i], d = Math.max(0, Math.min(L, y - A[i])); if (i < 2) return i + d / L;
+    const W = Math.max(vh * .3, Math.min(L * .8, PADB[i - 2] + PADH[i - 1] - vh * .17)), u = Math.max(0, (d - (L - W)) / W); return i + .16 * Math.min(1, d / Math.max(1, L - W)) + .84 * u * u * (3 - 2 * u); };
   const heure = p => { const i = Math.max(0, Math.min(5, Math.floor(p))), t = Math.max(0, Math.min(1, p - i)), m = h => h[0] * 60 + h[1]; const v = Math.round(m(HEURES[i]) + (m(HEURES[i + 1]) - m(HEURES[i])) * t); return String(Math.floor(v / 60) % 24).padStart(2, '0') + ':' + String(v % 60).padStart(2, '0'); };
   const lisse = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
@@ -8858,7 +8931,9 @@ function setupNuit() {
 
   // plans dégagés : à l'ouverture de chaque chapitre le décor est en pleine lumière ; le voile ne vient que pour la lecture
   let kV = 1, tEcl = 0, chAv = -1;
-  const lecture = y => { let i = 0; while (i < A.length - 2 && y > A[i + 1]) i++; const sortie = lisse(vh * .03, vh * .42, A[i + 1] - y); return i < 1 ? 1 : i < 2 ? sortie : lisse(vh * .08, vh * .5, y - A[i]) * sortie; };
+  const lecture = y => { let i = 0; while (i < A.length - 2 && y > A[i + 1]) i++; if (i < 1) return 1; const fin = YS[i - 1] - (i >= 2 ? PADB[i - 2] : 0) - y, sortie = lisse(vh * .22, vh * .7, fin); return i < 2 ? sortie : lisse(vh * .05, vh * .42, y - A[i]) * sortie; };
+  // la nuée s'assemble en emblème quand le titre d'un chapitre approche, puis se disperse pour la lecture
+  const forme = y => { let k = 0, f = 0; for (let i = 2; i <= 6; i++) { const v = lisse(A[i] - vh, A[i] - vh * .45, y) * (1 - lisse(A[i] + vh * .1, A[i] + vh * .5, y)); if (v > f) { f = v; k = i - 2; } } return [k, f]; };
   // ---------- son d'ambiance : la mer, le vent, la pluie, le tonnerre. Tout est fabriqué ici (aucun fichier) et reste coupé tant qu'on ne le demande pas ----------
   const son = (() => {
     let ctx = null, maitre, gMer, gPluie, gVent, bruitB, bruitW, actif = false, tMaj = 0;
@@ -8902,7 +8977,7 @@ function setupNuit() {
     const p = progDe(scrollY); if (calme) N.direct(p); else N.aller(p);
     N.ciel(lisse(4.5, 5, N.etat.prog) * (1 - lisse(5.5, 5.95, N.etat.prog)));
     { const k = lecture(scrollY); kV = calme ? k : kV + (k - kV) * .14; N.attenuer(kV); }
-    { const ch = Math.floor(N.etat.prog + .14); if (ch !== chAv) { if (chAv >= 0 && ch >= 2 && !calme) N.tour(); chAv = ch; } }   // nouveau chapitre : le phare fait un tour
+    { const ch = Math.floor(N.etat.prog + .14); if (ch !== chAv) { if (chAv >= 0 && ch >= 2 && !calme) N.choc(); chAv = ch; } const e = forme(scrollY); N.nuee(e[0], e[1]); }   // nouveau chapitre : une onde de lumière part du phare
     son.suivre(N.U.uOrage.value, N.U.uDawn.value);
     N.image(now);
     const v = Math.round(N.U.uDim.value * 100); if (v !== lastV) { lastV = v; voile.style.setProperty('--voile', (v * .0082).toFixed(3)); }
@@ -8935,7 +9010,7 @@ function setupNuit() {
     let rz2; addEventListener('resize', () => { clearTimeout(rz2); rz2 = setTimeout(() => { N.taille(); ancres(); rectsAt = -1e9; demander(); }, 120); });
     document.addEventListener('visibilitychange', () => { son.pause(document.hidden); demander(); });
     if (son.possible) { const bs = $$('[data-son]'), maj = () => bs.forEach(b => { b.hidden = false; b.setAttribute('aria-pressed', son.actif ? 'true' : 'false'); }); bs.forEach(b => b.addEventListener('click', () => { son.basculer(); maj(); })); maj(); }
-    new MutationObserver(demander).observe(html, { attributes: true, attributeFilter: ['class'] });
+    let calmeAv = html.classList.contains('calm'); new MutationObserver(() => { const c = html.classList.contains('calm'); if (c !== calmeAv) { calmeAv = c; if (ST) ST.refresh(); ancres(); } demander(); }).observe(html, { attributes: true, attributeFilter: ['class'] });
     if (ST) ST.addEventListener('refresh', () => { ancres(); demander(); });
     setTimeout(ancres, 1200); setTimeout(ancres, 4000);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { ancres(); rectsAt = -1e9; });
