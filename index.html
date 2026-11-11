@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-vdaxi6sDELGn2B+ksu6Tv5qTLjEA3lR2faUrZ5lfDAs=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-BMrVi18DEH96rkAANKI5RNrhnl/Xlj62kwJT/Nl825k=' 'sha256-pYtJVJcqjk+3DLZr2xOBHZnuIMtq+r7vcPZJcy6PPC8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-vdaxi6sDELGn2B+ksu6Tv5qTLjEA3lR2faUrZ5lfDAs=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-9TI/L1JJeaZp/BYnOwI15rbFSn2graQGq/qoT3CEsLk=' 'sha256-pYtJVJcqjk+3DLZr2xOBHZnuIMtq+r7vcPZJcy6PPC8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -3425,7 +3425,7 @@ function xpLive(on) {
 }
 // boucles vidéo : seulement si les animations sont actives et que le visiteur n’économise pas ses données
 const VID_OK = VISUELS && MOTION && !(navigator.connection && navigator.connection.saveData);
-const BOUCLES = ['vigie', 'silverfort'];   // fiches dont la boucle animée existe dans v/ (<id>.mp4, <id>.webm, et les mêmes en -s pour les petits écrans)
+const BOUCLES = ['vigie', 'silverfort', 'smsi', 'hackathon'];   // fiches dont la boucle animée existe dans v/ (<id>.mp4, <id>.webm, et les mêmes en -s pour les petits écrans)
 const vidSources = (v, name, fail) => { let so; for (const [ext, type] of [['mp4', 'video/mp4; codecs="avc1.640028"'], ['webm', 'video/webm; codecs="vp9"']]) { so = document.createElement('source'); so.src = 'v/' + name + '.' + ext; so.type = type; v.appendChild(so); } if (fail) so.onerror = fail; };
 // renvoie true si une boucle va être tentée : l’image fixe reste alors immobile dessous, sans sa dérive
 function artVideo(id) {
