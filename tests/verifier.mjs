@@ -95,6 +95,9 @@ async function open(opts, query = '', br = browser) {
   const t1 = await page.evaluate(() => [document.documentElement.dataset.theme, getComputedStyle(document.body).backgroundColor, document.getElementById('nuit').width > 300]);
   check(t1[0] === 'dark' && t1[1] === 'rgb(7, 12, 28)' && t1[2], `nuit de veille : fond de nuit pour tous, même si l’appareil préfère le clair (${t1.join(', ')})`);
   if (nuit) {
+    // son d'ambiance : coupé par défaut, le bouton l'allume puis le coupe, sans erreur
+    const son = await page.evaluate(async () => { const b = document.getElementById('son-btn'); if (!b || b.hidden) return 'absent'; const a0 = b.getAttribute('aria-pressed'); b.click(); await new Promise(r => setTimeout(r, 400)); const a1 = b.getAttribute('aria-pressed'); b.click(); await new Promise(r => setTimeout(r, 300)); return [a0, a1, b.getAttribute('aria-pressed')].join(','); });
+    check(son === 'false,true,false', `nuit de veille : le son d’ambiance est coupé par défaut et s’allume au bouton (${son})`);
     for (const x of [300, 360, 420, 480]) { await page.mouse.move(x, 300); await page.waitForTimeout(350); }
     const tenu = await page.waitForFunction(() => /Vous tenez|You hold/.test(document.getElementById('veille-t').textContent), null, { timeout: 8000 }).then(() => true, () => false);
     check(tenu, 'nuit de veille : la souris prend le faisceau en main');
