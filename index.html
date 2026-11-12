@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ipxUL7LQmh/A+d7CuFJo0/0o5fkqD5ErwXGTk4mkfuA=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-ugRgmGViCsoRGzHW/BUxUtcd3uOnhtVH9gDNYGGyKUU=' 'sha256-pYtJVJcqjk+3DLZr2xOBHZnuIMtq+r7vcPZJcy6PPC8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ipxUL7LQmh/A+d7CuFJo0/0o5fkqD5ErwXGTk4mkfuA=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-Om6QkehMf5UPXGzl1BogaaSjCOqMg1iH/XAW8PmgZss=' 'sha256-pYtJVJcqjk+3DLZr2xOBHZnuIMtq+r7vcPZJcy6PPC8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8932,8 +8932,6 @@ function setupNuit() {
   // plans dégagés : à l'ouverture de chaque chapitre le décor est en pleine lumière ; le voile ne vient que pour la lecture
   let kV = 1, tEcl = 0, chAv = -1;
   const lecture = y => { let i = 0; while (i < A.length - 2 && y > A[i + 1]) i++; if (i < 1) return 1; const fin = YS[i - 1] - (i >= 2 ? PADB[i - 2] : 0) - y, sortie = lisse(vh * .22, vh * .7, fin); return i < 2 ? sortie : lisse(vh * .05, vh * .42, y - A[i]) * sortie; };
-  // la nuée s'assemble en emblème quand le titre d'un chapitre approche, puis se disperse pour la lecture
-  const forme = y => { let k = 0, f = 0; for (let i = 2; i <= 6; i++) { const v = lisse(A[i] - vh, A[i] - vh * .45, y) * (1 - lisse(A[i] + vh * .1, A[i] + vh * .5, y)); if (v > f) { f = v; k = i - 2; } } return [k, f]; };
   // ---------- son d'ambiance : la mer, le vent, la pluie, le tonnerre. Tout est fabriqué ici (aucun fichier) et reste coupé tant qu'on ne le demande pas ----------
   const son = (() => {
     let ctx = null, maitre, gMer, gPluie, gVent, bruitB, bruitW, actif = false, tMaj = 0;
@@ -8977,7 +8975,7 @@ function setupNuit() {
     const p = progDe(scrollY); if (calme) N.direct(p); else N.aller(p);
     N.ciel(lisse(4.5, 5, N.etat.prog) * (1 - lisse(5.5, 5.95, N.etat.prog)));
     { const k = lecture(scrollY); kV = calme ? k : kV + (k - kV) * .14; N.attenuer(kV); }
-    { const ch = Math.floor(N.etat.prog + .14); if (ch !== chAv) { if (chAv >= 0 && ch >= 2 && !calme) N.choc(); chAv = ch; } const e = forme(scrollY); N.nuee(e[0], e[1]); }   // nouveau chapitre : une onde de lumière part du phare
+    { const ch = Math.floor(N.etat.prog + .14); if (ch !== chAv) { if (chAv >= 0 && ch >= 2 && !calme) N.choc(); chAv = ch; } }   // nouveau chapitre : une onde de lumière part du phare
     son.suivre(N.U.uOrage.value, N.U.uDawn.value);
     N.image(now);
     const v = Math.round(N.U.uDim.value * 100); if (v !== lastV) { lastV = v; voile.style.setProperty('--voile', (v * .0082).toFixed(3)); }
