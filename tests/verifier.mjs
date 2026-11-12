@@ -91,22 +91,24 @@ async function open(opts, query = '', br = browser) {
 {
   const { ctx, page, errors } = await open({ viewport: { width: 1440, height: 900 }, colorScheme: 'light', locale: 'fr-FR', permissions: ['clipboard-read', 'clipboard-write'] });
   const nuit = await page.waitForFunction(() => document.documentElement.classList.contains('nuit-ok'), null, { timeout: 30000 }).then(() => true, () => false);
-  check(nuit, 'nuit de veille : le décor 3D est actif');
-  const t1 = await page.evaluate(() => [document.documentElement.dataset.theme, getComputedStyle(document.body).backgroundColor, document.getElementById('nuit').width > 300]);
+  check(nuit, 'nuit de veille : le décor est actif');
+  const film = await page.evaluate(() => document.documentElement.classList.contains('film'));
+  const t1 = await page.evaluate(() => [document.documentElement.dataset.theme, getComputedStyle(document.body).backgroundColor, document.documentElement.classList.contains('film') ? document.querySelectorAll('.film-v').length === 6 : document.getElementById('nuit').width > 300]);
   check(t1[0] === 'dark' && t1[1] === 'rgb(7, 12, 28)' && t1[2], `nuit de veille : fond de nuit pour tous, même si l’appareil préfère le clair (${t1.join(', ')})`);
   if (nuit) {
     // son d'ambiance : coupé par défaut, le bouton l'allume puis le coupe, sans erreur
     const son = await page.evaluate(async () => { const b = document.getElementById('son-btn'); if (!b || b.hidden) return 'absent'; const a0 = b.getAttribute('aria-pressed'); b.click(); await new Promise(r => setTimeout(r, 400)); const a1 = b.getAttribute('aria-pressed'); b.click(); await new Promise(r => setTimeout(r, 300)); return [a0, a1, b.getAttribute('aria-pressed')].join(','); });
     check(son === 'false,true,false', `nuit de veille : le son d’ambiance est coupé par défaut et s’allume au bouton (${son})`);
     for (const x of [300, 360, 420, 480]) { await page.mouse.move(x, 300); await page.waitForTimeout(350); }
-    const tenu = await page.waitForFunction(() => /Vous tenez|You hold/.test(document.getElementById('veille-t').textContent), null, { timeout: 8000 }).then(() => true, () => false);
-    check(tenu, 'nuit de veille : la souris prend le faisceau en main');
-    const lit = await page.waitForFunction(() => { const c = [...document.querySelectorAll('.hero-name .ch')].map(e => parseFloat(e.style.getPropertyValue('--l'))); return c.some(v => v > .6) && c.some(v => v < .4); }, null, { timeout: 12000 }).then(() => true, () => false);
+    const tenu = await page.waitForFunction(f => f ? !!document.querySelector('.film-lampe.on') : /Vous tenez|You hold/.test(document.getElementById('veille-t').textContent), film, { timeout: 8000 }).then(() => true, () => false);
+    check(tenu, film ? 'film : la lampe suit le curseur' : 'nuit de veille : la souris prend le faisceau en main');
+    const lit = await page.waitForFunction(f => { const c = [...document.querySelectorAll('.hero-name .ch')].map(e => parseFloat(e.style.getPropertyValue('--l'))); return f ? Math.max(...c) - Math.min(...c) > .2 : c.some(v => v > .6) && c.some(v => v < .4); }, film, { timeout: 12000 }).then(() => true, () => false);
     check(lit, 'nuit de veille : le faisceau éclaire les lettres du nom, pas tout le nom d’un coup');
     await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
     const h = await page.waitForFunction(() => /^0[5-7]:/.test(document.getElementById('hd-heure-t').textContent), null, { timeout: 15000 }).then(() => true, () => false);
     check(h, `nuit de veille : l’heure du quart avance avec le défilement (${await page.textContent('#hd-heure-t')})`);
     check((await page.textContent('#bilan')).length > 20, 'nuit de veille : bilan du quart affiché au contact');
+    if (film) { const pl = await page.waitForFunction(() => [...document.querySelectorAll('.film-v')].findIndex(v => v.classList.contains('on')) === 5, null, { timeout: 8000 }).then(() => true, () => false); check(pl, 'film : en bas de page, c’est le dernier plan qui est à l’écran'); }
     await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(1500);
   }
   await page.screenshot({ path: path.join(OUT, 'accueil-nuit.png') });
@@ -158,8 +160,12 @@ if (existsSync(path.join(ROOT, 'v', 'vigie.mp4'))) {
 {
   const sans = await chromium.launch({ args: ['--disable-gpu', '--disable-webgl', '--disable-webgl2', '--disable-3d-apis'] });
   const { page, errors } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' }, '', sans);
-  const repli = await page.waitForFunction(() => document.documentElement.classList.contains('nuit-sans'), null, { timeout: 20000 }).then(() => true, () => false);
-  if (repli) {
+  const repli = await page.waitForFunction(() => document.documentElement.classList.contains('nuit-sans') || document.documentElement.classList.contains('film'), null, { timeout: 20000 }).then(() => true, () => false);
+  const filmSans = repli && await page.evaluate(() => document.documentElement.classList.contains('film'));
+  if (filmSans) {
+    check(await page.evaluate(() => document.querySelectorAll('.film-v').length === 6 && getComputedStyle(document.querySelector('.hero-name')).visibility === 'visible'), 'sans WebGL : le film ne dépend pas de la 3D, il est là');
+    check(errors.length === 0, `sans WebGL : aucune erreur (${errors.join(' | ') || 'rien'})`);
+  } else if (repli) {
     await page.waitForTimeout(1500);
     const e = await page.evaluate(() => [getComputedStyle(document.querySelector('.hero-name')).visibility, getComputedStyle(document.querySelector('.xp-media')).display, getComputedStyle(document.querySelector('.nuit-phare')).display, getComputedStyle(document.querySelector('.veille')).display]);
     check(e[0] === 'visible' && e[1] === 'none' && e[2] === 'block' && e[3] === 'none', `sans WebGL : nuit fixe, nom visible, phare dessiné, pas de compteur (${e.join(', ')})`);
