@@ -2,14 +2,14 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8eckBzpY9l67MD6EPh9q0gNL0zmFi8DDUOGWcKW+2kE=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-qKjJtEIpGEcFiWstDrlVbGuniNn1B56d4YuHrE4AP+M=' 'sha256-S5ek9yxIgexUVE+axE87QboDF87Ro33DEGHPXjwG3Ks=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8eckBzpY9l67MD6EPh9q0gNL0zmFi8DDUOGWcKW+2kE=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-3EVCHpRrOoFYV6a3Yp/kNIU8zInV5GZYEqjWPF8XDeA=' 'sha256-S5ek9yxIgexUVE+axE87QboDF87Ro33DEGHPXjwG3Ks=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Portfolio de Chahé Papazian, alternant ingénieur sécurité et réseaux chez Econocom, en cycle ingénieur à l’EFREI Paris.">
 <meta name="theme-color" content="#070C1C">
-<link rel="preload" as="image" href="v/film-0.jpg" fetchpriority="high" media="(orientation: landscape)"><link rel="preload" as="image" href="v/film-0-p.jpg" fetchpriority="high" media="(orientation: portrait)">
+<link rel="preload" as="image" href="v/f/a0.jpg" fetchpriority="high" media="(orientation: landscape)"><link rel="preload" as="image" href="v/f/p/a0.jpg" fetchpriority="high" media="(orientation: portrait)">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%2314213D%27/%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2710%27 fill=%27%23FF6B5B%27/%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Chahé Papazian · Portfolio">
@@ -2362,6 +2362,10 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 .film-lampe.on.bouge{opacity:.6}
 .film-calque.leger .film-lampe{mix-blend-mode:normal}
 .film-calque.leger .film-lampe.on{opacity:.5}
+.film-gl{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s ease-out}
+.film-gl.on{opacity:1}
+.film-bv{position:absolute;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none}
+.film-gl-ok .nuit-voile{display:none}
 .film-bande{position:absolute;left:0;right:0;top:0;height:6.5vh;background:#04070F;transform:scaleY(0);transform-origin:50% 0;z-index:1}
 .film-bande.bas{top:auto;bottom:0;transform-origin:50% 100%}
 @media (max-width:899px){.film .hero-sum{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(7,12,28,.74)}}
@@ -8239,17 +8243,441 @@ function creerNuit() { return null; }   // l'ancien décor 3D a laissé la place
    Même interface que l'ancien décor 3D, pour que le pilote ne change pas.
    ===================================================================== */
 const FILM_PLANS = 6;
-const FILM_BOUCLES = [0, 2];
+const FILM_BOUCLES = [0, 2, 4];
+// la lanterne du phare dans l'image 16:9 : [temps du film (s), x, y (fractions de l'image), présence (1 visible, 0 derrière la caméra)]
+const FILM_PHARE = [[0.0,0.4885,0.252,1.0],[4.667,0.4841,0.1789,1.0],[6.167,0.4803,0.1717,1.0],[7.333,0.4778,0.1994,1.0],[8.0,0.476,0.2342,1.0],[9.0,0.4746,0.3162,1.0],[9.5,0.4739,0.3349,1.0],[9.99,0.4736,0.3409,1.0],[10.0,0.4851,0.4172,1.0],[13.0,0.4843,0.3664,1.0],[14.333,0.4916,0.3382,1.0],[15.0,0.4942,0.3413,1.0],[15.667,0.4983,0.3689,1.0],[18.333,0.5095,0.4417,1.0],[19.0,0.5001,0.4434,1.0],[19.99,0.5026,0.4206,1.0],[20.0,0.4881,0.4394,1.0],[20.5,0.4707,0.4597,1.0],[21.167,0.4617,0.4903,1.0],[21.5,0.4588,0.5179,1.0],[21.833,0.4596,0.5696,1.0],[22.0,0.4759,0.6312,1.0],[22.167,0.5018,0.7103,0.92],[22.333,0.5253,0.8063,0.83],[22.5,0.535,0.8874,0.75],[22.667,0.5231,0.9427,0.62],[22.833,0.5104,1.0424,0.43],[23.0,0.4967,1.1833,0.23],[23.167,0.4994,1.2806,0.04],[23.333,0.5,1.302,0.0],[29.99,0.5,1.4,0.0],[30.0,0.5,1.4,0.0],[34.333,0.5,1.4,0.0],[34.5,0.265,0.715,0.25],[34.667,0.1367,0.2758,0.52],[34.833,0.0726,0.0507,0.56],[35.0,0.0805,0.0456,0.6],[35.167,0.1002,0.0487,0.63],[35.333,0.1368,0.0548,0.67],[35.667,0.2224,0.0758,0.72],[36.0,0.2889,0.1049,0.75],[36.333,0.3363,0.1314,0.79],[36.833,0.3842,0.1742,0.81],[37.167,0.4064,0.1978,0.89],[37.5,0.4243,0.1991,0.93],[38.0,0.4701,0.0197,0.97],[38.333,0.4774,0.0411,1.0],[39.333,0.487,0.1645,1.0],[39.667,0.4866,0.19,1.0],[39.99,0.4862,0.2005,1.0],[40.0,0.4877,0.2075,1.0],[41.0,0.491,0.1996,1.0],[41.833,0.4955,0.2058,1.0],[42.5,0.4994,0.2279,1.0],[43.167,0.5025,0.2662,1.0],[44.0,0.5097,0.3597,1.0],[45.0,0.5124,0.5055,1.0],[45.5,0.5256,0.616,1.0],[45.833,0.5319,0.6746,1.0],[46.167,0.5357,0.7388,1.0],[46.667,0.5392,0.8552,1.0],[47.0,0.5406,0.921,1.0],[47.167,0.5394,0.9412,0.97],[47.667,0.5051,0.9713,0.87],[47.833,0.5026,0.9811,0.83],[48.333,0.5,1.1083,0.78],[49.99,0.5,1.1448,0.7],[50.0,0.5,1.0885,0.7],[50.333,0.5,1.0149,0.77],[50.5,0.5003,0.9877,0.8],[50.833,0.5009,0.9627,0.87],[51.167,0.5008,0.9189,0.92],[51.667,0.4974,0.8042,0.97],[52.833,0.4858,0.4985,1.0],[53.333,0.4877,0.3854,1.0],[53.833,0.4882,0.29,1.0],[54.333,0.4877,0.2414,1.0],[55.0,0.487,0.2144,1.0],[55.667,0.4868,0.2206,1.0],[57.333,0.4862,0.3087,1.0],[57.833,0.4901,0.359,1.0],[59.0,0.4948,0.3692,1.0],[60.0,0.4911,0.3998,0.6]];
+// téléphone en hauteur : centre du recadrage portrait (fraction de la largeur 16:9), le même que celui des fichiers p/
+const FILM_CADRE = [[0,0.48],[10,0.48],[16,0.475],[20,0.495],[24,0.49],[28,0.42],[30,0.39],[33,0.45],[36,0.42],[36.8,0.47],[40,0.47],[50,0.49],[60,0.49]];
+const etiqueter = (calque, cle, val) => { val = String(val); if (calque.dataset[cle] !== val) calque.dataset[cle] = val; };
+const interpoler = (tab, t, n) => {
+  if (t <= tab[0][0]) return tab[0].slice(1, n + 1);
+  for (let i = 1; i < tab.length; i++) if (t <= tab[i][0]) { const a = tab[i - 1], b = tab[i], u = (t - a[0]) / Math.max(1e-6, b[0] - a[0]), r = []; for (let j = 1; j <= n; j++) r.push(a[j] + (b[j] - a[j]) * u); return r; }
+  return tab[tab.length - 1].slice(1, n + 1);
+};
+
+// le film choisit son lecteur : image par image (WebCodecs + WebGL2) quand le navigateur sait le faire, sinon le lecteur vidéo classique.
+// Le pilote garde une seule référence : si le lecteur image par image renonce en cours de route, l'autre prend sa place sans qu'il le voie.
 function creerFilm(calque, opt) {
+  let gl2 = false;
+  if (!opt.leger && window.VideoDecoder && window.EncodedVideoChunk && window.fetch && window.ReadableStream) {
+    try { const c = document.createElement('canvas'), g = c.getContext('webgl2'); gl2 = !!g; const x = g && g.getExtension('WEBGL_lose_context'); if (x) x.loseContext(); } catch (e) { gl2 = false; }
+  }
+  if (!gl2) return creerFilmVideo(calque, opt);
+  let n = null, cbEclair = null, bascule = false;
+  const repli = () => {
+    if (bascule) return; bascule = true;
+    const av = n, e = av ? av.etat : null; try { if (av) av.detruire(); } catch (x) {}
+    n = creerFilmVideo(calque, opt);
+    if (e) { Object.assign(n.etat, { prog: e.prog, cible: e.cible, dimK: e.dimK, calme: e.calme, fige: e.fige, intro: 0 }); if (e.dedans) n.main(e.mx, e.my); }
+    if (cbEclair) n.quandEclair(cbEclair);
+    document.documentElement.classList.remove('film-gl-ok');
+    (opt.reveil || (() => {}))();
+  };
+  try { n = creerFilmGL(calque, opt, repli); } catch (e) { n = null; }
+  if (!n) { calque.textContent = ''; document.documentElement.classList.remove('film-gl-ok'); return creerFilmVideo(calque, opt); }
+  const P = { film: true, NB: 0 };
+  Object.defineProperty(P, 'etat', { get: () => n.etat });
+  Object.defineProperty(P, 'U', { get: () => n.U });
+  Object.defineProperty(P, 'moteur', { get: () => n.moteur });
+  ['image', 'taille', 'aller', 'direct', 'main', 'relacher', 'occupe', 'attenuer', 'calme', 'figer', 'lanterneEcran', 'faisceauEcran', 'entree', 'ciel', 'figure', 'flux', 'sonar', 'quandPris', 'qualite', 'choc', 'nuee', 'tour', 'fin']
+    .forEach(m => { P[m] = (...a) => (n[m] ? n[m](...a) : undefined); });
+  P.quandEclair = f => { cbEclair = f; n.quandEclair(f); };
+  return P;
+}
+
+/* le film image par image. Chaque plan est un MP4 lu en flux (fetch) puis décodé ici (WebCodecs) : on demande exactement
+   l'image voulue, dans les deux sens, sans les « recherches » d'une balise vidéo. Les images décodées vont dans des textures ;
+   un seul passage de shader fond les deux images voisines (défilement fluide entre deux images du film), assombrit pendant la
+   lecture, ajoute les éclairs et la lumière : le faisceau part de la lanterne du phare et vient se poser sous le curseur. */
+function creerFilmGL(calque, opt, repli) {
+  const NPL = opt.plans, AVEC_BOUCLE = opt.boucles || [], reveil = opt.reveil || (() => {});
+  const H = [0, 10, 20, 30, 36.8, 50, 60];
+  const DIM = [0, .14, .4, .45, .45, .46, .15];
+  const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const enHauteur = () => matchMedia('(orientation: portrait)').matches;
+  const lisse = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  const Tde = p => { p = Math.max(0, Math.min(NPL, p)); const ci = Math.min(NPL - 1, Math.floor(p)), u = p - ci; return Math.min(NPL * 10 - .02, H[ci] + (H[ci + 1] - H[ci]) * (ci < 2 ? u : Math.max(0, (u - .16) / .84))); };
+  const etat = { prog: 0, cible: 0, actif: 0, eclat: 0, dimK: 1, fige: false, calme: false, dernier: 0, mx: 0, my: 0, intro: 0, video: false, boucle: -1, repos: 0, tonN: 0,
+    bouge: false, ecart: 0, Tav: 0, dir: 1, lx: innerWidth * .62, ly: innerHeight * .4, tx: innerWidth * .62, ty: innerHeight * .4, dedans: false, fa: 0,
+    palier: null, choix: 0, vu: false, mixL: 0, eclair: 0, erreurs: 0, echecs: 0, q: 1, img: -1, plan: -1, cadre: -1, bande: -1, leger: false };
+  const U = { uDim: { value: 0 }, uOrage: { value: 0 }, uDawn: { value: 0 } };
+  let onEclair = null, mort = false;
+  const el = (tag, cls) => { const e = document.createElement(tag); e.className = cls; calque.appendChild(e); return e; };
+
+  // images d'arrêt : affichées tout de suite (et en repli tant que les images du film ne sont pas décodées)
+  const imgs = []; for (let i = 0; i <= NPL; i++) { const im = el('img', 'film-m film-i'); im.alt = ''; im.decoding = 'async'; imgs.push(im); }
+  let dosImg = enHauteur() ? 'p/' : '';
+  const montrer = k => { if (k === etat.img) return; etat.img = k; imgs.forEach((im, i) => { if (Math.abs(i - k) <= 1 && !im.getAttribute('src')) im.src = `v/f/${dosImg}a${i}.jpg`; im.classList.toggle('on', i === k); }); };
+  const cv = el('canvas', 'film-gl');
+  const bV = el('video', 'film-bv'); bV.muted = true; bV.loop = true; bV.playsInline = true; bV.setAttribute('playsinline', ''); bV.preload = 'none'; bV.tabIndex = -1; bV.disablePictureInPicture = true;
+  const bandes = [0, 1].map(k => el('i', 'film-bande' + (k ? ' bas' : '')));
+
+  // ---------------------------------------------------------------- WebGL2
+  const gl = cv.getContext('webgl2', { alpha: false, antialias: false, depth: false, stencil: false, premultipliedAlpha: false, powerPreference: 'high-performance' });
+  if (!gl) { calque.textContent = ''; throw new Error('webgl2'); }
+  const VS = `#version 300 es
+in vec2 p; out vec2 v; void main(){ v = p * .5 + .5; gl_Position = vec4(p, 0., 1.); }`;
+  const FS = `#version 300 es
+precision highp float;
+in vec2 v; out vec4 o;
+uniform sampler2D A, B, L;
+uniform float mAB, mL, net, voile, fa, t, pres, aube, flash, grain;
+uniform vec4 xf; uniform vec2 res, tx, lan, cur;
+float h12(vec2 p){ vec3 q = fract(vec3(p.xyx) * .1031); q += dot(q, q.yzx + 33.33); return fract((q.x + q.y) * q.z); }
+float bruit(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
+  return mix(mix(h12(i), h12(i + vec2(1., 0.)), f.x), mix(h12(i + vec2(0., 1.)), h12(i + vec2(1., 1.)), f.x), f.y); }
+vec3 img(vec2 uv){ vec3 c = texture(A, uv).rgb; if (mAB > 0.) c = mix(c, texture(B, uv).rgb, mAB); if (mL > 0.) c = mix(c, texture(L, uv).rgb, mL); return c; }
+void main(){
+  vec2 px = vec2(v.x, 1. - v.y) * res;
+  vec2 uv = (px - xf.xy) * xf.zw;
+  vec3 c = img(uv);
+  if (net > 0.) { vec3 s = img(uv + vec2(tx.x, 0.)) + img(uv - vec2(tx.x, 0.)) + img(uv + vec2(0., tx.y)) + img(uv - vec2(0., tx.y)); c = max(c + (c - s * .25) * net, 0.); }
+  vec3 base = c;
+  if (flash > 0.) c += c * flash * .45 + vec3(.55, .62, .8) * flash * .05 * (1. - v.y * .6);
+  c = mix(c, vec3(.0275, .047, .11), voile);
+  if (fa > .001) {
+    vec2 d = cur - lan; float Lg = max(length(d), 1.); vec2 u = d / Lg;
+    vec2 q = px - lan; float le = dot(q, u), tr = abs(q.x * u.y - q.y * u.x);
+    float w = res.y * .014 + max(le, 0.) * .075, x = tr / w;
+    float cone = pow(max(0., 1. - x * x), 1.6) * smoothstep(-res.y * .02, res.y * .03, le) * (1. - smoothstep(Lg * 1.1, Lg * 2.6, le));
+    float tombe = 1. / (1. + max(le, 0.) / (res.y * .6));
+    float vol = bruit(vec2(le * .004 - t * .06, x * 1.7 + t * .03)) * .65 + bruit(vec2(le * .011 - t * .11, x * 4.)) * .35;
+    float brume = .55 + .6 * vol;
+    vec2 dc = px - cur; float r0 = res.y * .12, tache = exp(-dot(dc, dc) / (2. * r0 * r0));
+    vec3 chaud = mix(vec3(1., .84, .62), vec3(1., .78, .58), aube);
+    float k = fa * (1. - aube * .55), air = cone * tombe * brume, lect = 1. - voile * .65;
+    c += chaud * (air * .34 * (1. + voile * .5) + tache * .1 * lect) * k;
+    c += base * (air * .18 + tache * 1.05 * lect) * k * vec3(1.06, 1., .9);
+    vec2 dl = px - lan; float e = dot(dl, dl), g1 = res.y * .012, g2 = res.y * .05;
+    c += chaud * (exp(-e / (2. * g1 * g1)) * .7 + exp(-e / (2. * g2 * g2)) * .18) * k * pres;
+  }
+  c += (h12(px + fract(t * 7.13) * 517.) - .5) * grain;
+  o = vec4(c, 1.);
+}`;
+  const sh = (ty, src) => { const s = gl.createShader(ty); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error('shader'); return s; };
+  const prog = gl.createProgram();
+  try { gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS)); } catch (e) { calque.textContent = ''; throw e; }
+  gl.bindAttribLocation(prog, 0, 'p'); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { calque.textContent = ''; throw new Error('link'); }
+  gl.useProgram(prog);
+  const vao = gl.createVertexArray(); gl.bindVertexArray(vao);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  const loc = {}; ['A', 'B', 'L', 'mAB', 'mL', 'net', 'voile', 'fa', 't', 'pres', 'aube', 'flash', 'grain', 'xf', 'res', 'tx', 'lan', 'cur'].forEach(k => { loc[k] = gl.getUniformLocation(prog, k); });
+  gl.uniform1i(loc.A, 0); gl.uniform1i(loc.B, 1); gl.uniform1i(loc.L, 2);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+  cv.addEventListener('webglcontextlost', e => { e.preventDefault(); abandon(); });
+
+  const nouvelleTex = () => { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); t.w = 0; t.h = 0; return t; };
+  const charger = (t, src, w, h) => { gl.bindTexture(gl.TEXTURE_2D, t);
+    if (t.w !== w || t.h !== h) { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src); t.w = w; t.h = h; }
+    else gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, src); };
+  const libres = [], toutes = [];
+  const prendre = () => { if (libres.length) return libres.pop(); const t = nouvelleTex(); toutes.push(t); return t; };
+  const rendre = t => { if (t) libres.push(t); };
+  const noire = nouvelleTex(); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([7, 12, 28, 255])); noire.w = noire.h = 1;
+  let viaBitmap = false;
+
+  // images d'arrêt en texture
+  const texArret = new Array(NPL + 1).fill(null);
+  const arretTex = k => {
+    if (texArret[k]) return texArret[k];
+    const im = imgs[k]; if (!im.getAttribute('src')) im.src = `v/f/${dosImg}a${k}.jpg`;
+    if (im.complete && im.naturalWidth) { const t = nouvelleTex(); try { charger(t, im, im.naturalWidth, im.naturalHeight); } catch (e) { gl.deleteTexture(t); return null; } texArret[k] = t; return t; }
+    if (!im._att) { im._att = 1; im.addEventListener('load', () => reveil(), { once: true }); }
+    return null;
+  };
+  const viderArrets = () => { texArret.forEach((t, k) => { if (t) gl.deleteTexture(t); texArret[k] = null; }); imgs.forEach(im => { im.removeAttribute('src'); im._att = 0; }); etat.img = -1; };
+
+  // ---------------------------------------------------------------- paliers : AV1 1440p (grand écran), H.264 1080p, H.264 portrait recadré
+  const PALIERS = { q: { codec: 'av01.0.12M.08', w: 2560, h: 1440, max: 12, av: 6, ar: 8 }, h: { codec: 'avc1.64002A', w: 1920, h: 1080, max: 18, av: 6, ar: 10 }, p: { codec: 'avc1.64002A', w: 1080, h: 1440, max: 16, av: 6, ar: 10 } };
+  const soutenu = async (codec, w, h) => { try { const r = await VideoDecoder.isConfigSupported({ codec, codedWidth: w, codedHeight: h, optimizeForLatency: true }); return !!(r && r.supported); } catch (e) { return false; } };
+  const choisirPalier = async () => {
+    if (enHauteur()) return (await soutenu(PALIERS.p.codec, 1080, 1440)) ? 'p' : null;
+    const [av1, avc] = await Promise.all([soutenu(PALIERS.q.codec, 2560, 1440), soutenu(PALIERS.h.codec, 1920, 1080)]);
+    const large = Math.max(innerWidth, innerHeight) * Math.min(2, devicePixelRatio || 1), coeurs = navigator.hardwareConcurrency || 4;
+    if (av1 && (large >= 1700 || !avc) && coeurs >= 4) return 'q';
+    return avc ? 'h' : (av1 ? 'q' : null);
+  };
+  const lancerChoix = () => { const c = ++etat.choix; choisirPalier().then(p => { if (mort || c !== etat.choix) return; if (!p) { abandon(); return; } etat.palier = p; etiqueter(calque, 'palier', p); reveil(); }); };
+  const PAL = () => PALIERS[etat.palier || 'h'];
+
+  // ---------------------------------------------------------------- téléchargement en flux et lecture du MP4 (moov en tête)
+  const donnees = new Array(NPL).fill(null);
+  const pistes = Array.from({ length: NPL }, () => ({ D: null, cfg: null, dec: null, gen: 0, next: -1, vol: new Set(), cache: new Map(), lo: 0, hi: -1, focus: 0, tSortie: 0 }));
+  const telecharger = i => {
+    if (i < 0 || i >= NPL || donnees[i] || !etat.palier) return;
+    const d = donnees[i] = { buf: null, recu: 0, fin: false, ab: window.AbortController ? new AbortController() : null };
+    fetch(`v/f/${etat.palier}/${i}.mp4`, d.ab ? { signal: d.ab.signal } : {}).then(async r => {
+      if (!r.ok || !r.body) throw new Error('http');
+      const lg = +r.headers.get('content-length') || 0, rd = r.body.getReader(); d.buf = new Uint8Array(lg || 1 << 22);
+      for (;;) {
+        const { done, value } = await rd.read(); if (done) break;
+        if (donnees[i] !== d) { try { rd.cancel(); } catch (e) {} return; }
+        if (d.recu + value.length > d.buf.length) { const nb = new Uint8Array(Math.max(d.buf.length * 2, d.recu + value.length)); nb.set(d.buf.subarray(0, d.recu)); d.buf = nb; }
+        d.buf.set(value, d.recu); d.recu += value.length; arrive(i);
+      }
+      d.fin = true; arrive(i);
+    }).catch(e => { if (donnees[i] === d && !(e && e.name === 'AbortError')) { donnees[i] = null; if (++etat.echecs > 3) abandon(); } });
+  };
+  const arrive = i => { const P = pistes[i]; if (!P.D) initPiste(i); if (P.D && (Math.abs(i - etat.plan) <= 1)) reveil(); };
+  const oublier = () => { donnees.forEach((d, i) => { if (d && d.ab && !d.fin) try { d.ab.abort(); } catch (e) {} donnees[i] = null; }); pistes.forEach(P => { P.D = null; P.cfg = null; }); };
+
+  const lireMP4 = (u8, n) => {
+    const dv = new DataView(u8.buffer, u8.byteOffset, n), u32 = p => dv.getUint32(p), typ = p => String.fromCharCode(u8[p], u8[p + 1], u8[p + 2], u8[p + 3]);
+    const boite = (p, fin) => { if (p + 8 > fin) return null; let sz = u32(p), h = 8; if (sz === 1) { if (p + 16 > fin) return null; sz = u32(p + 8) * 4294967296 + u32(p + 12); h = 16; } else if (sz === 0) sz = fin - p; return sz < h ? null : { t: typ(p + 4), p, h, fin: p + sz }; };
+    let p = 0, moov = null;
+    while (p + 8 <= n) { const b = boite(p, Infinity); if (!b) return null; if (b.t === 'moov') { if (b.fin > n) return null; moov = b; break; } p = b.fin; }
+    if (!moov) return null;
+    const enfants = b => { const r = {}; let q = b.p + b.h; while (q + 8 <= b.fin) { const c = boite(q, b.fin); if (!c || c.fin > b.fin) break; (r[c.t] = r[c.t] || []).push(c); q = c.fin; } return r; };
+    const sous = (b, ...ts) => { for (const t of ts) { const e = b && enfants(b)[t]; if (!e) return null; b = e[0]; } return b; };
+    let trak = null; for (const t of enfants(moov).trak || []) { const hd = sous(t, 'mdia', 'hdlr'); if (hd && typ(hd.p + hd.h + 8) === 'vide') { trak = t; break; } }
+    const mdhd = sous(trak, 'mdia', 'mdhd'), stbl = sous(trak, 'mdia', 'minf', 'stbl'); if (!mdhd || !stbl) return null;
+    const ts = u32(mdhd.p + mdhd.h + (u8[mdhd.p + mdhd.h] === 1 ? 20 : 12)), E = enfants(stbl), g = t => (E[t] || [])[0];
+    const stsd = g('stsd'), stsz = g('stsz'), stsc = g('stsc'), stco = g('stco') || g('co64'), stts = g('stts'), stss = g('stss');
+    if (!stsd || !stsz || !stsc || !stco || !stts) return null;
+    const e0 = stsd.p + stsd.h + 8, se = boite(e0, stsd.fin); if (!se) return null;
+    const w = dv.getUint16(e0 + 32), h = dv.getUint16(e0 + 34); let codec = null, desc = null;
+    for (let q = e0 + 86; q + 8 <= se.fin;) { const c = boite(q, se.fin); if (!c) break; const d0 = c.p + c.h;
+      if (c.t === 'avcC') { codec = 'avc1.' + [u8[d0 + 1], u8[d0 + 2], u8[d0 + 3]].map(x => x.toString(16).padStart(2, '0')).join(''); desc = u8.slice(d0, c.fin); }
+      else if (c.t === 'av1C') { const c1 = u8[d0 + 1], c2 = u8[d0 + 2]; codec = `av01.${c1 >> 5}.${String(c1 & 31).padStart(2, '0')}${c2 & 128 ? 'H' : 'M'}.${c2 & 32 ? '12' : c2 & 64 ? '10' : '08'}`; desc = u8.slice(d0, c.fin); }
+      q = c.fin; }
+    if (!codec) return null;
+    const a = stsz.p + stsz.h, fixe = u32(a + 4), nS = u32(a + 8), taille = new Uint32Array(nS);
+    for (let k = 0; k < nS; k++) taille[k] = fixe || u32(a + 12 + 4 * k);
+    const b0 = stco.p + stco.h, c64 = stco.t === 'co64', nC = u32(b0 + 4), offC = new Float64Array(nC);
+    for (let k = 0; k < nC; k++) offC[k] = c64 ? u32(b0 + 8 + 8 * k) * 4294967296 + u32(b0 + 12 + 8 * k) : u32(b0 + 8 + 4 * k);
+    const s0 = stsc.p + stsc.h, nR = u32(s0 + 4), off = new Float64Array(nS); let s = 0;
+    for (let r = 0; r < nR && s < nS; r++) { const c0 = u32(s0 + 8 + 12 * r), c1 = r + 1 < nR ? u32(s0 + 8 + 12 * (r + 1)) : nC + 1, per = u32(s0 + 12 + 12 * r);
+      for (let c = c0; c < c1 && s < nS; c++) { let o = offC[c - 1]; for (let j = 0; j < per && s < nS; j++) { off[s] = o; o += taille[s]; s++; } } }
+    const cle = new Uint8Array(nS); if (stss) { const m = u32(stss.p + stss.h + 4); for (let k = 0; k < m; k++) { const x = u32(stss.p + stss.h + 8 + 4 * k) - 1; if (x < nS) cle[x] = 1; } } else cle.fill(1);
+    cle[0] = 1; const kAv = new Int32Array(nS); for (let k = 0, dk = 0; k < nS; k++) { if (cle[k]) dk = k; kAv[k] = dk; }
+    const fps = ts / (u32(stts.p + stts.h + 12) || 1);
+    return { codec, desc, w, h, n: nS, taille, off, cle, kAv, fps: fps > 1 && fps < 241 ? fps : 24 };
+  };
+  const initPiste = i => {
+    const d = donnees[i], P = pistes[i]; if (!d || !d.buf || P.D || d.recu < 64) return;
+    let D = null; try { D = lireMP4(d.buf, d.recu); } catch (e) { D = null; }
+    if (!D) { if (d.fin && ++etat.echecs > 3) abandon(); return; }
+    P.D = D; P.cfg = { codec: D.codec, codedWidth: D.w, codedHeight: D.h, optimizeForLatency: true }; if (D.desc) P.cfg.description = D.desc;
+  };
+
+  // ---------------------------------------------------------------- décodeurs : un par plan ouvert (le plan courant, et un voisin quand on s'en approche)
+  const ouvrirDec = i => {
+    const P = pistes[i]; if (P.dec || !P.cfg) return;
+    const gen = ++P.gen;
+    try {
+      P.dec = new VideoDecoder({ output: f => recevoir(i, gen, f), error: () => { if (P.gen !== gen) return; P.gen++; P.dec = null; P.vol.clear(); P.next = -1; if (++etat.erreurs > 3) abandon(); else reveil(); } });
+      P.dec.configure(P.cfg); P.next = -1; P.vol.clear();
+    } catch (e) { P.dec = null; if (++etat.erreurs > 3) abandon(); }
+  };
+  const fermer = i => { const P = pistes[i]; P.gen++; if (P.dec) { try { P.dec.close(); } catch (e) {} P.dec = null; } P.vol.clear(); P.next = -1; P.cache.forEach(rendre); P.cache.clear(); };
+  const elaguer = P => { let pire = -1, dm = -1; P.cache.forEach((t, k) => { const d = Math.abs(k - P.focus); if (d > dm) { dm = d; pire = k; } }); if (pire >= 0) { rendre(P.cache.get(pire)); P.cache.delete(pire); } };
+  const ranger = (i, gen, n, t) => { const P = pistes[i]; if (P.gen !== gen || P.cache.has(n)) { rendre(t); return; } while (P.cache.size >= PAL().max) elaguer(P); P.cache.set(n, t); };
+  function recevoir(i, gen, f) {
+    const P = pistes[i];
+    if (mort || P.gen !== gen || !P.D) { f.close(); return; }
+    const n = Math.round(f.timestamp * P.D.fps / 1e6); P.vol.delete(n); P.tSortie = performance.now();
+    if (n < P.lo || n > P.hi || P.cache.has(n)) { f.close(); reveil(); return; }
+    const t = prendre(), w = f.displayWidth, h = f.displayHeight;
+    if (!viaBitmap) { try { charger(t, f, w, h); f.close(); ranger(i, gen, n, t); reveil(); return; } catch (e) { viaBitmap = true; } }
+    createImageBitmap(f).then(bm => { f.close(); if (mort) { bm.close(); return; } try { charger(t, bm, bm.width, bm.height); ranger(i, gen, n, t); } catch (e) { rendre(t); if (++etat.echecs > 6) abandon(); } bm.close(); reveil(); },
+      () => { f.close(); rendre(t); if (++etat.echecs > 6) abandon(); });
+  }
+  const nourrir = i => {
+    const P = pistes[i], D = P.D, d = donnees[i]; if (!P.dec || !D || !d || P.dec.state !== 'configured') return;
+    while (P.dec.decodeQueueSize < 5 && P.next >= 0 && P.next < D.n && P.next <= P.hi) {
+      const k = P.next, o = D.off[k], s = D.taille[k]; if (o + s > d.recu) break;
+      try { P.dec.decode(new EncodedVideoChunk({ type: D.cle[k] ? 'key' : 'delta', timestamp: Math.round(k * 1e6 / D.fps), duration: Math.round(1e6 / D.fps), data: d.buf.subarray(o, o + s) })); }
+      catch (e) { fermer(i); if (++etat.erreurs > 3) abandon(); return; }
+      P.vol.add(k); P.next++;
+    }
+  };
+  // le plan i doit montrer l'image fp (fractionnaire) : on garde une petite fenêtre décodée autour, plus large dans le sens du défilement
+  const servir = (i, fp, dir, court) => {
+    const P = pistes[i], D = P.D; if (!D) return;
+    if (!P.dec) ouvrirDec(i); if (!P.dec) return;
+    const f0 = Math.max(0, Math.min(D.n - 1, Math.floor(fp))), f1 = Math.min(D.n - 1, f0 + 1), pal = PAL();
+    P.focus = fp; P.lo = Math.max(0, f0 - (dir < 0 && !court ? pal.ar : 1)); P.hi = Math.min(D.n - 1, f1 + (dir > 0 && !court ? pal.av : 1));
+    let manque = -1; const essai = k => { if (manque < 0 && k >= P.lo && k <= P.hi && !P.cache.has(k)) manque = k; };
+    essai(f0); essai(f1);
+    if (dir >= 0) { for (let k = f1 + 1; k <= P.hi && manque < 0; k++) essai(k); for (let k = f0 - 1; k >= P.lo && manque < 0; k--) essai(k); }
+    else { for (let k = f0 - 1; k >= P.lo && manque < 0; k--) essai(k); for (let k = f1 + 1; k <= P.hi && manque < 0; k++) essai(k); }
+    if (manque < 0) return;
+    if (P.vol.has(manque)) {
+      // l'image est partie au décodeur ; s'il la garde (certains décodeurs attendent la suite), on vide la file et on repartira d'une image clé
+      if (P.next > P.hi && P.dec.decodeQueueSize === 0 && performance.now() - P.tSortie > 140) { try { P.dec.flush().catch(() => {}); } catch (e) {} P.tSortie = performance.now(); P.next = -1; }
+      else nourrir(i);
+      return;
+    }
+    if (P.next < 0 || manque < P.next || manque > P.next + 40) {
+      try { if (P.next >= 0 || P.vol.size) { P.dec.reset(); P.dec.configure(P.cfg); } } catch (e) { fermer(i); return; }
+      P.vol.clear(); P.next = D.kAv[Math.min(manque, P.lo)];
+    }
+    nourrir(i);
+  };
+
+  // ---------------------------------------------------------------- boucle vivante du chapitre (balise vidéo cachée, dessinée dans le canevas)
+  const RVFC = 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
+  const texL = nouvelleTex(); let bNeuf = false, bPret = false, bCb = 0;
+  const surImage = () => { bCb = 0; bNeuf = true; reveil(); if (etat.boucle >= 0) bCb = bV.requestVideoFrameCallback(surImage); };
+  const jouer = () => { const p = bV.play(); if (p && p.catch) p.catch(() => {}); };
+  const lancerBoucle = k => { etat.boucle = k; bPret = false; bNeuf = false; etiqueter(calque, 'boucle', k); bV.src = `v/f/${etat.palier}/b${k}.mp4`; jouer(); if (RVFC) { if (bCb) bV.cancelVideoFrameCallback(bCb); bCb = bV.requestVideoFrameCallback(surImage); } };
+  const arreterBoucle = () => { if (etat.boucle < 0) return; etat.boucle = -1; etiqueter(calque, 'boucle', -1); };
+  { let haut = calque; while (haut.parentElement && haut.parentElement !== document.body) haut = haut.parentElement;
+    if (window.MutationObserver) new MutationObserver(() => { if (haut.inert) { if (!bV.paused) bV.pause(); } else if (etat.boucle >= 0 && bV.paused) jouer(); }).observe(haut, { attributes: true, attributeFilter: ['inert'] }); }
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { if (!bV.paused) bV.pause(); } else if (etat.boucle >= 0 && bV.paused) jouer(); });
+
+  // ---------------------------------------------------------------- abandon : on rend la main au lecteur vidéo classique
+  function abandon() {
+    if (mort) return;
+    detruire(); setTimeout(repli, 0);
+  }
+  function detruire() {
+    if (mort) return; mort = true;
+    for (let i = 0; i < NPL; i++) fermer(i);
+    oublier();
+    try { bV.pause(); bV.removeAttribute('src'); bV.load(); } catch (e) {}
+    try { toutes.forEach(t => gl.deleteTexture(t)); texArret.forEach(t => t && gl.deleteTexture(t)); gl.deleteTexture(texL); } catch (e) {}
+    calque.textContent = '';
+    document.documentElement.classList.remove('film-gl-ok');
+  }
+
+  // les vidéos ne se chargent qu'une fois la page affichée : d'abord le texte et l'image d'accueil
+  { const activer = () => setTimeout(() => { etat.video = true; reveil(); }, 450); if (document.readyState === 'complete') activer(); else addEventListener('load', activer, { once: true }); }
+  lancerChoix();
+  etiqueter(calque, 'moteur', 'gl'); etiqueter(calque, 'boucle', -1); etiqueter(calque, 'lampe', 0);
+
+  let tailleCss = null;
+  const mesurer = () => { tailleCss = [calque.clientWidth || innerWidth, calque.clientHeight || innerHeight]; };
+  const redimensionner = () => {
+    if (!tailleCss) mesurer(); const [w, h] = tailleCss;
+    const pal = PAL(), dpr = Math.min(2, devicePixelRatio || 1), cap = Math.max(1, 1.15 * Math.max(pal.w / w, pal.h / h));
+    const s = Math.max(.5, Math.min(dpr, cap) * etat.q), W = Math.round(w * s), Hh = Math.round(h * s);
+    if (cv.width !== W || cv.height !== Hh) { cv.width = W; cv.height = Hh; }
+  };
+
+  function image(now) {
+    if (mort) return;
+    const t = now / 1000, dtv = Math.min(.6, Math.max(.001, t - etat.dernier)); etat.dernier = t;
+    etat.prog += (etat.cible - etat.prog) * (etat.fige ? 1 : 1 - Math.exp(-dtv * 3.6));
+    if (Math.abs(etat.cible - etat.prog) < .0004) etat.prog = etat.cible;
+    if (etat.intro > 0) etat.intro = Math.max(0, etat.intro - dtv / 3.2);
+    const T = Tde(etat.prog), Tc = Tde(etat.cible);
+    let k = 0; for (let i = 1; i <= NPL; i++) if (Math.abs(T - H[i]) < Math.abs(T - H[k])) k = i;
+    montrer(k);
+    const dT = T - etat.Tav; etat.Tav = T; if (Math.abs(dT) > 1e-5) etat.dir = dT > 0 ? 1 : -1;
+    if (Math.abs(etat.cible - etat.prog) < .0004) etat.bouge = false;
+    const arret = Math.abs(T - H[k]) < .03 && Math.abs(Tc - H[k]) < .03;
+    etiqueter(calque, 'arret', arret ? k : -1);
+    const di = Math.min(5, Math.floor(etat.prog)); U.uDim.value = (DIM[di] + (DIM[di + 1] - DIM[di]) * Math.min(1, etat.prog - di)) * etat.dimK;
+    U.uOrage.value = lisse(3.5, 3.94, etat.prog) * (1 - lisse(4.3, 4.72, etat.prog)); U.uDawn.value = lisse(5.42, 6, etat.prog) * .94;
+    if (U.uOrage.value > .55 && !etat.calme && !etat.fige) { if (!etat.tonN) etat.tonN = t + 2; else if (t > etat.tonN) { etat.tonN = t + 6 + Math.random() * 8; if (onEclair) onEclair(); if (!REDUIT) etat.eclair = 1; } } else etat.tonN = 0;
+    if (etat.eclair > 0) etat.eclair = Math.max(0, etat.eclair - dtv * 3.2);
+
+    // le film : le plan courant (et ses voisins quand on s'en approche) ; les autres décodeurs sont fermés
+    let A = null, B = null, mab = 0; etat.ecart = 0;
+    const vivant = etat.video && !!etat.palier && !etat.calme && !etat.fige;
+    if (vivant) {
+      const pi = Math.min(NPL - 1, Math.floor(T / 10)), lt = T - pi * 10;
+      if (pi !== etat.plan) { etat.plan = pi; for (let j = 0; j < NPL; j++) if (Math.abs(j - pi) > 1) fermer(j); }
+      telecharger(pi); const P = pistes[pi]; if (!P.D) initPiste(pi);
+      if (P.D) {
+        let fp = Math.min(P.D.n - 1, Math.max(0, lt * P.D.fps)); if (arret) fp = Math.round(fp);
+        servir(pi, fp, etat.dir);
+        const f0 = Math.floor(fp), f1 = Math.min(P.D.n - 1, f0 + 1);
+        A = P.cache.get(f0) || null; B = P.cache.get(f1) || null; mab = fp - f0;
+        if (A && !B) { B = A; mab = 0; }
+        if (!A) { let best = null, bd = 1e9; P.cache.forEach((tx, n) => { const d = Math.abs(n - fp); if (d < bd) { bd = d; best = tx; } }); if (best && bd <= 4) { A = B = best; mab = 0; } etat.ecart = Math.min(1, bd / P.D.fps); }
+        if (etat.bouge && etat.dir > 0 && lt > 8.6 && pi + 1 < NPL) { telecharger(pi + 1); const Q = pistes[pi + 1]; if (!Q.D) initPiste(pi + 1); if (Q.D) servir(pi + 1, 0, 1, true); }
+        if (etat.bouge && etat.dir < 0 && lt < 1.4 && pi > 0) { telecharger(pi - 1); const Q = pistes[pi - 1]; if (!Q.D) initPiste(pi - 1); if (Q.D) servir(pi - 1, Q.D.n - 1, -1, true); }
+        if (donnees[pi] && donnees[pi].fin && etat.bouge) telecharger(etat.dir > 0 ? pi + 1 : pi - 1);
+      } else etat.ecart = 1;
+      etiqueter(calque, 'plans', pistes.map((P, j) => P.dec ? j : -1).filter(j => j >= 0).join(','));
+    } else if (etat.plan !== -1) { etat.plan = -1; for (let j = 0; j < NPL; j++) fermer(j); etiqueter(calque, 'plans', ''); }
+    if (!A) { const ta = arretTex(k); if (ta) { A = B = ta; mab = 0; } }
+
+    // repos : le film est garé sur l'image d'arrêt -> la boucle vivante prend le relais, en fondu
+    const repos = vivant && arret && AVEC_BOUCLE.indexOf(k) >= 0;
+    if (repos) { etat.repos += dtv; if (etat.repos > .35 && etat.boucle !== k) lancerBoucle(k); } else { etat.repos = 0; arreterBoucle(); }
+    if (etat.boucle >= 0 && (bNeuf || (!RVFC && !bV.paused)) && bV.readyState >= 2 && bV.videoWidth) { try { charger(texL, bV, bV.videoWidth, bV.videoHeight); bPret = true; } catch (e) { bPret = false; } bNeuf = false; }
+    const cL = etat.boucle >= 0 && bPret ? 1 : 0; etat.mixL += Math.sign(cL - etat.mixL) * Math.min(Math.abs(cL - etat.mixL), dtv / .45);
+    if (etat.mixL <= 0 && etat.boucle < 0 && !bV.paused) { bV.pause(); bPret = false; }
+
+    // la lampe : elle suit le curseur en douceur ; le faisceau s'allume quand le curseur entre, s'éteint quand il sort
+    const kl = REDUIT ? 1 : 1 - Math.exp(-dtv * 9); etat.lx += (etat.tx - etat.lx) * kl; etat.ly += (etat.ty - etat.ly) * kl;
+    const cf = etat.dedans ? 1 : 0; etat.fa += Math.sign(cf - etat.fa) * Math.min(Math.abs(cf - etat.fa), REDUIT ? 1 : dtv / (cf ? .45 : .9));
+
+    // cadrage : sur grand écran, le phare du premier plan est décalé vers la droite pour laisser le nom lisible ; à l'ouverture, léger zoom arrière et bandes qui s'ouvrent
+    const e = etat.intro * etat.intro * (3 - 2 * etat.intro), kc = innerWidth > innerHeight ? Math.round((1 - lisse(1.02, 1.9, etat.prog)) * 100) : 0, cz = Math.round(e * 100);
+    if (kc * 1000 + cz !== etat.cadre) { etat.cadre = kc * 1000 + cz; calque.style.setProperty('--fx', (kc * .09).toFixed(2) + '%'); calque.style.setProperty('--fs', ((1 + kc * .0019) * (1 + cz * .0009)).toFixed(4)); }
+    const b = Math.round(Math.max((1 - etat.dimK) * (etat.prog > 1.05 ? 1 : 0), e * 2.6) * 50);
+    if (b !== etat.bande) { etat.bande = b; bandes.forEach(x => { x.style.transform = `scaleY(${b / 50})`; }); }
+    if (!A) return;   // rien à dessiner encore : l'image d'arrêt (balise img) reste à l'écran
+
+    redimensionner();
+    const W = cv.width, Hh = cv.height, sc = W / Math.max(1, tailleCss[0]), vw = A.w, vh = A.h, fsv = (1 + kc * .0019) * (1 + cz * .0009);
+    const s0 = Math.max(W / vw, Hh / vh) * fsv, rw = vw * s0, rh = vh * s0, ox = (W - rw) / 2 + kc * .0009 * W, oy = (Hh - rh) / 2;
+    // la lanterne à l'écran (dans le cadre portrait si l'écran est en hauteur) ; phare derrière la caméra : le faisceau monte du bas de l'écran
+    const ph = interpoler(FILM_PHARE, T, 3); let xv = ph[0];
+    if (vw < vh) { const cx = interpoler(FILM_CADRE, T, 1)[0], cw = 1080 / 2560, x0 = Math.max(0, Math.min(1 - cw, cx - cw / 2)); xv = (xv - x0) / cw; }
+    const curx = etat.lx * sc, cury = etat.ly * sc, wp = lisse(.25, .75, ph[2]), bx = W * .5 + (curx - W * .5) * .3, by = Hh * 1.35;
+    const lanx = bx + (ox + xv * rw - bx) * wp, lany = by + (oy + ph[1] * rh - by) * wp;
+    const net = s0 > 1.15 ? Math.min(.5, (s0 - 1) * .45) : 0, fl = etat.eclair > 0 ? Math.pow(etat.eclair, 1.6) * (etat.eclair > .85 ? 1 : .55) : 0;
+    const enRoute = lisse(.002, .03, Math.abs(etat.cible - etat.prog));
+    gl.viewport(0, 0, W, Hh);
+    gl.uniform4f(loc.xf, ox, oy, 1 / rw, 1 / rh); gl.uniform2f(loc.res, W, Hh); gl.uniform2f(loc.tx, 1 / vw, 1 / vh);
+    gl.uniform1f(loc.mAB, mab); gl.uniform1f(loc.mL, etat.mixL > 0 && bPret ? etat.mixL : 0); gl.uniform1f(loc.net, net);
+    gl.uniform1f(loc.voile, Math.min(.85, U.uDim.value * .82)); gl.uniform1f(loc.fa, etat.fa * (1 - enRoute * .3)); gl.uniform1f(loc.t, etat.calme ? 0 : t % 600);
+    gl.uniform1f(loc.pres, wp); gl.uniform1f(loc.aube, U.uDawn.value); gl.uniform1f(loc.flash, fl); gl.uniform1f(loc.grain, 1.6 / 255);
+    gl.uniform2f(loc.lan, lanx, lany); gl.uniform2f(loc.cur, curx, cury);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, A);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, B || A);
+    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, bPret ? texL : noire);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    if (!etat.vu) { etat.vu = true; cv.classList.add('on'); document.documentElement.classList.add('film-gl-ok'); }
+  }
+
+  return {
+    film: true, gl: true, moteur: 'gl', image, etat, U, NB: 0, detruire,
+    // l'écran passe de la largeur à la hauteur (ou l'inverse) : autres fichiers, autre palier
+    taille() {
+      const d = enHauteur() ? 'p/' : '';
+      tailleCss = null;
+      if (d !== dosImg) { dosImg = d; for (let j = 0; j < NPL; j++) fermer(j); oublier(); viderArrets(); etat.plan = -1; etat.palier = null; arreterBoucle(); bV.pause(); bPret = false; etat.mixL = 0; lancerChoix(); }
+      reveil();
+    },
+    aller(p) { if (Math.abs(p - etat.cible) > .001) etat.bouge = true; etat.cible = p; }, direct(p) { etat.cible = etat.prog = p; },
+    main(x, y) { etat.mx = x; etat.my = y; etat.actif = 1; etat.tx = (x + 1) / 2 * innerWidth; etat.ty = (1 - y) / 2 * innerHeight; if (!etat.dedans) { etat.dedans = true; if (REDUIT || etat.fa <= 0) { etat.lx = etat.tx; etat.ly = etat.ty; } } etiqueter(calque, 'lampe', 1); },
+    relacher() { etat.dedans = false; etat.actif = 0; etiqueter(calque, 'lampe', 0); },
+    // y a-t-il encore quelque chose à animer ? Sinon, le pilote s'arrête jusqu'au prochain défilement, mouvement de souris ou image de boucle
+    occupe() {
+      return !mort && (etat.prog !== etat.cible || etat.intro > 0 || etat.ecart > .02 || Math.abs(etat.tx - etat.lx) + Math.abs(etat.ty - etat.ly) > .6 || (etat.fa > 0 && etat.fa < 1)
+        || (etat.repos > 0 && etat.boucle < 0) || (etat.mixL > 0 && etat.mixL < 1) || (etat.boucle >= 0 && (!RVFC || !bPret)) || U.uOrage.value > .55 || etat.eclair > 0 || !etat.video || !etat.palier);
+    },
+    attenuer(k) { etat.dimK = k; }, calme(b) { etat.calme = b; }, figer(b) { etat.fige = b; },
+    lanterneEcran(o) { o.x = etat.lx / innerWidth; o.y = etat.ly / innerHeight; o.devant = etat.actif > 0; return o; },
+    faisceauEcran(o) { o.x = etat.lx / innerWidth + .02; o.y = etat.ly / innerHeight; o.devant = etat.actif > 0; return o; },
+    entree() { if (!etat.fige && !etat.calme) etat.intro = 1; },
+    qualite(f) { etat.q = Math.max(.5, etat.q * f); },
+    ciel() {}, figure() {}, flux() {}, sonar() { return false; }, quandPris() {}, quandEclair(f) { onEclair = f; }, choc() {}, nuee() {}, tour() {}, fin() {}
+  };
+}
+
+function creerFilmVideo(calque, opt) {
   const NPL = opt.plans, AVEC_BOUCLE = opt.boucles || [], reveil = opt.reveil || (() => {});
   const H = [0, 10, 20, 30, 36.8, 50, 60];             // dans le film, l'image d'arrêt de chaque chapitre (en secondes)
   const DIM = [0, .14, .4, .45, .45, .46, .15];
   // format : H.264 sur les appareils Apple (décodage matériel), WebM ailleurs (plus léger).
   // Écran en hauteur : fichiers portrait déjà recadrés sur le sujet (moins de pixels à charger et à décoder).
   const UA = navigator.userAgent, APPLE = /iP(hone|ad|od)/.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints > 1) || /^((?!chrome|chromium|android|crios|fxios|edg).)*safari/i.test(UA);
-  const FORMATS = APPLE ? [['.mp4', 'video/mp4']] : [['.webm', 'video/webm'], ['.mp4', 'video/mp4']];
+  const FORMATS = [['.mp4', 'video/mp4']];
   const enHauteur = () => matchMedia('(orientation: portrait)').matches;
   let suf = enHauteur() ? '-p' : '';
+  const dos = () => (suf ? 'p' : 'h');
+  etiqueter(calque, 'moteur', 'video'); etiqueter(calque, 'boucle', -1); etiqueter(calque, 'lampe', 0);
   const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const etat = { prog: 0, cible: 0, actif: 0, eclat: 0, dimK: 1, fige: false, calme: false, dernier: 0, mx: 0, my: 0, plan: -1, bande: -1, cadre: -1, img: -1, leger: !!opt.leger,
     video: false, intro: 0, boucle: -1, repos: 0, tonN: 0, lent: 0, nRech: 0, bouge: false, voisins: false, ecart: 0, Tav: 0,
@@ -8264,17 +8692,17 @@ function creerFilm(calque, opt) {
 
   // images d'arrêt : toujours là, sous les vidéos ; en mode léger, il n'y a qu'elles
   const imgs = []; for (let i = 0; i <= NPL; i++) { const im = el('img', 'film-m film-i'); im.alt = ''; im.decoding = 'async'; imgs.push(im); }
-  const montrer = k => { if (k === etat.img) return; etat.img = k; imgs.forEach((im, i) => { if (Math.abs(i - k) <= 1 && !im.getAttribute('src')) im.src = `v/film-${i}${suf}.jpg`; im.classList.toggle('on', i === k); }); };
+  const montrer = k => { if (k === etat.img) return; etat.img = k; imgs.forEach((im, i) => { if (Math.abs(i - k) <= 1 && !im.getAttribute('src')) im.src = `v/f/${suf ? 'p/' : ''}a${i}.jpg`; im.classList.toggle('on', i === k); }); };
 
-  const sources = (v, base) => FORMATS.forEach(([x, ty]) => { const so = document.createElement('source'); so.src = base + suf + x; so.type = ty; v.appendChild(so); });
+  const sources = (v, base) => FORMATS.forEach(([x, ty]) => { const so = document.createElement('source'); so.src = base + x; so.type = ty; v.appendChild(so); });
   const video = cls => { const v = el('video', cls); v.muted = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto'; v.tabIndex = -1; v.disablePictureInPicture = true; return v; };
   const vider = v => { v.pause(); [...v.children].forEach(c => c.remove()); v.removeAttribute('src'); try { v.load(); } catch (e) {} };
 
   // boucle vivante du chapitre : une seule balise, lue normalement (aucune recherche d'image)
   const boucleV = video('film-m film-b'); boucleV.loop = true; boucleV.preload = 'none';
   boucleV.addEventListener('playing', () => { if (etat.boucle >= 0) boucleV.classList.add('on'); });
-  const lancerBoucle = k => { etat.boucle = k; boucleV.classList.remove('on'); vider(boucleV); sources(boucleV, `v/boucle-${k}`); boucleV.load(); const p = boucleV.play(); if (p && p.catch) p.catch(() => {}); };
-  const arreterBoucle = () => { if (etat.boucle < 0) return; etat.boucle = -1; boucleV.classList.remove('on'); setTimeout(() => { if (etat.boucle < 0) boucleV.pause(); }, 750); };
+  const lancerBoucle = k => { etat.boucle = k; etiqueter(calque, 'boucle', k); boucleV.classList.remove('on'); vider(boucleV); sources(boucleV, `v/f/${dos()}/b${k}`); boucleV.load(); const p = boucleV.play(); if (p && p.catch) p.catch(() => {}); };
+  const arreterBoucle = () => { if (etat.boucle < 0) return; etat.boucle = -1; etiqueter(calque, 'boucle', -1); boucleV.classList.remove('on'); setTimeout(() => { if (etat.boucle < 0) boucleV.pause(); }, 750); };
   { let haut = calque; while (haut.parentElement && haut.parentElement !== document.body) haut = haut.parentElement;
     if (window.MutationObserver) new MutationObserver(() => { if (haut.inert) { if (!boucleV.paused) boucleV.pause(); } else if (etat.boucle >= 0 && boucleV.paused) { const p = boucleV.play(); if (p && p.catch) p.catch(() => {}); } }).observe(haut, { attributes: true, attributeFilter: ['inert'] }); }
 
@@ -8282,14 +8710,14 @@ function creerFilm(calque, opt) {
   // Au chargement, seul le plan d'accueil se charge ; ses voisins attendent le premier défilement.
   const vids = new Array(NPL).fill(null);
   const alleger = () => { etat.leger = true; calque.classList.add('leger'); };
-  const ouvrir = i => { if (i < 0 || i >= NPL || vids[i]) return; const v = video('film-m film-v'); calque.insertBefore(v, boucleV); sources(v, `v/film-${i}`);
+  const ouvrir = i => { if (i < 0 || i >= NPL || vids[i]) return; const v = video('film-m film-v'); calque.insertBefore(v, boucleV); sources(v, `v/f/${dos()}/${i}`);
     const der = v.lastElementChild; if (der) der.addEventListener('error', () => { if (vids[i] === v && !v.classList.contains('pret')) alleger(); });
     v.addEventListener('loadeddata', () => { v.classList.add('pret'); reveil(); });
     v.addEventListener('seeked', () => { reveil(); if (!v._t) return; const d = performance.now() - v._t; v._t = 0; etat.lent += (d - etat.lent) * .15; if (++etat.nRech > 16 && etat.lent > 160) alleger(); });   // recherches d'image trop lentes : on passe aux images fixes
     // iOS ne charge une vidéo qu'après une lecture : on la lance et on l'arrête aussitôt (refusé en mode économie d'énergie : les images fixes restent)
     const pl = v.play(); if (pl && pl.then) pl.then(() => { v.pause(); reveil(); }).catch(() => {});
-    vids[i] = v; };
-  const fermer = i => { const v = vids[i]; if (!v) return; vids[i] = null; vider(v); v.remove(); };
+    vids[i] = v; etiqueter(calque, 'plans', vids.map((x, j) => x ? j : -1).filter(j => j >= 0).join(',')); };
+  const fermer = i => { const v = vids[i]; if (!v) return; vids[i] = null; vider(v); v.remove(); etiqueter(calque, 'plans', vids.map((x, j) => x ? j : -1).filter(j => j >= 0).join(',')); };
   // en mouvement rapide, recherche approchée (image clé la plus proche) ; à l'arrivée, recherche exacte pour retomber pile sur l'image d'arrêt
   const viser = (v, but, vite) => { if (v && v.readyState >= 1 && v.duration && !v.seeking && Math.abs(v.currentTime - but) > .03) { v._t = performance.now(); try { if (vite && v.fastSeek) v.fastSeek(but); else v.currentTime = but; } catch (e) {} } };
 
@@ -8316,7 +8744,8 @@ function creerFilm(calque, opt) {
       viser(v, but, vite); if (v && v.readyState >= 1) etat.ecart = Math.abs(v.currentTime - but);
       if (etat.bouge) { viser(vids[pi + 1], 0); if (vids[pi - 1]) viser(vids[pi - 1], Math.max(0, (vids[pi - 1].duration || 10) - .06)); }
       // repos : le film est garé sur l'image d'arrêt (et le restera, même si on fait défiler le texte) -> la boucle vivante prend le relais
-      const repos = Math.abs(T - H[k]) < .03 && Math.abs(Tc - H[k]) < .03 && AVEC_BOUCLE.indexOf(k) >= 0;
+      const arret = Math.abs(T - H[k]) < .03 && Math.abs(Tc - H[k]) < .03; etiqueter(calque, 'arret', arret ? k : -1);
+      const repos = arret && AVEC_BOUCLE.indexOf(k) >= 0;
       if (repos) { etat.repos += dtv; if (etat.repos > .35 && etat.boucle !== k) lancerBoucle(k); } else { etat.repos = 0; arreterBoucle(); }
     } else if (etat.plan !== -1 || etat.boucle >= 0) { etat.plan = -1; for (let j = 0; j < NPL; j++) fermer(j); arreterBoucle(); }
     const di = Math.min(5, Math.floor(etat.prog)); U.uDim.value = (DIM[di] + (DIM[di + 1] - DIM[di]) * Math.min(1, etat.prog - di)) * etat.dimK;
@@ -8335,12 +8764,12 @@ function creerFilm(calque, opt) {
     if (b !== etat.bande) { etat.bande = b; bandes.forEach(x => { x.style.transform = `scaleY(${b / 50})`; }); }
   }
   return {
-    film: true, image, etat, U, NB: 0,
+    film: true, moteur: 'video', image, etat, U, NB: 0,
     // l'écran passe de la largeur à la hauteur (ou l'inverse) : on change de fichiers
     taille() { const s = enHauteur() ? '-p' : ''; if (s === suf) return; suf = s; for (let j = 0; j < NPL; j++) fermer(j); etat.plan = -1; imgs.forEach(im => im.removeAttribute('src')); etat.img = -1; if (etat.boucle >= 0) { etat.boucle = -1; vider(boucleV); boucleV.classList.remove('on'); } },
     aller(p) { if (Math.abs(p - etat.cible) > .001) etat.bouge = true; etat.cible = p; }, direct(p) { etat.cible = etat.prog = p; },
-    main(x, y) { etat.mx = x; etat.my = y; etat.actif = 1; etat.tx = (x + 1) / 2 * innerWidth; etat.ty = (1 - y) / 2 * innerHeight; if (!etat.dedans) { etat.dedans = true; if (REDUIT) { etat.lx = etat.tx; etat.ly = etat.ty; } } lampe.classList.add('on'); },
-    relacher() { etat.dedans = false; etat.actif = 0; lampe.classList.remove('on'); },
+    main(x, y) { etat.mx = x; etat.my = y; etat.actif = 1; etat.tx = (x + 1) / 2 * innerWidth; etat.ty = (1 - y) / 2 * innerHeight; if (!etat.dedans) { etat.dedans = true; if (REDUIT) { etat.lx = etat.tx; etat.ly = etat.ty; } } lampe.classList.add('on'); etiqueter(calque, 'lampe', 1); },
+    relacher() { etat.dedans = false; etat.actif = 0; lampe.classList.remove('on'); etiqueter(calque, 'lampe', 0); },
     // y a-t-il encore quelque chose à animer ? Sinon, le pilote s'arrête jusqu'au prochain défilement ou mouvement de souris
     occupe() { return etat.prog !== etat.cible || etat.intro > 0 || etat.ecart > .04 || (etat.dedans && Math.abs(etat.tx - etat.lx) + Math.abs(etat.ty - etat.ly) > .6) || (etat.repos > 0 && etat.boucle < 0) || U.uOrage.value > .55 || !etat.video; },
     attenuer(k) { etat.dimK = k; }, calme(b) { etat.calme = b; }, figer(b) { etat.fige = b; },
