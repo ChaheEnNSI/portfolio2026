@@ -280,8 +280,10 @@ for (const scheme of ['light', 'dark']) {
   await page.waitForFunction(() => { const b = document.querySelector('.os-boot2'); return b && b.classList.contains('gone'); }, null, { timeout: 15000 });
   await page.waitForTimeout(500);
   check(await page.evaluate(() => [...document.body.children].filter(e => e.id !== 'rx').every(e => e.inert)), 'ChahéOS ouvert : le site derrière est inerte');
-  await page.click('.os-lk-tid'); await page.waitForTimeout(1600);
-  check(await page.evaluate(() => document.querySelector('.os-lock').classList.contains('gone')), 'ChahéOS : Touch ID déverrouille la session');
+  await page.click('.os-lk-tid');
+  // on attend le déverrouillage réel plutôt qu’une durée fixe (les machines de test sont lentes)
+  const ouvert = await page.waitForFunction(() => document.querySelector('.os-lock').classList.contains('gone'), null, { timeout: 10000 }).then(() => true, () => false);
+  check(ouvert, 'ChahéOS : Touch ID déverrouille la session');
   await page.screenshot({ path: path.join(OUT, 'chaheos.png') });
   await page.click('.os-logo'); await page.click('.os-mb >> text=Verrouiller'); await page.waitForTimeout(600);
   await page.keyboard.press('Escape');

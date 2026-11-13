@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8eckBzpY9l67MD6EPh9q0gNL0zmFi8DDUOGWcKW+2kE=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-tuwpA5oWhoGtb9y51XXtdvQw6uV49t7EuHAJ9EPPBUE=' 'sha256-S5ek9yxIgexUVE+axE87QboDF87Ro33DEGHPXjwG3Ks=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8eckBzpY9l67MD6EPh9q0gNL0zmFi8DDUOGWcKW+2kE=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-qKjJtEIpGEcFiWstDrlVbGuniNn1B56d4YuHrE4AP+M=' 'sha256-S5ek9yxIgexUVE+axE87QboDF87Ro33DEGHPXjwG3Ks=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8275,6 +8275,8 @@ function creerFilm(calque, opt) {
   boucleV.addEventListener('playing', () => { if (etat.boucle >= 0) boucleV.classList.add('on'); });
   const lancerBoucle = k => { etat.boucle = k; boucleV.classList.remove('on'); vider(boucleV); sources(boucleV, `v/boucle-${k}`); boucleV.load(); const p = boucleV.play(); if (p && p.catch) p.catch(() => {}); };
   const arreterBoucle = () => { if (etat.boucle < 0) return; etat.boucle = -1; boucleV.classList.remove('on'); setTimeout(() => { if (etat.boucle < 0) boucleV.pause(); }, 750); };
+  { let haut = calque; while (haut.parentElement && haut.parentElement !== document.body) haut = haut.parentElement;
+    if (window.MutationObserver) new MutationObserver(() => { if (haut.inert) { if (!boucleV.paused) boucleV.pause(); } else if (etat.boucle >= 0 && boucleV.paused) { const p = boucleV.play(); if (p && p.catch) p.catch(() => {}); } }).observe(haut, { attributes: true, attributeFilter: ['inert'] }); }
 
   // plans du film : au plus trois balises vivantes (le plan courant et ses voisins), les autres sont libérées.
   // Au chargement, seul le plan d'accueil se charge ; ses voisins attendent le premier défilement.
