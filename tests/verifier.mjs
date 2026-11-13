@@ -5,7 +5,7 @@
 // Usage local : npm i --no-save playwright axe-core && npx playwright install chromium firefox webkit && node tests/verifier.mjs
 import http from 'node:http';
 import { readFile, mkdir, stat } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,8 +26,15 @@ const server = http.createServer(async (req, res) => {
   const file = path.join(ROOT, rel);
   if (!file.startsWith(ROOT + path.sep)) { res.writeHead(403); return res.end(); }
   try {
-    const body = await readFile(file);
-    res.writeHead(200, { 'content-type': TYPES[path.extname(file)] || 'application/octet-stream' });
+    const body = await readFile(file), type = TYPES[path.extname(file)] || 'application/octet-stream';
+    const m = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
+    if (m && (m[1] || m[2])) {
+      const a = m[1] ? +m[1] : Math.max(0, body.length - +m[2]), b = m[1] && m[2] ? Math.min(+m[2], body.length - 1) : body.length - 1;
+      if (a >= body.length || a > b) { res.writeHead(416, { 'content-range': `bytes */${body.length}` }); return res.end(); }
+      res.writeHead(206, { 'content-type': type, 'content-range': `bytes ${a}-${b}/${body.length}`, 'accept-ranges': 'bytes', 'content-length': b - a + 1 });
+      return res.end(body.subarray(a, b + 1));
+    }
+    res.writeHead(200, { 'content-type': type, 'accept-ranges': 'bytes', 'content-length': body.length });
     res.end(body);
   } catch {
     res.writeHead(404, { 'content-type': TYPES['.html'] });
@@ -39,6 +46,8 @@ const BASE = `http://127.0.0.1:${server.address().port}/portfolio2026/`;
 
 const fails = [];
 const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'ÉCHEC'}  ${what}`); if (!ok) fails.push(what); };
+// boucles vivantes déclarées dans la page (une par chapitre qui en a une)
+const BOUCLES = (() => { try { const m = /const FILM_BOUCLES = \[([\d, ]*)\]/.exec(readFileSync(path.join(ROOT, 'index.html'), 'utf8')); return m ? m[1].split(',').map(x => x.trim()).filter(Boolean).map(Number) : []; } catch { return []; } })();
 await mkdir(OUT, { recursive: true });
 // WebGL logiciel : les machines de test n’ont pas de carte graphique, le décor 3D doit quand même tourner
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
@@ -56,6 +65,7 @@ async function open(opts, query = '', br = browser) {
     try { await route.fulfill({ body: await readFile(path.join(CDN_LOCAL, rel)), contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' } }); } catch { await route.abort(); }
   });
   await ctx.addInitScript(QUIET); await ctx.addInitScript(CSP_SPY);
+  await ctx.addInitScript(`try{Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>${opts.modeste ? 2 : 8}});Object.defineProperty(navigator,'deviceMemory',{get:()=>${opts.modeste ? 2 : 8}})}catch(e){}`);
   const page = await ctx.newPage(); const errors = [];
   page.on('pageerror', e => errors.push(String(e).slice(0, 200)));
   page.on('console', m => { if (m.type() === 'error' && !/GL|WebGL|GPU|Failed to load resource/i.test(m.text())) errors.push(m.text().slice(0, 200)); });
@@ -93,7 +103,7 @@ async function open(opts, query = '', br = browser) {
   const nuit = await page.waitForFunction(() => document.documentElement.classList.contains('nuit-ok'), null, { timeout: 30000 }).then(() => true, () => false);
   check(nuit, 'nuit de veille : le décor est actif');
   const film = await page.evaluate(() => document.documentElement.classList.contains('film'));
-  const t1 = await page.evaluate(() => [document.documentElement.dataset.theme, getComputedStyle(document.body).backgroundColor, document.documentElement.classList.contains('film') ? document.querySelectorAll('.film-v').length === 6 : document.getElementById('nuit').width > 300]);
+  const t1 = await page.evaluate(() => [document.documentElement.dataset.theme, getComputedStyle(document.body).backgroundColor, document.documentElement.classList.contains('film') ? document.querySelectorAll('.film-i').length === 7 : document.getElementById('nuit').width > 300]);
   check(t1[0] === 'dark' && t1[1] === 'rgb(7, 12, 28)' && t1[2], `nuit de veille : fond de nuit pour tous, même si l’appareil préfère le clair (${t1.join(', ')})`);
   if (nuit) {
     // son d'ambiance : coupé par défaut, le bouton l'allume puis le coupe, sans erreur
@@ -102,13 +112,32 @@ async function open(opts, query = '', br = browser) {
     for (const x of [300, 360, 420, 480]) { await page.mouse.move(x, 300); await page.waitForTimeout(350); }
     const tenu = await page.waitForFunction(f => f ? !!document.querySelector('.film-lampe.on') : /Vous tenez|You hold/.test(document.getElementById('veille-t').textContent), film, { timeout: 8000 }).then(() => true, () => false);
     check(tenu, film ? 'film : la lampe suit le curseur' : 'nuit de veille : la souris prend le faisceau en main');
+    if (film) {
+      const v0 = await page.evaluate(() => [...document.querySelectorAll('.film-v')].map(v => ((v.querySelector('source') || {}).src || '').split('/').pop()));
+      check(v0.length <= 1 && v0.every(x => /^film-0\.(webm|mp4)$/.test(x)), `film : à l’accueil, seul le premier plan se charge (${v0.join(', ') || 'aucun'})`);
+      const lampeFixe = await page.evaluate(async () => { const l = document.querySelector('.film-lampe'); const a = l.style.transform; await new Promise(r => setTimeout(r, 1500)); return l.classList.contains('on') && l.style.transform === a; });
+      check(lampeFixe, 'film : la lampe reste allumée sous le curseur immobile');
+      if (BOUCLES.includes(2)) {
+        await page.evaluate(() => { const y = document.getElementById('profil').getBoundingClientRect().top + scrollY; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); });
+        const b = await page.waitForFunction(() => { const v = document.querySelector('.film-b'); return v && v.classList.contains('on') && !v.paused && /boucle-2\.(webm|mp4)$/.test(v.currentSrc); }, null, { timeout: 20000 }).then(() => true, () => false);
+        check(b, 'film : arrêté sur le Profil, la boucle vivante du chapitre se lance');
+      }
+    }
     const lit = await page.waitForFunction(f => { const c = [...document.querySelectorAll('.hero-name .ch')].map(e => parseFloat(e.style.getPropertyValue('--l'))); return f ? Math.max(...c) - Math.min(...c) > .2 : c.some(v => v > .6) && c.some(v => v < .4); }, film, { timeout: 12000 }).then(() => true, () => false);
     check(lit, 'nuit de veille : le faisceau éclaire les lettres du nom, pas tout le nom d’un coup');
     await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
     const h = await page.waitForFunction(() => /^0[5-7]:/.test(document.getElementById('hd-heure-t').textContent), null, { timeout: 15000 }).then(() => true, () => false);
     check(h, `nuit de veille : l’heure du quart avance avec le défilement (${await page.textContent('#hd-heure-t')})`);
     check((await page.textContent('#bilan')).length > 20, 'nuit de veille : bilan du quart affiché au contact');
-    if (film) { const pl = await page.waitForFunction(() => [...document.querySelectorAll('.film-v')].findIndex(v => v.classList.contains('on')) === 5, null, { timeout: 8000 }).then(() => true, () => false); check(pl, 'film : en bas de page, c’est le dernier plan qui est à l’écran'); }
+    if (film) {
+      const pl = await page.waitForFunction(() => [...document.querySelectorAll('.film-i')].findIndex(v => v.classList.contains('on')) === 6, null, { timeout: 8000 }).then(() => true, () => false);
+      check(pl, 'film : en bas de page, c’est l’image du lever du soleil qui est à l’écran');
+      // rechargement : la page revient en haut, même si l'adresse porte une ancre
+      await page.evaluate(() => { location.hash = 'projets'; }); await page.waitForTimeout(300);
+      await page.reload(); await page.waitForFunction(() => document.documentElement.classList.contains('nuit-ok') && !document.documentElement.classList.contains('ld-on'), null, { timeout: 30000 }).catch(() => {}); await page.waitForTimeout(1200);
+      const haut = await page.evaluate(() => [Math.round(scrollY), location.hash]);
+      check(haut[0] < 40 && haut[1] === '', `rechargement : retour en haut de page, ancre retirée (${haut.join(' ')})`);
+    }
     await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(1500);
   }
   await page.screenshot({ path: path.join(OUT, 'accueil-nuit.png') });
@@ -117,6 +146,43 @@ async function open(opts, query = '', br = browser) {
   const shared = await page.evaluate(() => navigator.clipboard.readText());
   check(shared === 'https://chaheennsi.github.io/portfolio2026/p/vigie/', `partager un projet : lien copié (${shared})`);
   check(errors.length === 0, `nuit de veille et partage sans erreur (${errors.join(' | ') || 'rien'})`);
+  await ctx.close();
+}
+
+// 1 bis a. fichiers du film : tout ce que la page peut demander est présent
+{
+  const manque = [];
+  for (let i = 0; i < 6; i++) for (const x of ['.webm', '.mp4', '-p.webm', '-p.mp4']) if (!existsSync(path.join(ROOT, 'v', `film-${i}${x}`))) manque.push(`film-${i}${x}`);
+  for (let i = 0; i <= 6; i++) for (const x of ['.jpg', '-p.jpg']) if (!existsSync(path.join(ROOT, 'v', `film-${i}${x}`))) manque.push(`film-${i}${x}`);
+  for (const k of BOUCLES) for (const x of ['.webm', '.mp4', '-p.webm', '-p.mp4']) if (!existsSync(path.join(ROOT, 'v', `boucle-${k}${x}`))) manque.push(`boucle-${k}${x}`);
+  check(manque.length === 0, `film : plans, images d’arrêt et boucles (${BOUCLES.join(', ') || 'aucune'}) présents (${manque.join(', ') || 'rien ne manque'})`);
+}
+
+// 1 bis c. téléphone en hauteur : le film est recadré sur le sujet (fichiers portrait)
+{
+  const { ctx, page, errors } = await open({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'fr-FR' });
+  await page.waitForFunction(() => document.documentElement.classList.contains('nuit-ok'), null, { timeout: 30000 }).catch(() => {});
+  if (await page.evaluate(() => document.documentElement.classList.contains('film'))) {
+    const p = await page.waitForFunction(() => { const im = document.querySelector('.film-i.on'); return im && /film-0-p\.jpg$/.test(im.src) && im.naturalWidth > 0; }, null, { timeout: 15000 }).then(() => true, () => false);
+    const v = await page.evaluate(() => [...document.querySelectorAll('.film-v source')].map(s => s.src.split('/').pop()));
+    check(p && v.every(x => /-p\.(webm|mp4)$/.test(x)), `téléphone : film recadré en hauteur (image ${p ? 'portrait' : 'absente'}, vidéos ${v.join(', ') || 'pas encore'})`);
+    check(errors.length === 0, `téléphone : film sans erreur (${errors.join(' | ') || 'rien'})`);
+  }
+  await ctx.close();
+}
+
+// 1 bis b. mode léger : sur un appareil modeste, le film devient des images fixes en fondu, sans aucune vidéo
+{
+  const { ctx, page, errors } = await open({ viewport: { width: 390, height: 844 }, locale: 'fr-FR', modeste: true });
+  await page.waitForFunction(() => document.documentElement.classList.contains('nuit-ok'), null, { timeout: 30000 }).catch(() => {});
+  if (await page.evaluate(() => document.documentElement.classList.contains('film'))) {
+    await page.waitForTimeout(2500);
+    const a = await page.evaluate(() => [document.documentElement.classList.contains('leger'), document.querySelectorAll('.film-v').length, [...document.querySelectorAll('.film-i')].findIndex(v => v.classList.contains('on'))]);
+    await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+    const fin = await page.waitForFunction(() => [...document.querySelectorAll('.film-i')].findIndex(v => v.classList.contains('on')) === 6 && document.querySelectorAll('.film-v').length === 0, null, { timeout: 10000 }).then(() => true, () => false);
+    check(a[0] && a[1] === 0 && a[2] === 0 && fin, `mode léger : images fixes sans vidéo, de l’accueil au lever du soleil (${a.join(', ')}, fin ${fin})`);
+    check(errors.length === 0, `mode léger : aucune erreur (${errors.join(' | ') || 'rien'})`);
+  }
   await ctx.close();
 }
 
@@ -163,7 +229,7 @@ if (existsSync(path.join(ROOT, 'v', 'vigie.mp4'))) {
   const repli = await page.waitForFunction(() => document.documentElement.classList.contains('nuit-sans') || document.documentElement.classList.contains('film'), null, { timeout: 20000 }).then(() => true, () => false);
   const filmSans = repli && await page.evaluate(() => document.documentElement.classList.contains('film'));
   if (filmSans) {
-    check(await page.evaluate(() => document.querySelectorAll('.film-v').length === 6 && getComputedStyle(document.querySelector('.hero-name')).visibility === 'visible'), 'sans WebGL : le film ne dépend pas de la 3D, il est là');
+    check(await page.evaluate(() => document.querySelectorAll('.film-i').length === 7 && getComputedStyle(document.querySelector('.hero-name')).visibility === 'visible'), 'sans WebGL : le film ne dépend pas de la 3D, il est là');
     check(errors.length === 0, `sans WebGL : aucune erreur (${errors.join(' | ') || 'rien'})`);
   } else if (repli) {
     await page.waitForTimeout(1500);
@@ -261,6 +327,10 @@ for (const [nom, type] of [['Firefox', firefox], ['WebKit (Safari)', webkit]]) {
     check(errors.length === 0 && csp.length === 0, `${nom} ${vp.width}px : aucune erreur ni violation CSP (${[...errors, ...csp].join(' | ') || 'rien'})`);
     const vis = await page.evaluate(() => { const h = document.querySelector('.hero-name'); const r = h && h.getBoundingClientRect(); return !!r && r.width > 100 && getComputedStyle(h).visibility !== 'hidden'; });
     check(vis, `${nom} ${vp.width}px : le nom s’affiche en haut de page`);
+    if (await page.evaluate(() => document.documentElement.classList.contains('film'))) {
+      const im = await page.waitForFunction(() => { const i = document.querySelector('.film-i.on'); return i && i.complete && i.naturalWidth > 0; }, null, { timeout: 15000 }).then(() => true, () => false);
+      check(im, `${nom} ${vp.width}px : l’image du film est affichée derrière le nom`);
+    }
     await page.screenshot({ path: path.join(OUT, `${nom.split(' ')[0].toLowerCase()}-${vp.width}.png`) });
     if (!mob) {
       check(await page.evaluate(() => document.documentElement.dataset.theme) === 'dark', `${nom} : thème nuit`);
