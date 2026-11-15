@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8eckBzpY9l67MD6EPh9q0gNL0zmFi8DDUOGWcKW+2kE=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-LRk7LlcKzQe/G54w5OG9whOvPKj8vPJd1SXJAUqq+BA=' 'sha256-S5ek9yxIgexUVE+axE87QboDF87Ro33DEGHPXjwG3Ks=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8eckBzpY9l67MD6EPh9q0gNL0zmFi8DDUOGWcKW+2kE=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-6lhTJnhAnyBmfYq4A6ATuzSc+X3zeb85ElG1hzKDtkY=' 'sha256-S5ek9yxIgexUVE+axE87QboDF87Ro33DEGHPXjwG3Ks=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8259,7 +8259,8 @@ const interpoler = (tab, t, n) => {
 // Le pilote garde une seule référence : si le lecteur image par image renonce en cours de route, l'autre prend sa place sans qu'il le voie.
 function creerFilm(calque, opt) {
   let gl2 = false;
-  if (!opt.leger && window.VideoDecoder && window.EncodedVideoChunk && window.fetch && window.ReadableStream) {
+  const bureau = matchMedia('(hover: hover) and (pointer: fine)').matches && !/Apple/.test(navigator.vendor || '') && !(navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform || ''));
+  if (!opt.leger && bureau && window.VideoDecoder && window.EncodedVideoChunk && window.fetch && window.ReadableStream) {
     try { const c = document.createElement('canvas'), g = c.getContext('webgl2'); gl2 = !!g; const x = g && g.getExtension('WEBGL_lose_context'); if (x) x.loseContext(); } catch (e) { gl2 = false; }
   }
   if (!gl2) return creerFilmVideo(calque, opt);
@@ -8293,13 +8294,13 @@ function creerFilmGL(calque, opt, repli) {
   const NPL = opt.plans, AVEC_BOUCLE = opt.boucles || [], reveil = opt.reveil || (() => {});
   const H = [0, 10, 20, 30, 36.8, 50, 60];
   const DIM = [0, .14, .4, .45, .45, .46, .15];
-  const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches, ECO = !!(navigator.connection && navigator.connection.saveData);
   const enHauteur = () => matchMedia('(orientation: portrait)').matches;
   const lisse = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const Tde = p => { p = Math.max(0, Math.min(NPL, p)); const ci = Math.min(NPL - 1, Math.floor(p)), u = p - ci; return Math.min(NPL * 10 - .02, H[ci] + (H[ci + 1] - H[ci]) * (ci < 2 ? u : Math.max(0, (u - .16) / .84))); };
   const etat = { prog: 0, cible: 0, actif: 0, eclat: 0, dimK: 1, fige: false, calme: false, dernier: 0, mx: 0, my: 0, intro: 0, video: false, boucle: -1, repos: 0, tonN: 0,
     bouge: false, ecart: 0, Tav: 0, dir: 1, lx: innerWidth * .62, ly: innerHeight * .4, tx: innerWidth * .62, ty: innerHeight * .4, dedans: false, fa: 0,
-    palier: null, choix: 0, vu: false, mixL: 0, eclair: 0, erreurs: 0, echecs: 0, q: 1, img: -1, plan: -1, cadre: -1, bande: -1, leger: false };
+    palier: null, choix: 0, vu: false, sorties: 0, tDemande: 0, mixL: 0, eclair: 0, erreurs: 0, echecs: 0, q: 1, img: -1, plan: -1, cadre: -1, bande: -1, leger: false };
   const U = { uDim: { value: 0 }, uOrage: { value: 0 }, uDawn: { value: 0 } };
   let onEclair = null, mort = false;
   const el = (tag, cls) => { const e = document.createElement(tag); e.className = cls; calque.appendChild(e); return e; };
@@ -8374,11 +8375,17 @@ void main(){
   const charger = (t, src, w, h) => { gl.bindTexture(gl.TEXTURE_2D, t);
     if (t.w !== w || t.h !== h) { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src); t.w = w; t.h = h; }
     else gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, src); };
-  const libres = [], toutes = [];
+  const libres = [], toutes = []; let affichee = null;
   const prendre = () => { if (libres.length) return libres.pop(); const t = nouvelleTex(); toutes.push(t); return t; };
   const rendre = t => { if (t) libres.push(t); };
   const noire = nouvelleTex(); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([7, 12, 28, 255])); noire.w = noire.h = 1;
-  let viaBitmap = false;
+  let viaBitmap = false, verifiee = false;
+  // une texture « pleine » : au moins un pixel non noir et opaque parmi quelques points lus (lecture unique, à la première image)
+  const fbo = gl.createFramebuffer();
+  const pleine = t => { try { gl.bindFramebuffer(gl.FRAMEBUFFER, fbo); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
+    const px = new Uint8Array(4); let ok = false;
+    for (const [u, v] of [[.5, .5], [.25, .3], [.75, .3], [.5, .8], [.2, .7], [.8, .7]]) { gl.readPixels(Math.floor(t.w * u), Math.floor(t.h * v), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); if (px[3] > 0 && px[0] + px[1] + px[2] > 6) { ok = true; break; } }
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null); return ok; } catch (e) { gl.bindFramebuffer(gl.FRAMEBUFFER, null); return true; } };
 
   // images d'arrêt en texture
   const texArret = new Array(NPL + 1).fill(null);
@@ -8473,8 +8480,8 @@ void main(){
       P.dec.configure(P.cfg); P.next = -1; P.vol.clear();
     } catch (e) { P.dec = null; if (++etat.erreurs > 3) abandon(); }
   };
-  const fermer = i => { const P = pistes[i]; P.gen++; if (P.dec) { try { P.dec.close(); } catch (e) {} P.dec = null; } P.vol.clear(); P.next = -1; P.cache.forEach(rendre); P.cache.clear(); };
-  const elaguer = P => { let pire = -1, dm = -1; P.cache.forEach((t, k) => { const d = Math.abs(k - P.focus); if (d > dm) { dm = d; pire = k; } }); if (pire >= 0) { rendre(P.cache.get(pire)); P.cache.delete(pire); } };
+  const fermer = i => { const P = pistes[i]; P.gen++; if (P.dec) { try { P.dec.close(); } catch (e) {} P.dec = null; } P.vol.clear(); P.next = -1; P.cache.forEach(t => { if (t === affichee) affichee = null; rendre(t); }); P.cache.clear(); };
+  const elaguer = P => { let pire = -1, dm = -1; P.cache.forEach((t, k) => { const d = Math.abs(k - P.focus); if (t !== affichee && d > dm) { dm = d; pire = k; } }); if (pire >= 0) { rendre(P.cache.get(pire)); P.cache.delete(pire); } };
   const ranger = (i, gen, n, t) => { const P = pistes[i]; if (P.gen !== gen || P.cache.has(n)) { rendre(t); return; } while (P.cache.size >= PAL().max) elaguer(P); P.cache.set(n, t); };
   function recevoir(i, gen, f) {
     const P = pistes[i];
@@ -8482,17 +8489,17 @@ void main(){
     const n = Math.round(f.timestamp * P.D.fps / 1e6); P.vol.delete(n); P.tSortie = performance.now();
     if (n < P.lo || n > P.hi || P.cache.has(n)) { f.close(); reveil(); return; }
     const t = prendre(), w = f.displayWidth, h = f.displayHeight;
-    if (!viaBitmap) { try { charger(t, f, w, h); f.close(); ranger(i, gen, n, t); reveil(); return; } catch (e) { viaBitmap = true; } }
-    createImageBitmap(f).then(bm => { f.close(); if (mort) { bm.close(); return; } try { charger(t, bm, bm.width, bm.height); ranger(i, gen, n, t); } catch (e) { rendre(t); if (++etat.echecs > 6) abandon(); } bm.close(); reveil(); },
+    if (!viaBitmap) { try { charger(t, f, w, h); if (!verifiee) { verifiee = true; if (!pleine(t)) throw new Error('vide'); } f.close(); etat.sorties++; ranger(i, gen, n, t); reveil(); return; } catch (e) { viaBitmap = true; } }
+    createImageBitmap(f).then(bm => { f.close(); if (mort) { bm.close(); return; } try { charger(t, bm, bm.width, bm.height); etat.sorties++; ranger(i, gen, n, t); } catch (e) { rendre(t); if (++etat.echecs > 6) abandon(); } bm.close(); reveil(); },
       () => { f.close(); rendre(t); if (++etat.echecs > 6) abandon(); });
   }
   const nourrir = i => {
     const P = pistes[i], D = P.D, d = donnees[i]; if (!P.dec || !D || !d || P.dec.state !== 'configured') return;
-    while (P.dec.decodeQueueSize < 5 && P.next >= 0 && P.next < D.n && P.next <= P.hi) {
+    while (P.dec.decodeQueueSize < 5 && P.next >= 0 && P.next < D.n && P.next <= P.hi + 3) {
       const k = P.next, o = D.off[k], s = D.taille[k]; if (o + s > d.recu) break;
       try { P.dec.decode(new EncodedVideoChunk({ type: D.cle[k] ? 'key' : 'delta', timestamp: Math.round(k * 1e6 / D.fps), duration: Math.round(1e6 / D.fps), data: d.buf.subarray(o, o + s) })); }
       catch (e) { fermer(i); if (++etat.erreurs > 3) abandon(); return; }
-      P.vol.add(k); P.next++;
+      P.vol.add(k); P.next++; if (!etat.tDemande) etat.tDemande = performance.now();
     }
   };
   // le plan i doit montrer l'image fp (fractionnaire) : on garde une petite fenêtre décodée autour, plus large dans le sens du défilement
@@ -8578,6 +8585,7 @@ void main(){
     if (etat.eclair > 0) etat.eclair = Math.max(0, etat.eclair - dtv * 3.2);
 
     // le film : le plan courant (et ses voisins quand on s'en approche) ; les autres décodeurs sont fermés
+    if (etat.tDemande && !etat.sorties && performance.now() - etat.tDemande > 5000) { abandon(); return; }
     let A = null, B = null, mab = 0; etat.ecart = 0;
     const vivant = etat.video && !!etat.palier && !etat.calme && !etat.fige;
     if (vivant) {
@@ -8587,16 +8595,18 @@ void main(){
       if (P.D) {
         let fp = Math.min(P.D.n - 1, Math.max(0, lt * P.D.fps)); if (arret) fp = Math.round(fp);
         servir(pi, fp, etat.dir);
-        const f0 = Math.floor(fp), f1 = Math.min(P.D.n - 1, f0 + 1);
-        A = P.cache.get(f0) || null; B = P.cache.get(f1) || null; mab = fp - f0;
-        if (A && !B) { B = A; mab = 0; }
-        if (!A) { let best = null, bd = 1e9; P.cache.forEach((tx, n) => { const d = Math.abs(n - fp); if (d < bd) { bd = d; best = tx; } }); if (best && bd <= 4) { A = B = best; mab = 0; } etat.ecart = Math.min(1, bd / P.D.fps); }
+        const fi = Math.min(P.D.n - 1, Math.round(fp));
+        A = B = P.cache.get(fi) || null; mab = 0;
+        if (!A) { let best = null, bd = 1e9; P.cache.forEach((tx, n) => { const d = Math.abs(n - fp); if (d < bd) { bd = d; best = tx; } }); if (best && bd <= 12) A = B = best; etat.ecart = Math.min(1, bd / P.D.fps); }
         if (etat.bouge && etat.dir > 0 && lt > 8.6 && pi + 1 < NPL) { telecharger(pi + 1); const Q = pistes[pi + 1]; if (!Q.D) initPiste(pi + 1); if (Q.D) servir(pi + 1, 0, 1, true); }
         if (etat.bouge && etat.dir < 0 && lt < 1.4 && pi > 0) { telecharger(pi - 1); const Q = pistes[pi - 1]; if (!Q.D) initPiste(pi - 1); if (Q.D) servir(pi - 1, Q.D.n - 1, -1, true); }
         if (donnees[pi] && donnees[pi].fin && etat.bouge) telecharger(etat.dir > 0 ? pi + 1 : pi - 1);
+        // en arrière-plan, une fois le plan courant chargé : les plans voisins (deux de chaque côté), un à la fois
+        if (donnees[pi] && donnees[pi].fin && !ECO && !donnees.some(d => d && !d.fin)) { for (const j of [pi + 1, pi - 1, pi + 2, pi - 2]) if (j >= 0 && j < NPL && !donnees[j]) { telecharger(j); break; } }
       } else etat.ecart = 1;
       etiqueter(calque, 'plans', pistes.map((P, j) => P.dec ? j : -1).filter(j => j >= 0).join(','));
     } else if (etat.plan !== -1) { etat.plan = -1; for (let j = 0; j < NPL; j++) fermer(j); etiqueter(calque, 'plans', ''); }
+    if (!A && vivant && affichee) { A = B = affichee; mab = 0; }   // l'image suivante arrive : on garde celle qui est à l'écran
     if (!A) { const ta = arretTex(k); if (ta) { A = B = ta; mab = 0; } }
 
     // repos : le film est garé sur l'image d'arrêt -> la boucle vivante prend le relais, en fondu
@@ -8636,7 +8646,7 @@ void main(){
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, A);
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, B || A);
     gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, bPret ? texL : noire);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.drawArrays(gl.TRIANGLES, 0, 3); affichee = A;
     if (!etat.vu) { etat.vu = true; cv.classList.add('on'); document.documentElement.classList.add('film-gl-ok'); }
   }
 
@@ -8661,7 +8671,7 @@ void main(){
     lanterneEcran(o) { o.x = etat.lx / innerWidth; o.y = etat.ly / innerHeight; o.devant = etat.actif > 0; return o; },
     faisceauEcran(o) { o.x = etat.lx / innerWidth + .02; o.y = etat.ly / innerHeight; o.devant = etat.actif > 0; return o; },
     entree() { if (!etat.fige && !etat.calme) etat.intro = 1; },
-    qualite(f) { etat.q = Math.max(.5, etat.q * f); },
+    qualite() {},
     ciel() {}, figure() {}, flux() {}, sonar() { return false; }, quandPris() {}, quandEclair(f) { onEclair = f; }, choc() {}, nuee() {}, tour() {}, fin() {}
   };
 }
