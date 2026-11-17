@@ -115,7 +115,8 @@ async function open(opts, query = '', br = browser) {
     if (film) {
       const v0 = await page.evaluate(() => [...document.querySelectorAll('.film-v')].map(v => ((v.querySelector('source') || {}).src || '').split('/').pop()));
       check(v0.length <= 1 && v0.every(x => /^film-0\.(webm|mp4)$/.test(x)), `film : à l’accueil, seul le premier plan se charge (${v0.join(', ') || 'aucun'})`);
-      const lampeFixe = await page.evaluate(async () => { const l = document.querySelector('.film-lampe'); const a = l.style.transform; await new Promise(r => setTimeout(r, 1500)); return l.classList.contains('on') && l.style.transform === a; });
+      // la lampe rejoint le curseur en douceur : on attend qu'elle y soit avant de vérifier qu'elle ne bouge plus
+      const lampeFixe = await page.evaluate(async () => { const l = document.querySelector('.film-lampe'); await new Promise(r => setTimeout(r, 2500)); const a = l.style.transform; await new Promise(r => setTimeout(r, 1500)); return l.classList.contains('on') && l.style.transform === a; });
       check(lampeFixe, 'film : la lampe reste allumée sous le curseur immobile');
       if (BOUCLES.includes(2)) {
         await page.evaluate(() => { const y = document.getElementById('profil').getBoundingClientRect().top + scrollY; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); });

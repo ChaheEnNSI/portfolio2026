@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-qKjJtEIpGEcFiWstDrlVbGuniNn1B56d4YuHrE4AP+M=' 'sha256-S5ek9yxIgexUVE+axE87QboDF87Ro33DEGHPXjwG3Ks=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-V+fzaFSaBBIEK3Cl0Ucd74X6DcdlZvMjJfMq5vlVV0c=' 'sha256-S5ek9yxIgexUVE+axE87QboDF87Ro33DEGHPXjwG3Ks=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -2362,6 +2362,10 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 .film-lampe.on.bouge{opacity:.6}
 .film-calque.leger .film-lampe{mix-blend-mode:normal}
 .film-calque.leger .film-lampe.on{opacity:.5}
+/* le décor ne reste jamais figé : une lente respiration (zoom et dérive) sous le film, les boucles et les images d'arrêt */
+@media (prefers-reduced-motion: no-preference){.film-calque{animation:film-zoom 23s ease-in-out infinite alternate,film-derive 31s ease-in-out infinite alternate}.calm .film-calque{animation:none}}
+@keyframes film-zoom{from{scale:1.012}to{scale:1.046}}
+@keyframes film-derive{from{translate:-.45% .3%}to{translate:.45% -.3%}}
 .film-bande{position:absolute;left:0;right:0;top:0;height:6.5vh;background:#04070F;transform:scaleY(0);transform-origin:50% 0;z-index:1}
 .film-bande.bas{top:auto;bottom:0;transform-origin:50% 100%}
 @media (max-width:899px){.film .hero-sum{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(7,12,28,.74)}}
@@ -8239,7 +8243,7 @@ function creerNuit() { return null; }   // l'ancien décor 3D a laissé la place
    Même interface que l'ancien décor 3D, pour que le pilote ne change pas.
    ===================================================================== */
 const FILM_PLANS = 6;
-const FILM_BOUCLES = [0, 2];
+const FILM_BOUCLES = [0, 2, 3, 4, 5, 6];
 function creerFilm(calque, opt) {
   const NPL = opt.plans, AVEC_BOUCLE = opt.boucles || [], reveil = opt.reveil || (() => {});
   const H = [0, 10, 20, 30, 36.8, 50, 60];             // dans le film, l'image d'arrêt de chaque chapitre (en secondes)
@@ -8284,14 +8288,17 @@ function creerFilm(calque, opt) {
   const alleger = () => { etat.leger = true; calque.classList.add('leger'); };
   const ouvrir = i => { if (i < 0 || i >= NPL || vids[i]) return; const v = video('film-m film-v'); calque.insertBefore(v, boucleV); sources(v, `v/film-${i}`);
     const der = v.lastElementChild; if (der) der.addEventListener('error', () => { if (vids[i] === v && !v.classList.contains('pret')) alleger(); });
-    v.addEventListener('loadeddata', () => { v.classList.add('pret'); reveil(); });
-    v.addEventListener('seeked', () => { reveil(); if (!v._t) return; const d = performance.now() - v._t; v._t = 0; etat.lent += (d - etat.lent) * .15; if (++etat.nRech > 16 && etat.lent > 160) alleger(); });   // recherches d'image trop lentes : on passe aux images fixes
+    v.addEventListener('loadeddata', () => { if (Math.abs(v.currentTime - (v._but || 0)) < .5) v.classList.add('pret'); reveil(); });   // visible seulement sur la bonne image : jamais la première image d'un plan par erreur
+    v.addEventListener('seeked', () => { reveil(); if (Math.abs(v.currentTime - (v._but || 0)) < .5) v.classList.add('pret'); if (!v._t) return; const d = performance.now() - v._t; v._t = 0; rech.push(d); if (rech.length > 16) rech.shift(); if (++etat.nRech > 24 && [...rech].sort((x, y) => x - y)[8] > 250) alleger(); });   // recherches d'image durablement trop lentes (médiane des 16 dernières) : images fixes ; un à-coup isolé ne compte pas
     // iOS ne charge une vidéo qu'après une lecture : on la lance et on l'arrête aussitôt (refusé en mode économie d'énergie : les images fixes restent)
     const pl = v.play(); if (pl && pl.then) pl.then(() => { v.pause(); reveil(); }).catch(() => {});
     vids[i] = v; };
   const fermer = i => { const v = vids[i]; if (!v) return; vids[i] = null; vider(v); v.remove(); };
+  // seules les recherches dans une partie déjà téléchargée mesurent l'appareil : une attente réseau (VPN, connexion lente) ne fait pas basculer en images fixes
+  const rech = [];
+  const dansTampon = (v, t) => { const b = v.buffered; for (let i = 0; i < b.length; i++) if (t >= b.start(i) && t <= b.end(i)) return true; return false; };
   // en mouvement rapide, recherche approchée (image clé la plus proche) ; à l'arrivée, recherche exacte pour retomber pile sur l'image d'arrêt
-  const viser = (v, but, vite) => { if (v && v.readyState >= 1 && v.duration && !v.seeking && Math.abs(v.currentTime - but) > .03) { v._t = performance.now(); try { if (vite && v.fastSeek) v.fastSeek(but); else v.currentTime = but; } catch (e) {} } };
+  const viser = (v, but, vite) => { if (v) v._but = but; if (v && v.readyState >= 1 && v.duration && !v.seeking && Math.abs(v.currentTime - but) > .03) { v._t = dansTampon(v, but) ? performance.now() : 0; try { if (vite && v.fastSeek) v.fastSeek(but); else v.currentTime = but; } catch (e) {} } };
 
   const lampe = el('i', 'film-lampe'), bandes = [0, 1].map(k => el('i', 'film-bande' + (k ? ' bas' : '')));
   // les vidéos ne se chargent qu'une fois la page affichée : d'abord le texte et l'image d'accueil
@@ -8316,7 +8323,7 @@ function creerFilm(calque, opt) {
       viser(v, but, vite); if (v && v.readyState >= 1) etat.ecart = Math.abs(v.currentTime - but);
       if (etat.bouge) { viser(vids[pi + 1], 0); if (vids[pi - 1]) viser(vids[pi - 1], Math.max(0, (vids[pi - 1].duration || 10) - .06)); }
       // repos : le film est garé sur l'image d'arrêt (et le restera, même si on fait défiler le texte) -> la boucle vivante prend le relais
-      const repos = Math.abs(T - H[k]) < .03 && Math.abs(Tc - H[k]) < .03 && AVEC_BOUCLE.indexOf(k) >= 0;
+      const hk = Math.min(H[k], NPL * 10 - .08), repos = Math.abs(T - hk) < .03 && Math.abs(Tc - hk) < .03 && AVEC_BOUCLE.indexOf(k) >= 0;   // le film s'arrête 0,08 s avant sa fin : la dernière boucle part de là
       if (repos) { etat.repos += dtv; if (etat.repos > .35 && etat.boucle !== k) lancerBoucle(k); } else { etat.repos = 0; arreterBoucle(); }
     } else if (etat.plan !== -1 || etat.boucle >= 0) { etat.plan = -1; for (let j = 0; j < NPL; j++) fermer(j); arreterBoucle(); }
     const di = Math.min(5, Math.floor(etat.prog)); U.uDim.value = (DIM[di] + (DIM[di + 1] - DIM[di]) * Math.min(1, etat.prog - di)) * etat.dimK;
