@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ipxUL7LQmh/A+d7CuFJo0/0o5fkqD5ErwXGTk4mkfuA=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-GhcjXfCNln98MtFa7oKCnF7CeJP4/EJ6GkHBXjB65PU=' 'sha256-IEGW+/7MMx73aoJfByZcpzquK3PmVvOFkqv5nNVU1u0=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ipxUL7LQmh/A+d7CuFJo0/0o5fkqD5ErwXGTk4mkfuA=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-GhcjXfCNln98MtFa7oKCnF7CeJP4/EJ6GkHBXjB65PU=' 'sha256-6he5eaZeOi4t3iKcBrRXpii8rsOcSmraMguaB0+YBKg=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -9203,7 +9203,8 @@ window.__site = { projets: PROJETS.map(p => p.titre), chat: chatCtl, L, tour: to
   await breathe();
   const camera = new THREE.PerspectiveCamera(30, 1, .1, 60); camera.position.set(0, .3, 8.4); camera.lookAt(0, 0, 0);
   const key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(-3, 4, 5); scene.add(key);
-  const rim = new THREE.PointLight(0x3D3BFF, 16, 9, 2); rim.position.set(1.5, 1, -3); scene.add(rim);
+  const rim = new THREE.PointLight(0x8DB6FF, 18, 9, 2); rim.position.set(1.5, 1.4, -3); scene.add(rim);   // la lune, derrière
+  const mer = new THREE.PointLight(0x2F9FB0, 5, 7, 2); mer.position.set(-.5, -3, 2); scene.add(mer);       // le reflet de la mer, par en dessous
 
   // --- modèle : un drone marin, blanc comme le phare, bande rouge, rivets et hublot de cuivre, lanterne, anneau-bouée
   const ACC = new THREE.Color('#FF6B5B'), HOT = new THREE.Color('#FFB24A');   // la lanterne et le cadenas brillent comme le phare
@@ -9227,6 +9228,7 @@ window.__site = { projets: PROJETS.map(p => p.titre), chat: chatCtl, L, tour: to
   const led = new THREE.Mesh(new THREE.SphereGeometry(.075, 20, 14), hotM); led.position.set(.5, 1.33, -.05); body.add(led);
   { const cage = new THREE.Mesh(new THREE.CylinderGeometry(.1, .1, .16, 16, 1, true), new THREE.MeshStandardMaterial({ color: 0xFFF4DC, roughness: .1, metalness: 0, transparent: true, opacity: .28, side: THREE.DoubleSide, depthWrite: false })); cage.position.copy(led.position); cage.rotation.z = -.42; body.add(cage);
     const toit = new THREE.Mesh(new THREE.ConeGeometry(.12, .1, 16), rouge); toit.position.set(.535, 1.43, -.05); toit.rotation.z = -.42; body.add(toit); }   // une petite lanterne de phare
+  const lueur = new THREE.PointLight(0xFFB24A, 2.6, 3.2, 2); lueur.position.set(.45, 1.42, .1); body.add(lueur);   // sa lumière chaude tombe sur Root
   const eye = new THREE.Group(); body.add(eye);
   const bezel = new THREE.Mesh(new THREE.TorusGeometry(.47, .075, 18, 72), cuivre); bezel.position.z = .87; eye.add(bezel);   // un hublot de cuivre
   for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2, b = new THREE.Mesh(new THREE.SphereGeometry(.026, 10, 8), cuivre); b.position.set(Math.cos(a) * .47, Math.sin(a) * .47, .95); eye.add(b); }
@@ -9247,12 +9249,13 @@ window.__site = { projets: PROJETS.map(p => p.titre), chat: chatCtl, L, tour: to
 
   // --- passager : Root, un petit poulpe corail à lunettes noires (il ne les quitte jamais), couvert d'algues, collier à cadenas,
   //     assis sur l'épaule gauche du drone, les tentacules dans le vide
-  const furM = new THREE.MeshPhysicalMaterial({ color: 0xCF3F2A, roughness: .46, metalness: 0, clearcoat: .45, clearcoatRoughness: .35 });   // peau humide
+  const furM = new THREE.MeshPhysicalMaterial({ color: 0xBE3326, roughness: .42, metalness: 0, clearcoat: .6, clearcoatRoughness: .3, sheen: .8, sheenColor: new THREE.Color(0xFF9C7E), sheenRoughness: .45 });   // peau humide
   const furD = new THREE.MeshStandardMaterial({ color: 0x8E2A1C, roughness: .55 });                                                       // taches
   const creamM = new THREE.MeshStandardMaterial({ color: 0xFFC9B0, roughness: .6 });                                                    // ventouses, dessous des bras
   const pinkM = new THREE.MeshStandardMaterial({ color: 0xE9826B, roughness: .5 });
-  const algueM = new THREE.MeshStandardMaterial({ color: 0x1F7A4A, roughness: .5, emissive: 0x0B2A18, emissiveIntensity: .4, side: THREE.DoubleSide });
-  const algueC = new THREE.MeshStandardMaterial({ color: 0x7FB23A, roughness: .55, emissive: 0x1E2A08, emissiveIntensity: .4, side: THREE.DoubleSide });
+  const algueM = new THREE.MeshPhysicalMaterial({ color: 0x1F7A4A, roughness: .38, emissive: 0x0B2A18, emissiveIntensity: .5, clearcoat: .8, clearcoatRoughness: .25, sheen: 1, sheenColor: new THREE.Color(0x7FE0A0), side: THREE.DoubleSide });
+  const algueC = new THREE.MeshPhysicalMaterial({ color: 0x7FB23A, roughness: .42, emissive: 0x1E2A08, emissiveIntensity: .5, clearcoat: .6, clearcoatRoughness: .3, sheen: 1, sheenColor: new THREE.Color(0xD8F08A), side: THREE.DoubleSide });
+  const algueR = new THREE.MeshPhysicalMaterial({ color: 0x8E3B2E, roughness: .4, emissive: 0x2A0C08, emissiveIntensity: .4, clearcoat: .6, sheen: 1, sheenColor: new THREE.Color(0xFF9E8A), side: THREE.DoubleSide });   // une algue rouge, pour la variété
   const sph = (r, m, sx = 1, sy = 1, sz = 1, ws = 22, hs = 16) => { const o = new THREE.Mesh(new THREE.SphereGeometry(r, ws, hs), m); o.scale.set(sx, sy, sz); return o; };
   const cap = (r, l, m) => new THREE.Mesh(new THREE.CapsuleGeometry(r, l, 6, 14), m);
   const cone = (r0, r1, l, m) => new THREE.Mesh(new THREE.CylinderGeometry(r1, r0, l, 14, 1), m);   // bras qui s'affine vers le bout
@@ -9264,10 +9267,10 @@ window.__site = { projets: PROJETS.map(p => p.titre), chat: chatCtl, L, tour: to
   // la base d'où partent les huit bras
   const torso = sph(.21, furM, 1.15, .82, 1.05); torso.position.set(0, .3, -.03); cat.add(torso);
   [[.1, .34, .15], [-.12, .28, .14], [.02, .22, .19]].forEach(([x, y, z]) => { const t = sph(.03, furD, 1, .7, .4, 10, 8); t.position.set(x, y, z); cat.add(t); });
-  const belly = sph(.14, creamM, 1.1, .62, .55); belly.position.set(0, .25, .12); cat.add(belly);
+  const belly = sph(.15, furM, 1.1, .7, .7); belly.position.set(0, .25, .1); cat.add(belly);
   // la tête : le manteau, grand, arrondi, penché en arrière ; les yeux sont devant, sous les lunettes
   const head = new THREE.Group(); head.position.set(0, .66, .02); cat.add(head);
-  const manteau = sph(.3, furM, 1.02, 1.34, 1.12, 32, 26); manteau.position.set(0, .17, -.11); manteau.rotation.x = -.52; head.add(manteau);
+  const manteau = sph(.3, furM, 1.14, 1.16, 1.14, 32, 26); manteau.position.set(0, .16, -.1); manteau.rotation.x = -.42; head.add(manteau);   // un manteau bien rond, comme un vrai poulpe
   [[.13, .3, .02], [-.1, .36, -.1], [.04, .22, .18], [-.17, .16, .08], [.18, .12, -.08], [-.02, .42, -.2]].forEach(([x, y, z], k) => { const t = sph(.034 - (k % 3) * .006, furD, 1, .65, .35, 10, 8); t.position.set(x, y, z); t.position.multiplyScalar(1.12); t.position.y += .03; t.position.z -= .05; t.lookAt(0, .17, -.11); head.add(t); });
   [-1, 1].forEach(s => { const o = sph(.072, pinkM, 1, .95, .8); o.position.set(.115 * s, .0, .18); head.add(o); });
   [-1, 1].forEach(s => { const l = sph(.084, glass, 1.22, .8, .38); l.position.set(.105 * s, .015, .245); l.rotation.y = .28 * s; head.add(l); });
@@ -9277,7 +9280,7 @@ window.__site = { projets: PROJETS.map(p => p.titre), chat: chatCtl, L, tour: to
   const sourire = new THREE.Mesh(new THREE.TorusGeometry(.04, .009, 6, 16, Math.PI * .8), dark); sourire.position.set(.02, -.085, .235); sourire.rotation.set(-.3, 0, Math.PI + .35); head.add(sourire);
   // les algues : deux frondes qui ondulent (elles remplacent les oreilles) et des rubans posés sur le manteau
   const ears = [-1, 1].map(s => {
-    const e = new THREE.Group(); e.position.set(.075 * s, .5, -.24); e.rotation.z = -.32 * s; head.add(e);
+    const e = new THREE.Group(); e.position.set(.16 * s, .42, -.18); e.rotation.z = -1.15 * s; head.add(e);   // les algues retombent sur les côtés
     const a = cap(.034, .19, algueM); a.scale.set(1, 1, .3); a.position.y = .12; e.add(a);
     const b = new THREE.Group(); b.position.y = .25; b.rotation.z = .55 * s; e.add(b);
     const c = cap(.028, .17, algueC); c.scale.set(1, 1, .3); c.position.y = .1; b.add(c);
@@ -9285,10 +9288,22 @@ window.__site = { projets: PROJETS.map(p => p.titre), chat: chatCtl, L, tour: to
     return e;
   });
   const ruban = (pts, r, m) => { const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(...p))), 24, r, 6, false); const o = new THREE.Mesh(g, m); o.scale.z = 1; head.add(o); return o; };
-  ruban([[-.04, .5, -.2], [-.14, .38, .02], [-.22, .22, .08], [-.25, .05, .06], [-.22, -.1, .02]], .022, algueM);
-  ruban([[.02, .5, -.26], [.12, .36, -.24], [.2, .2, -.26], [.24, .04, -.2], [.22, -.12, -.16]], .02, algueC);
-  ruban([[-.02, .49, -.3], [-.06, .34, -.44], [-.04, .12, -.46], [.0, -.08, -.4]], .021, algueM);
-  [[-.25, .02, .07], [.23, .0, -.2], [-.04, .02, -.35]].forEach(([x, y, z], k) => { const f = sph(.04, k % 2 ? algueC : algueM, 1, 1.7, .35, 10, 8); f.position.set(x, y, z); f.rotation.z = .4; head.add(f); });
+  ruban([[.02, .5, -.06], [-.12, .46, .12], [-.24, .32, .2], [-.31, .12, .16], [-.32, -.06, .1], [-.28, -.2, .06]], .026, algueM);   // une algue posée en travers de la tête, qui retombe devant
+  ruban([[.05, .49, -.1], [.17, .42, .08], [.27, .26, .16], [.32, .06, .12], [.3, -.12, .06]], .023, algueC);
+  ruban([[-.06, .5, -.02], [-.02, .5, .14], [.08, .44, .24], [.14, .36, .27]], .02, algueM);   // une mèche qui tombe sur le front
+  [[-.31, .1, .17], [.31, .04, .13], [.12, .38, .26], [-.2, .36, .2]].forEach(([x, y, z], k) => { const f = sph(.045, k % 2 ? algueC : algueM, 1, 1.7, .35, 10, 8); f.position.set(x, y, z); f.rotation.z = .4; head.add(f); });
+  // quatre longues algues en chaînes articulées : chaque articulation est un ressort amorti, poussé par les accélérations du drone
+  const algues = [[-.22, .36, .02, 1.75, .25, algueM], [.24, .34, -.02, -1.8, .2, algueC], [-.04, .44, -.3, -.15, 2.4, algueR], [.1, .44, -.28, .3, 2.2, algueM]].map(([x, y, z, rz, rx, m], j) => {
+    const base = new THREE.Group(); base.position.set(x, y, z); base.rotation.set(rx, 0, rz); head.add(base);
+    const segs = []; let p = base; const n = 5 - (j % 2);
+    for (let k = 0; k < n; k++) {
+      const g = new THREE.Group(); g.position.y = k ? .085 - k * .006 : 0; p.add(g);
+      const w = .036 - k * .005, o = cap(w, .07, k % 2 && j !== 2 ? algueC : m); o.scale.set(1, 1, .26); o.position.y = .045; o.rotation.y = k * .5; g.add(o);
+      if (k % 2 === 1) { const f = sph(.026, m, 1, 1.9, .25, 10, 8); f.position.set((k % 4 ? 1 : -1) * .04, .05, 0); f.rotation.z = (k % 4 ? -.7 : .7); g.add(f); }   // petites feuilles
+      segs.push({ g, ax: 0, az: 0, vx: 0, vz: 0, rx: .12 + k * .05, rz: (j % 2 ? -1 : 1) * (.1 + k * .04) }); p = g;
+    }
+    return segs;
+  });
   const collar = new THREE.Mesh(new THREE.TorusGeometry(.15, .024, 8, 30), dark); collar.position.set(0, .51, .0); collar.rotation.x = Math.PI / 2 - .12; cat.add(collar);
   const lockB = new THREE.Mesh(new THREE.BoxGeometry(.06, .05, .025), hotM); lockB.position.set(0, .445, .155); cat.add(lockB);
   const lockS = new THREE.Mesh(new THREE.TorusGeometry(.021, .008, 6, 14, Math.PI), hotM); lockS.position.set(0, .47, .155); cat.add(lockS);
@@ -9323,38 +9338,57 @@ window.__site = { projets: PROJETS.map(p => p.titre), chat: chatCtl, L, tour: to
     tail.push(g); tp = g;
   }
   // quatre autres bras, plus courts, qui ondulent sous lui
-  const bras = [[.17, -.75, .5], [-.17, .75, .5], [.08, -.35, -.7], [-.09, .4, -.7]].map(([x, rz, ry]) => {
+  const bras = [[.18, -.9, .5], [-.18, .9, .5], [.09, -.45, -.8], [-.1, .5, -.8], [.2, -1.2, 1.6], [-.2, 1.2, 1.6]].map(([x, rz, ry]) => {
     const chaine = []; let p = cat;
     const base = new THREE.Group(); base.position.set(x, .17, -.02); base.rotation.set(0, ry, rz); cat.add(base); p = base;
-    for (let k = 0; k < 6; k++) {
-      const g = new THREE.Group(); g.position.y = k ? -.07 : -.02; p.add(g);
-      const sg = cap(.042 - k * .0055, .045, furM); sg.position.y = -.033; g.add(sg);
+    for (let k = 0; k < 7; k++) {
+      const g = new THREE.Group(); g.position.y = k ? -.068 : -.02; p.add(g);
+      const sg = cap(.046 - k * .0055, .045, furM); sg.position.y = -.033; g.add(sg);
       if (k % 2) { const v = sph(.012, creamM, 1, 1, .5, 8, 6); v.position.set(0, -.033, .032 - k * .004); g.add(v); }
       chaine.push(g); p = g;
     }
     return chaine;
   });
+  const gouttes = Array.from({ length: 6 }, () => { const g = new THREE.Mesh(new THREE.SphereGeometry(.022, 10, 8), new THREE.MeshPhysicalMaterial({ color: 0xBFE6FF, roughness: .05, metalness: 0, clearcoat: 1, transparent: true, opacity: 0, depthWrite: false })); g.scale.set(1, 1.35, 1); g.visible = false; scene.add(g); return { g, v: 0, vie: 0 }; });
+  const bouts = () => [...legs.map(L => L.knee), ...bras.map(c => c[c.length - 1]), tail[tail.length - 1]];
+  const vGo = new THREE.Vector3(); let prochaineGoutte = 2;
+  function gouttesTick(t, dt) {
+    if (t > prochaineGoutte && !REDUCE) { prochaineGoutte = t + .9 + Math.random() * 2.2; const d = gouttes.find(x => x.vie <= 0); if (d) { const b = bouts(); b[Math.floor(Math.random() * b.length)].getWorldPosition(vGo); d.g.position.copy(vGo); d.v = 0; d.vie = 1.4; d.g.visible = true; } }
+    gouttes.forEach(d => { if (d.vie <= 0) return; d.vie -= dt; d.v -= 9.8 * .55 * dt; d.g.position.y += d.v * dt; d.g.material.opacity = Math.min(.85, d.vie * 1.2); if (d.vie <= 0) d.g.visible = false; });
+  }
   // pose du poulpe : k = 1 vivant, k = 0 pose de repos (utilisée pour préparer les éclats de la surprise)
-  const cs = { k: 1, kt: 0, tilt: 0, tiltT: 0, nextTilt: 3, ear: -1, earT: 0, nextEar: 2 };
+  const cs = { k: 1, kt: 0, tilt: 0, tiltT: 0, nextTilt: 3, ear: -1, earT: 0, nextEar: 2, pvx: 0, pvy: 0, ax: 0, ay: 0, tr: 0 };
   function catPose(k, t, dt, vx, vy, kt = t) {
     const sw = 2.3 + Math.sin(kt * .37) * .6;                                          // le rythme des bras varie
     const inert = clamp(vy / 900 + Math.abs(vx) / 1500, -.45, .6);                    // en vol, les bras partent vers l'arrière
+    const h = Math.min(Math.max(dt, 1e-3), .05);
+    cs.ax += (clamp((vx - cs.pvx) / h, -6000, 6000) - cs.ax) * Math.min(1, h * 12); cs.ay += (clamp((vy - cs.pvy) / h, -6000, 6000) - cs.ay) * Math.min(1, h * 12); cs.pvx = vx; cs.pvy = vy;
+    cs.tr += (clamp(-vx / 1400, -.5, .5) * k - cs.tr) * Math.min(1, h * 4);          // les bras traînent derrière dans les virages
+    algues.forEach((c, j) => c.forEach((sg, i) => {
+      const souple = 1 + i * .45, raide = 46 / souple, amort = 5.5;
+      const tz = sg.rz + k * (Math.sin(t * 1.6 + j * 1.9 - i * .8) * (.09 + i * .03) - clamp(cs.ax / 9000, -.5, .5) * souple * .5 + cs.tr * .5);
+      const tx = sg.rx + k * (Math.sin(t * 1.1 + j - i * .6) * (.06 + i * .025) + clamp(cs.ay / 9000, -.5, .5) * souple * .45 + inert * .25);
+      sg.vz += (raide * (tz - sg.az) - amort * sg.vz) * h; sg.az += sg.vz * h; sg.vx += (raide * (tx - sg.ax) - amort * sg.vx) * h; sg.ax += sg.vx * h;
+      sg.g.rotation.set(sg.ax, 0, sg.az);
+    }));
+    gouttesTick(t, h);
     legs.forEach((L, i) => {
       const kick = Math.sin(kt * sw + (i ? Math.PI : 0) + Math.sin(kt * .9) * .4);
       L.hip.rotation.x = -1.2 + k * (kick * .14 + inert * .25);
       L.knee.rotation.x = 1.1 + k * (kick * .5 + inert);
     });
     tail.forEach((g, i) => { g.rotation.x = TREST[i] + k * Math.sin(kt * 1.5 - i * .6) * .2; g.rotation.z = k * Math.sin(kt * 1.05 - i * .5) * (.2 + i * .035); });
-    bras.forEach((c, j) => c.forEach((g, i) => { g.rotation.x = .3 + i * .2 + k * Math.sin(kt * 1.7 + j * 1.3 - i * .7) * (.16 + i * .05) + k * inert * .3; g.rotation.z = k * Math.sin(kt * 1.2 + j - i * .5) * .12; }));
+    bras.forEach((c, j) => c.forEach((g, i) => { g.rotation.x = .3 + i * .2 + k * Math.sin(kt * 1.7 + j * 1.3 - i * .7) * (.16 + i * .05) + k * inert * .3; g.rotation.z = k * Math.sin(kt * 1.2 + j - i * .5) * .12 + cs.tr * (.25 + i * .12); }));
+    lueur.intensity = 2.6 * (1 + .06 * Math.sin(t * 7.3) + .04 * Math.sin(t * 13.1));   // la flamme de la lanterne vacille
     // la tête regarde vers le visiteur, suit un peu le regard du drone, et se penche parfois par curiosité
     if (t > cs.nextTilt) { cs.tiltT = (Math.random() - .5) * .7; cs.nextTilt = t + 2.5 + Math.random() * 4; }
     if (t > cs.nextEar) { cs.ear = Math.random() < .5 ? 0 : 1; cs.earT = t; cs.nextEar = t + 1.8 + Math.random() * 4; }
     cs.tilt += (cs.tiltT - cs.tilt) * Math.min(1, dt * 3);
     head.rotation.set(-st.ey * .2 * k, .85 + k * (st.ex * .35 - st.yaw * .5), cs.tilt * k);
     // les algues ondulent toujours un peu ; parfois l'une se redresse d'un coup
-    ears.forEach((e, i) => { const tw = i === cs.ear ? Math.max(0, Math.sin(Math.min(1, (t - cs.earT) / .35) * Math.PI)) : 0; e.rotation.z = (i ? .32 : -.32) + (i ? -1 : 1) * tw * .45 * k + k * .12 * Math.sin(t * 1.9 + i * 1.7); e.rotation.x = k * .1 * Math.sin(t * 1.3 + i); });
+    ears.forEach((e, i) => { const tw = i === cs.ear ? Math.max(0, Math.sin(Math.min(1, (t - cs.earT) / .35) * Math.PI)) : 0; e.rotation.z = (i ? 1.15 : -1.15) + (i ? -1 : 1) * tw * .35 * k + k * .12 * Math.sin(t * 1.9 + i * 1.7); e.rotation.x = k * .1 * Math.sin(t * 1.3 + i); });
     const souffle = 1 + .035 * k * Math.sin(t * 2.2);                                   // le manteau respire
-    manteau.scale.set(souffle, 1.2 * (1 + .02 * k * Math.sin(t * 2.2 + .5)), 1.05 * souffle); siphon.scale.setScalar(1 + .12 * k * Math.max(0, Math.sin(t * 2.2 - 1)));
+    manteau.scale.set(1.14 * souffle, 1.16 * (1 + .025 * k * Math.sin(t * 2.2 + .5)), 1.14 * souffle); siphon.scale.setScalar(1 + .12 * k * Math.max(0, Math.sin(t * 2.2 - 1)));
     torso.scale.y = .82 * (1 + .025 * k * Math.sin(t * 2.6));
     arms.forEach(A => setArm(A, ARM_SEAT[0] + .06 * k * Math.sin(kt * 1.3 + A.s), ARM_SEAT[1], 1, 0));
   }
