@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-DrBIYBReDjL0kX6Dzn+difpAkA7J2dBvb1DuRTNJsFM=' 'sha256-S5ek9yxIgexUVE+axE87QboDF87Ro33DEGHPXjwG3Ks=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-NN+TXiacQ+jmQM0mE8hoyD0UGLlWtelgL3Rq8lErFO4=' 'sha256-S5ek9yxIgexUVE+axE87QboDF87Ro33DEGHPXjwG3Ks=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8404,7 +8404,7 @@ void main(){
   const viderArrets = () => { texArret.forEach((t, k) => { if (t) gl.deleteTexture(t); texArret[k] = null; }); imgs.forEach(im => { im.removeAttribute('src'); im._att = 0; }); etat.img = -1; };
 
   // ---------------------------------------------------------------- paliers : AV1 1440p (grand écran), H.264 1080p, H.264 portrait recadré
-  const PALIERS = { q: { codec: 'av01.0.12M.08', w: 2560, h: 1440, max: 12, av: 6, ar: 8 }, h: { codec: 'avc1.64002A', w: 1920, h: 1080, max: 18, av: 6, ar: 10 }, p: { codec: 'avc1.64002A', w: 1080, h: 1440, max: 16, av: 6, ar: 10 } };
+  const PALIERS = { q: { codec: 'av01.0.12M.08', w: 2560, h: 1440, max: 14, av: 8, ar: 10 }, h: { codec: 'avc1.64002A', w: 1920, h: 1080, max: 22, av: 10, ar: 12 }, p: { codec: 'avc1.64002A', w: 1080, h: 1440, max: 18, av: 8, ar: 12 } };
   const soutenu = async (codec, w, h) => { try { const r = await VideoDecoder.isConfigSupported({ codec, codedWidth: w, codedHeight: h, optimizeForLatency: true }); return !!(r && r.supported); } catch (e) { return false; } };
   const choisirPalier = async () => {
     if (enHauteur()) return (await soutenu(PALIERS.p.codec, 1080, 1440)) ? 'p' : null;
@@ -8602,7 +8602,7 @@ void main(){
         servir(pi, fp, etat.dir);
         const fi = Math.min(P.D.n - 1, Math.round(fp));
         A = B = P.cache.get(fi) || null; mab = 0;
-        if (!A) { let best = null, bd = 1e9; P.cache.forEach((tx, n) => { const d = Math.abs(n - fp); if (d < bd) { bd = d; best = tx; } }); if (best && bd <= 12) A = B = best; etat.ecart = Math.min(1, bd / P.D.fps); }
+        if (!A) { let best = null, bd = 1e9; P.cache.forEach((tx, n) => { const d = Math.abs(n - fp); if (d < bd) { bd = d; best = tx; } }); if (best && bd <= P.D.fps * .5) A = B = best; etat.ecart = Math.min(1, bd / P.D.fps); }
         if (etat.bouge && etat.dir > 0 && lt > 8.6 && pi + 1 < NPL) { telecharger(pi + 1); const Q = pistes[pi + 1]; if (!Q.D) initPiste(pi + 1); if (Q.D) servir(pi + 1, 0, 1, true); }
         if (etat.bouge && etat.dir < 0 && lt < 1.4 && pi > 0) { telecharger(pi - 1); const Q = pistes[pi - 1]; if (!Q.D) initPiste(pi - 1); if (Q.D) servir(pi - 1, Q.D.n - 1, -1, true); }
         if (donnees[pi] && donnees[pi].fin && etat.bouge) telecharger(etat.dir > 0 ? pi + 1 : pi - 1);
