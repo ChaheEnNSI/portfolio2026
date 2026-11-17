@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-P6Bwfe/OldiuJ0VHp3jSqWCYrwIQfLDHANiZ/An/3Zo=' 'sha256-P/eklsED2diU84Ix2OwrR9UTT9251qk0TIzxe7HeWW8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-tAWwVIGaOlTKpHqhQ1yDt2z0Qk7Nxc5LQ9Se+qMCgag=' 'sha256-P/eklsED2diU84Ix2OwrR9UTT9251qk0TIzxe7HeWW8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -2363,6 +2363,7 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 @media (prefers-reduced-motion: no-preference){.film-calque::before{animation:film-grain .9s steps(6) infinite}.calm .film-calque::before{animation:none}}
 @keyframes film-grain{0%{transform:translate(0,0)}17%{transform:translate(-22px,14px)}33%{transform:translate(18px,-26px)}50%{transform:translate(-30px,-8px)}67%{transform:translate(26px,20px)}83%{transform:translate(-8px,30px)}100%{transform:translate(0,0)}}
 .film-lampe{position:absolute;left:0;top:0;width:440px;height:440px;margin:-220px 0 0 -220px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,238,210,.27),rgba(255,224,178,.1) 44%,rgba(255,224,178,0) 73%);mix-blend-mode:screen;opacity:0;transition:opacity .7s ease-out;will-change:transform}
+.film-eau{opacity:1;mix-blend-mode:screen}
 .film-lampe.on{opacity:1}
 .film-lampe.on.bouge{opacity:.6}
 .film-calque.leger .film-lampe{mix-blend-mode:normal}
@@ -8321,6 +8322,73 @@ function creerFilm(calque, opt) {
   { const activer = () => setTimeout(() => { etat.video = true; reveil(); }, 450); if (document.readyState === 'complete') activer(); else addEventListener('load', activer, { once: true }); }
 
 
+  // L'EAU VIVANTE : par-dessus la boucle des arrêts où la mer est grande, la houle ondule et scintille en temps réel (WebGL, quelques lignes de calcul par pixel).
+  // Mesures faites sur les images d'arrêt : horizon, île à épargner, source de lumière reflétée (phare, lune, soleil), recadrage portrait.
+  const EAU = [
+    { force: 1, hor: .517, ile: [0, 0, 0, 0], src: [.495, .25, .75], chaud: .35, crop: .269 },     // 0 : le phare au loin, son reflet sur la mer
+    null, null,
+    { force: 1, hor: .467, ile: [0, 0, 0, 0], src: [.885, .16, 1], chaud: 0, crop: .178 },          // 3 : les lumières sur l'eau, la lune à droite
+    null, null,
+    { force: .85, hor: .511, ile: [.5, .64, .19, .13], src: [.505, .47, .9], chaud: 1, crop: .278 }  // 6 : l'aube, le soleil derrière le phare
+  ];
+  const eau = (() => {
+    if (REDUIT || matchMedia('(pointer: coarse)').matches) return { reveil() {} };   // au doigt, pas de lampe à refléter : on économise la batterie
+    const cv = el('canvas', 'film-m film-eau'); let gl = null;
+    try { gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' }); } catch (e) {}
+    if (!gl) { cv.remove(); return { reveil() {} }; }
+    const sh = (ty, src) => { const o = gl.createShader(ty); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+    const pg = gl.createProgram();
+    gl.attachShader(pg, sh(gl.VERTEX_SHADER, 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}'));
+    gl.attachShader(pg, sh(gl.FRAGMENT_SHADER, `precision mediump float;varying vec2 v;
+uniform vec2 uCrop;uniform float uT,uA,uHor,uChaud;uniform vec4 uIle;uniform vec3 uS;uniform vec3 uL;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}
+float H(vec2 w,float t){return sin(w.x*2.1+w.y-t*1.1)*.45+sin(-w.x*1.4+w.y*1.7-t*.8)*.35+sin(w.x*4.3+w.y*3.1-t*1.9)*.2+(n(w*2.2+vec2(t*.25,-t*.6))+.5*n(w*4.7+vec2(-t*.5,-t*1.1)))*.8+n(w*9.+vec2(t*.7,-t*2.))*.22;}
+float reflet(vec2 u,vec2 g,vec2 S,float ym,float d){vec2 r=g-vec2((u.x-S.x)*3.2/(.25+d),(u.y-ym)*.35);return exp(-dot(r,r)/.008);}
+void main(){
+  vec2 u=vec2(uCrop.x+v.x*uCrop.y,v.y);float d=u.y-uHor;
+  if(d<=0.){gl_FragColor=vec4(0.);return;}
+  float m=smoothstep(0.,.035,d);
+  if(uIle.z>0.){vec2 e=(u-uIle.xy)/uIle.zw;m*=smoothstep(.85,1.25,length(e));}
+  float z=1./(d+.015);vec2 w=vec2((u.x-.5)*z*2.4,z*1.3);float t=uT;
+  float h0=H(w,t);vec2 g=vec2(H(w+vec2(.03,0.),t)-h0,H(w+vec2(0.,.03),t)-h0)*6.;
+  float loin=smoothstep(0.,.1,d);
+  float gS=reflet(u,g,uS.xy,uHor+(uHor-uS.y)*.8,d)*uS.z;
+  float gL=reflet(u,g,uL.xy,uL.y<uHor?uHor+(uHor-uL.y)*.8:uL.y+.04,d)*uL.z*(1.-smoothstep(.15,.45,abs(u.x-uL.x)));
+  float ciel=smoothstep(.15,.6,-g.y)*.05;
+  vec3 c=(vec3(.8,.88,1.)*(1.-uChaud)+vec3(1.,.8,.55)*uChaud)*(gS*1.5+ciel)+vec3(1.,.82,.58)*gL*1.15;
+  c*=m*uA*loin;gl_FragColor=vec4(c,clamp(max(c.r,max(c.g,c.b)),0.,1.));
+}`));
+    gl.linkProgram(pg);
+    if (!gl.getProgramParameter(pg, gl.LINK_STATUS)) { cv.remove(); return { reveil() {} }; }
+    gl.useProgram(pg);
+    const bu = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bu); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const ap = gl.getAttribLocation(pg, 'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
+    const L = {}; ['uCrop', 'uT', 'uA', 'uHor', 'uChaud', 'uIle', 'uS', 'uL'].forEach(n => { L[n] = gl.getUniformLocation(pg, n); });
+    const DOUX = matchMedia('(pointer: coarse)').matches;   // téléphone : 30 images/s suffisent
+    let raf = 0, a = 0, k = -1, av = 0, port = null, haut = calque;
+    while (haut.parentElement && haut.parentElement !== document.body) haut = haut.parentElement;
+    const taille = () => { const p = suf === '-p'; if (p === port) return; port = p; cv.width = p ? 405 : 960; cv.height = 540; gl.viewport(0, 0, cv.width, cv.height); };
+    const cible = () => { const e = EAU[etat.boucle]; return e && !etat.leger && !etat.calme && !etat.fige && !haut.inert && boucleV.classList.contains('on') ? e.force : 0; };
+    function tour(now) {
+      raf = 0; const dt = Math.min(.1, (now - (av || now)) / 1000);
+      if (DOUX && now - av < 30) { raf = requestAnimationFrame(tour); return; }
+      av = now; const c = cible(); if (c > 0) k = etat.boucle;
+      a += Math.sign(c - a) * Math.min(Math.abs(c - a), dt / .9);
+      if (a <= 0 && c <= 0) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); return; }
+      const e = EAU[k]; if (!e) return; taille();
+      // la lampe du curseur : de l'écran vers l'image (même recadrage que la vidéo : object-fit cover, dans la scène qui respire)
+      const r = cv.getBoundingClientRect(), sc = Math.max(r.width / cv.width, r.height / cv.height), cw = port ? .421875 : 1, cx = port ? e.crop : 0;
+      const ux = (etat.lx - (r.left + (r.width - cv.width * sc) / 2)) / (cv.width * sc), uy = (etat.ly - (r.top + (r.height - cv.height * sc) / 2)) / (cv.height * sc);
+      gl.uniform2f(L.uCrop, cx, cw); gl.uniform1f(L.uT, now / 1000 % 3600); gl.uniform1f(L.uA, a); gl.uniform1f(L.uHor, e.hor); gl.uniform1f(L.uChaud, e.chaud);
+      gl.uniform4fv(L.uIle, e.ile); gl.uniform3fv(L.uS, e.src); gl.uniform3f(L.uL, cx + ux * cw, uy, etat.dedans && etat.lampeBouge !== 1 ? 1 : 0);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      raf = requestAnimationFrame(tour);
+    }
+    boucleV.addEventListener('playing', () => { if (!raf) raf = requestAnimationFrame(tour); });
+    return { reveil() { if (!raf && (a > 0 || cible() > 0)) raf = requestAnimationFrame(tour); } };
+  })();
+
   function image(now) {
     const t = now / 1000, dtv = Math.min(.6, Math.max(.001, t - etat.dernier)); etat.dernier = t;
     etat.prog += (etat.cible - etat.prog) * (etat.fige ? 1 : 1 - Math.exp(-dtv * 3.6));
@@ -8369,6 +8437,7 @@ function creerFilm(calque, opt) {
       lampe.style.transform = `translate(${etat.lx.toFixed(1)}px,${etat.ly.toFixed(1)}px)`;
       const bg = Math.abs(etat.cible - etat.prog) > .002 ? 1 : 0; if (bg !== etat.lampeBouge) { etat.lampeBouge = bg; lampe.classList.toggle('bouge', !!bg); }
     }
+    eau.reveil();
     // cadrage : sur grand écran, le phare du premier plan est décalé vers la droite pour laisser le nom lisible ; à l'ouverture, léger zoom arrière et bandes qui s'ouvrent
     const e = etat.intro * etat.intro * (3 - 2 * etat.intro), kc = innerWidth > innerHeight ? Math.round((1 - lisse(1.02, 1.9, etat.prog)) * 100) : 0, cz = Math.round(e * 100);
     if (kc * 1000 + cz !== etat.cadre) { etat.cadre = kc * 1000 + cz; calque.style.setProperty('--fx', (kc * .09).toFixed(2) + '%'); calque.style.setProperty('--fs', ((1 + kc * .0019) * (1 + cz * .0009)).toFixed(4)); }
