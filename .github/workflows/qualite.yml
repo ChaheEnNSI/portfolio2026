@@ -21,7 +21,7 @@ concurrency:
 jobs:
   verifier:
     runs-on: ubuntu-24.04 # version figée : Playwright 1.56 ne gère pas encore Ubuntu 26.04
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       # actions épinglées par empreinte de commit (une étiquette peut être déplacée, une empreinte non)
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -33,7 +33,8 @@ jobs:
       - name: Outils de test (versions figées)
         run: npm install --no-save --no-audit --no-fund --ignore-scripts playwright@1.56.0 axe-core@4.10.2
       - name: Navigateurs Chromium, Firefox et WebKit (Safari)
-        run: npx playwright install --with-deps chromium firefox webkit
+        # l'installation reste parfois bloquée sur les machines de GitHub : 4 minutes au plus par essai, 3 essais
+        run: for i in 1 2 3; do timeout 240 npx playwright install --with-deps chromium firefox webkit && exit 0; echo "installation bloquée, nouvel essai ($i)"; done; exit 1
       - name: Vérifications
         run: node tests/verifier.mjs
       - name: Captures d’écran
