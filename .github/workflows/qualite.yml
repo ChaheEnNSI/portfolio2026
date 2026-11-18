@@ -33,8 +33,11 @@ jobs:
       - name: Outils de test (versions figées)
         run: npm install --no-save --no-audit --no-fund --ignore-scripts playwright@1.56.0 axe-core@4.10.2
       - name: Navigateurs Chromium, Firefox et WebKit (Safari)
-        # l'installation reste parfois bloquée sur les machines de GitHub : 4 minutes au plus par essai, 3 essais
-        run: for i in 1 2 3; do timeout 240 npx playwright install --with-deps chromium firefox webkit && exit 0; echo "installation bloquée, nouvel essai ($i)"; done; exit 1
+        # apt reste parfois bloqué sur un miroir lent : délais réseau courts avec nouvelles tentatives, et attente du verrou au lieu d'échouer
+        timeout-minutes: 20
+        run: |
+          printf 'Acquire::Retries "5";\nAcquire::http::Timeout "20";\nAcquire::https::Timeout "20";\nDPkg::Lock::Timeout "300";\n' | sudo tee /etc/apt/apt.conf.d/99ci > /dev/null
+          for i in 1 2 3; do timeout 360 npx playwright install --with-deps chromium firefox webkit && exit 0; echo "installation bloquée, nouvel essai ($i)"; done; exit 1
       - name: Vérifications
         run: node tests/verifier.mjs
       - name: Captures d’écran
