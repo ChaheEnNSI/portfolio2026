@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-tAWwVIGaOlTKpHqhQ1yDt2z0Qk7Nxc5LQ9Se+qMCgag=' 'sha256-P/eklsED2diU84Ix2OwrR9UTT9251qk0TIzxe7HeWW8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-fZfHt7pdOApDs2bLp6qa0Yl44bnYfUBll6JlzlFkh8g=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -2355,6 +2355,7 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 .film-i.on{opacity:1}
 .film-v.on.pret{opacity:1}
 .film-b{transition:opacity .7s ease}
+.film-b.net{transition-duration:.12s}
 .film-b.on{opacity:1}
 .film-calque::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 46%,rgba(4,8,20,0) 52%,rgba(4,8,20,.5) 100%)}
 @media (hover: none), (pointer: coarse){.film-lampe{display:none}}
@@ -2362,7 +2363,7 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 .film-calque::before{content:"";position:absolute;inset:-60px;z-index:1;pointer-events:none;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
 @media (prefers-reduced-motion: no-preference){.film-calque::before{animation:film-grain .9s steps(6) infinite}.calm .film-calque::before{animation:none}}
 @keyframes film-grain{0%{transform:translate(0,0)}17%{transform:translate(-22px,14px)}33%{transform:translate(18px,-26px)}50%{transform:translate(-30px,-8px)}67%{transform:translate(26px,20px)}83%{transform:translate(-8px,30px)}100%{transform:translate(0,0)}}
-.film-lampe{position:absolute;left:0;top:0;width:440px;height:440px;margin:-220px 0 0 -220px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,238,210,.27),rgba(255,224,178,.1) 44%,rgba(255,224,178,0) 73%);mix-blend-mode:screen;opacity:0;transition:opacity .7s ease-out;will-change:transform}
+.film-lampe{position:absolute;left:0;top:0;width:440px;height:440px;margin:-220px 0 0 -220px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,226,182,.16),rgba(255,212,160,.06) 45%,rgba(255,212,160,0) 74%);mix-blend-mode:screen;opacity:0;transition:opacity .7s ease-out;will-change:transform}
 .film-eau{opacity:1;mix-blend-mode:screen}
 .film-lampe.on{opacity:1}
 .film-lampe.on.bouge{opacity:.6}
@@ -8264,7 +8265,7 @@ function creerFilm(calque, opt) {
   const REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const etat = { prog: 0, cible: 0, actif: 0, eclat: 0, dimK: 1, fige: false, calme: false, dernier: 0, mx: 0, my: 0, plan: -1, bande: -1, cadre: -1, img: -1, leger: !!opt.leger,
     video: false, intro: 0, boucle: -1, repos: 0, tonN: 0, lent: 0, nRech: 0, bouge: false, voisins: false, ecart: 0, Tav: 0,
-    lx: innerWidth * .62, ly: innerHeight * .4, tx: innerWidth * .62, ty: innerHeight * .4, dedans: false, lampeBouge: -1, G: null, dirG: 1, dir: 1, cibAv: 0, calmeDepuis: 0, eclairAv: -1 };
+    lx: innerWidth * .62, ly: innerHeight * .4, tx: innerWidth * .62, ty: innerHeight * .4, dedans: false, lampeBouge: -1, G: null, dirG: 1, sgAv: 0, dir: 1, cibAv: 0, calmeDepuis: 0, eclairAv: -1, sortie: null, glisse: 0, nojeu: false, refus: false };
   const ECLAIRS = [33.17, 34.08, 36.25];   // les éclairs du film (images les plus claires du plan de la tempête)
   const GLISSE = 1;                         // vitesse du film quand il continue seul (1 = sa vitesse réelle)
   const U = { uDim: { value: 0 }, uOrage: { value: 0 }, uDawn: { value: 0 } };
@@ -8285,30 +8286,58 @@ function creerFilm(calque, opt) {
   const video = cls => { const v = el('video', cls); v.muted = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto'; v.tabIndex = -1; v.disablePictureInPicture = true; return v; };
   const vider = v => { v.pause(); [...v.children].forEach(c => c.remove()); v.removeAttribute('src'); try { v.load(); } catch (e) {} };
 
-  // boucle vivante du chapitre : une seule balise, lue normalement (aucune recherche d'image)
-  const boucleV = video('film-m film-b'); boucleV.loop = true; boucleV.preload = 'none';
-  boucleV.addEventListener('playing', () => { if (etat.boucle >= 0) boucleV.classList.add('on'); });
-  // la boucle du prochain arrêt se charge pendant le trajet (une balise cachée remplit le cache du navigateur)
-  const pre = new Map();
-  const precharger = k => { if (k < 0 || AVEC_BOUCLE.indexOf(k) < 0 || pre.has(k) || etat.leger) return; const v = document.createElement('video'); v.muted = true; v.preload = 'auto'; v.playsInline = true; sources(v, `v/boucle-${k}`); try { v.load(); } catch (e) {} pre.set(k, v); if (pre.size > 3) { const [k0, v0] = pre.entries().next().value; vider(v0); pre.delete(k0); } };
-  { const debloquer = () => { [...vids, boucleV].forEach(v => { if (!v || !v.currentSrc) return; if (v === boucleV) { if (etat.boucle >= 0 && v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } return; }
-      if (!v.paused) return; const p = v.play(); if (p && p.then) p.then(() => { v.pause(); if (v._but != null) try { v.currentTime = v._but; } catch (e) {} }).catch(() => {}); }); };
-    addEventListener('touchstart', debloquer, { once: true, passive: true }); }   // iOS (mode économie d'énergie) : le premier toucher autorise les vidéos
-  const lancerBoucle = k => { etat.boucle = k; boucleV.classList.remove('on'); vider(boucleV); sources(boucleV, `v/boucle-${k}`); boucleV.load(); const p = boucleV.play(); if (p && p.catch) p.catch(() => {}); };
-  const arreterBoucle = () => { if (etat.boucle < 0) return; etat.boucle = -1; boucleV.classList.remove('on'); setTimeout(() => { if (etat.boucle < 0) boucleV.pause(); }, 750); };
-  { let haut = calque; while (haut.parentElement && haut.parentElement !== document.body) haut = haut.parentElement;
-    if (window.MutationObserver) new MutationObserver(() => { if (haut.inert) { if (!boucleV.paused) boucleV.pause(); } else if (etat.boucle >= 0 && boucleV.paused) { const p = boucleV.play(); if (p && p.catch) p.catch(() => {}); } }).observe(haut, { attributes: true, attributeFilter: ['inert'] }); }
+  // BOUCLES DES ARRÊTS : deux balises qui se relaient. Pendant le trajet, la boucle de l'arrêt suivant se charge dans la balise libre et attend,
+  // en pause, sur sa première image (identique à l'image d'arrêt pour 1, 2, 3, 5, 6) : à l'arrivée elle part aussitôt, sans fondu. Revenir au même arrêt ne recharge rien.
+  const BV = [0, 1].map(() => { const v = video('film-m film-b'); v.loop = true; v.preload = 'none'; v._k = -1; return v; });
+  let boucleV = BV[0];                      // la balise montrée (ou la dernière montrée)
+  const NET = [1, 2, 3, 5, 6];
+  // ces boucles sont un aller-retour très lent autour de l'image d'arrêt : à chaque instant de la boucle correspond un temps du film
+  // [image de départ dans l'aller-retour de 192 images, temps de l'arrêt, sens, amplitude en images]
+  const PAL = { 1: [4, 10, 1, 16], 2: [188, 20, 1, 16], 3: [190, 30, 1, 16], 4: [0, 36.8, 1, 10], 5: [187, 50, 1, 16], 6: [3, 59.92, -1, 30] };
+  const tempsFilm = (k, tau) => { const p = PAL[k]; if (!p || !(tau >= 0)) return null; const n = (p[0] + tau * 24) % 192; return p[1] + p[2] * p[3] / 24 * (1 - Math.cos(2 * Math.PI * n / 192)) / 2; };
+  const charger = (v, k) => { if (v._k === k) return; v._k = k; v.classList.remove('on'); vider(v); v.preload = 'auto'; sources(v, `v/boucle-${k}`); try { v.load(); } catch (e) {}
+    // iOS ne charge qu'après une lecture : on la lance et on l'arrête aussitôt sur sa première image
+    if (APPLE) { const p = v.play(); if (p && p.then) p.then(() => { if (!(boucleV === v && etat.boucle === k)) { v.pause(); try { v.currentTime = 0; } catch (e) {} } }).catch(() => {}); } };
+  // la balise libre : jamais celle qu'on montre, jamais celle qui garde la boucle de l'arrêt le plus proche (on est peut-être en train d'y arriver)
+  const libre = garder => { const vue = (etat.boucle >= 0 || etat.sortie) ? boucleV : null; return BV.find(x => x !== vue && x._k !== garder && x._k < 0) || BV.find(x => x !== vue && x._k !== garder) || null; };
+  const amorcer = (k, garder) => { if (k < 0 || AVEC_BOUCLE.indexOf(k) < 0 || etat.leger || BV.some(x => x._k === k)) return; const v = libre(garder); if (v) charger(v, k); };
+  const lancerBoucle = k => {
+    let v = BV.find(x => x._k === k); if (!v) { v = libre(k) || BV.find(x => x !== boucleV); charger(v, k); }
+    const autre = BV.find(x => x !== v); etat.boucle = k; etat.sortie = null; boucleV = v;
+    v.classList.toggle('net', NET.indexOf(k) >= 0);
+    if (v.paused && v.currentTime > .04) try { v.currentTime = 0; } catch (e) {}
+    let vu = false; const montre = () => { if (vu || etat.boucle !== k || boucleV !== v) return; vu = true; v.classList.add('on'); autre.classList.remove('on'); setTimeout(() => { if (boucleV !== autre || etat.boucle < 0) autre.pause(); }, 200); };
+    v._montre = montre; const p = v.play(); if (p && p.catch) p.catch(e => { if (e && e.name === 'NotAllowedError') etat.refus = true; });
+    if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(montre);
+  };
+  BV.forEach(v => v.addEventListener('playing', () => { if (boucleV === v && etat.boucle === v._k && v._montre) setTimeout(v._montre, 60); }));
+  const arreterBoucle = () => { if (etat.boucle < 0 && !etat.sortie) return; etat.boucle = -1; etat.sortie = null; const v = boucleV; v.classList.remove('on'); setTimeout(() => { if (etat.boucle < 0 || boucleV !== v) v.pause(); }, 750); };
+  let haut = calque; while (haut.parentElement && haut.parentElement !== document.body) haut = haut.parentElement;
+  if (window.MutationObserver) new MutationObserver(() => { if (haut.inert) { if (!boucleV.paused) boucleV.pause(); } else if (etat.boucle >= 0 && boucleV.paused) { const p = boucleV.play(); if (p && p.catch) p.catch(() => {}); } }).observe(haut, { attributes: true, attributeFilter: ['inert'] });
+  { // iPhone en économie d'énergie : chaque toucher retente les vidéos refusées, jusqu'à ce que l'une parte
+    let ok = false;
+    const debloquer = () => { if (ok || !etat.refus) return;   // seulement si le navigateur a refusé une lecture (pas à chaque clic sur ordinateur)
+      const essai = (v, garder) => { const p = v.play(); if (p && p.then) p.then(() => { ok = true; etat.nojeu = false; if (!garder()) { v.pause(); if (v._but != null) try { v.currentTime = v._but; } catch (e) {} } }).catch(() => {}); };
+      BV.forEach(v => { if (v.currentSrc && v.paused) essai(v, () => boucleV === v && etat.boucle === v._k); });
+      vids.forEach(v => { if (v && v.currentSrc && v.paused && !v._jeu) essai(v, () => !!v._jeu); }); };
+    ['touchend', 'click'].forEach(ev => addEventListener(ev, debloquer, { passive: true }));
+    // chien de garde : une boucle montrée qui ne bouge plus (refus, pause imprévue, erreur réseau) est relancée
+    let tv = -1, n = 0;
+    setInterval(() => { if (document.hidden || haut.inert || etat.boucle < 0 || etat.sortie) { n = 0; return; } const v = boucleV;
+      if (v.paused || v.currentTime === tv) { if (++n >= 2) { n = 0; if (v.error) { const k = v._k; v._k = -1; charger(v, k); } const p = v.play(); if (p && p.catch) p.catch(() => {}); } } else n = 0; tv = v.currentTime; }, 1000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && !haut.inert && etat.boucle >= 0 && boucleV.paused) { const p = boucleV.play(); if (p && p.catch) p.catch(() => {}); } });
+  }
 
   // plans du film : au plus trois balises vivantes (le plan courant et ses voisins), les autres sont libérées.
   // Au chargement, seul le plan d'accueil se charge ; ses voisins attendent le premier défilement.
-  const vids = new Array(NPL).fill(null);
+  const vids = new Array(NPL).fill(null), erreurs = [];
   const alleger = () => { etat.leger = true; calque.classList.add('leger'); };
-  const ouvrir = i => { if (i < 0 || i >= NPL || vids[i]) return; const v = video('film-m film-v'); scene.insertBefore(v, boucleV); sources(v, `v/film-${i}`);
-    const der = v.lastElementChild; if (der) der.addEventListener('error', () => { if (vids[i] === v && !v.classList.contains('pret')) alleger(); });
+  const ouvrir = i => { if (i < 0 || i >= NPL || vids[i]) return; const v = video('film-m film-v'); scene.insertBefore(v, BV[0]); sources(v, `v/film-${i}`);
+    const der = v.lastElementChild; if (der) der.addEventListener('error', () => { if (vids[i] !== v || v.classList.contains('pret')) return; erreurs[i] = (erreurs[i] || 0) + 1; if (erreurs[i] >= 2) alleger(); else setTimeout(() => { if (vids[i] === v) { fermer(i); etat.plan = -1; reveil(); } }, 1500); });   // un raté réseau est retenté une fois, 1,5 s plus tard
     v.addEventListener('loadeddata', () => { if (Math.abs(v.currentTime - (v._but || 0)) < .5) v.classList.add('pret'); reveil(); });   // visible seulement sur la bonne image : jamais la première image d'un plan par erreur
     v.addEventListener('seeked', () => { reveil(); if (Math.abs(v.currentTime - (v._but || 0)) < .5) { const ok = () => { clearTimeout(v._pt); v.classList.add('pret'); }; if (v.requestVideoFrameCallback && !v.classList.contains('pret')) { v.requestVideoFrameCallback(ok); clearTimeout(v._pt); v._pt = setTimeout(ok, 160); } else ok(); } if (!v._t) return; const d = performance.now() - v._t; v._t = 0; rech.push(d); if (rech.length > 16) rech.shift(); etat.nRech++; });   // des recherches lentes ne figent jamais le décor : le film suit avec un peu de retard, il ne passe pas en images fixes
     // iOS ne charge une vidéo qu'après une lecture : on la lance et on l'arrête aussitôt (refusé en mode économie d'énergie : les images fixes restent)
-    const pl = v.play(); if (pl && pl.then) pl.then(() => { v.pause(); reveil(); }).catch(() => {});
+    const pl = v.play(); if (pl && pl.then) pl.then(() => { if (!v._jeu) v.pause(); reveil(); }).catch(e => { if (e && e.name === 'NotAllowedError') etat.refus = true; });
     vids[i] = v; };
   const fermer = i => { const v = vids[i]; if (!v) return; vids[i] = null; vider(v); v.remove(); };
   // seules les recherches dans une partie déjà téléchargée mesurent l'appareil : une attente réseau (VPN, connexion lente) ne fait pas basculer en images fixes
@@ -8319,7 +8348,7 @@ function creerFilm(calque, opt) {
 
   const lampe = el('i', 'film-lampe'), bandes = [0, 1].map(k => el('i', 'film-bande' + (k ? ' bas' : '')));
   // les vidéos ne se chargent qu'une fois la page affichée : d'abord le texte et l'image d'accueil
-  { const activer = () => setTimeout(() => { etat.video = true; reveil(); }, 450); if (document.readyState === 'complete') activer(); else addEventListener('load', activer, { once: true }); }
+  { const activer = () => { if (!etat.leger) amorcer(0); setTimeout(() => { etat.video = true; reveil(); }, 450); }; if (document.readyState === 'complete') activer(); else addEventListener('load', activer, { once: true }); }
 
 
   // L'EAU VIVANTE : par-dessus la boucle des arrêts où la mer est grande, la houle ondule et scintille en temps réel (WebGL, quelques lignes de calcul par pixel).
@@ -8357,7 +8386,7 @@ void main(){
   float gL=reflet(u,g,uL.xy,uL.y<uHor?uHor+(uHor-uL.y)*.8:uL.y+.04,d)*uL.z*(1.-smoothstep(.15,.45,abs(u.x-uL.x)));
   float ciel=smoothstep(.15,.6,-g.y)*.05;
   vec3 c=(vec3(.8,.88,1.)*(1.-uChaud)+vec3(1.,.8,.55)*uChaud)*(gS*1.5+ciel)+vec3(1.,.82,.58)*gL*1.15;
-  c*=m*uA*loin;gl_FragColor=vec4(c,clamp(max(c.r,max(c.g,c.b)),0.,1.));
+  c*=m*uA*loin*(1.-.5*smoothstep(.2,.45,d))*(1.-.45*uChaud);gl_FragColor=vec4(c,clamp(max(c.r,max(c.g,c.b)),0.,1.));
 }`));
     gl.linkProgram(pg);
     if (!gl.getProgramParameter(pg, gl.LINK_STATUS)) { cv.remove(); return { reveil() {} }; }
@@ -8372,7 +8401,7 @@ void main(){
     const cible = () => { const e = EAU[etat.boucle]; return e && !etat.leger && !etat.calme && !etat.fige && !haut.inert && boucleV.classList.contains('on') ? e.force : 0; };
     function tour(now) {
       raf = 0; const dt = Math.min(.1, (now - (av || now)) / 1000);
-      if (DOUX && now - av < 30) { raf = requestAnimationFrame(tour); return; }
+      if (now - av < 30) { raf = requestAnimationFrame(tour); return; }   // 30 images/s suffisent aux reflets
       av = now; const c = cible(); if (c > 0) k = etat.boucle;
       a += Math.sign(c - a) * Math.min(Math.abs(c - a), dt / .9);
       if (a <= 0 && c <= 0) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); return; }
@@ -8385,7 +8414,7 @@ void main(){
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       raf = requestAnimationFrame(tour);
     }
-    boucleV.addEventListener('playing', () => { if (!raf) raf = requestAnimationFrame(tour); });
+    BV.forEach(v => v.addEventListener('playing', () => { if (!raf) raf = requestAnimationFrame(tour); }));
     return { reveil() { if (!raf && (a > 0 || cible() > 0)) raf = requestAnimationFrame(tour); } };
   })();
 
@@ -8398,17 +8427,27 @@ void main(){
     // arrêté entre deux arrêts : le film continue seul, à sa vitesse réelle, jusqu'à l'arrêt suivant (dans le sens du dernier défilement), où sa boucle prend le relais.
     // G est la position atteinte : défiler dans le même sens la rattrape sans à-coup ; défiler dans l'autre sens la ramène en douceur vers la page.
     if (etat.cible !== etat.cibAv) { etat.dir = etat.cible > etat.cibAv ? 1 : -1; etat.cibAv = etat.cible; etat.calmeDepuis = t; }
+    // G : position du film quand il ne suit pas exactement la page (il continue seul, ou il reprend là où en était la boucle).
+    // Défiler vers G le laisse attendre que la page le rattrape ; défiler dans l'autre sens le ramène en douceur vers la page.
+    const defile = etat.prog !== etat.cible, sensP = Math.sign(etat.cible - etat.prog);
     if (etat.G !== null) {
-      if ((etat.dirG > 0 && Tsc >= etat.G) || (etat.dirG < 0 && Tsc <= etat.G) || etat.leger || etat.fige || etat.calme) etat.G = null;
-      else if (etat.prog !== etat.cible && Math.sign(etat.cible - etat.prog) !== etat.dirG) { etat.G += (Tsc - etat.G) * (1 - Math.exp(-dtv * 2.5)); if (Math.abs(etat.G - Tsc) < .01) etat.G = null; }
+      const sg = Math.sign(etat.G - Tsc);
+      if (etat.leger || etat.fige || etat.calme || Math.abs(etat.G - Tsc) < .01 || (etat.sgAv && sg && sg !== etat.sgAv)) etat.G = null;
+      else if (defile && sensP && sensP !== sg) etat.G += (Tsc - etat.G) * (1 - Math.exp(-dtv * 2.5));
+      etat.sgAv = etat.G === null ? 0 : Math.sign(etat.G - Tsc);
     }
+    etat.glisse = 0;
     { const cur = etat.G === null ? Tsc : etat.G, surArret = H.some(h => Math.abs(Math.min(h, FIN) - cur) < .03);
-      if (!REDUIT && !(etat.leger || etat.fige || etat.calme) && etat.video && etat.prog === etat.cible && t - etat.calmeDepuis > .7 && !surArret) {
-        const d = etat.G === null ? etat.dir : etat.dirG, n = d > 0 ? H.find(h => Math.min(h, FIN) > cur + .03) : [...H].reverse().find(h => h < cur - .03);
-        if (n !== undefined) { const hn = Math.min(n, FIN); etat.dirG = d; etat.G = cur + Math.sign(hn - cur) * Math.min(GLISSE * dtv, Math.abs(hn - cur)); }
-      } }
-    const plie = x => etat.G === null ? x : (etat.dirG > 0 ? Math.max(x, etat.G) : Math.min(x, etat.G));
-    const T = plie(Tsc), Tc = plie(Tcs);
+      if (!REDUIT && !(etat.leger || etat.fige || etat.calme) && etat.video && !defile && t - etat.calmeDepuis > .7 && !surArret && !etat.sortie) {
+        const av = h => Math.min(h, FIN) > cur + .03, ar = h => h < cur - .03, nA = H.find(av), nR = [...H].reverse().find(ar);
+        // dans le sens du dernier défilement (plus de rebond) ; mais à moins d'1 s de film de l'arrêt qu'on vient de quitter, le film s'y repose (pas de long retour en arrière)
+        let d = etat.dir, n = d > 0 ? nA : nR; const o = d > 0 ? nR : nA; if (o !== undefined && Math.abs(Math.min(o, FIN) - cur) < 1) { n = o; d = -d; }
+        if (n !== undefined) { const hn = Math.min(n, FIN), pc = Math.min(NPL - 1, Math.floor(cur / 10)), pv = vids[pc]; etat.glisse = d;
+          if (d > 0 && pv && pv._jeu && !pv.paused) etat.G = pv.currentTime >= (pv.duration || 10) - .1 ? hn : Math.min(hn, Math.max(cur, pc * 10 + pv.currentTime));   // en avant : le film suit ce que la vidéo LUE montre
+          else etat.G = cur + Math.sign(hn - cur) * Math.min(GLISSE * dtv, Math.abs(hn - cur));
+          if (Math.abs(etat.G - hn) < .03) { etat.G = hn; etat.glisse = 0; }   // arrivé : on ne lance pas la lecture du plan suivant
+          etat.sgAv = Math.sign(etat.G - Tsc); } } }
+    const T = etat.G === null ? Tsc : etat.G, Tc = etat.G === null ? Tcs : (etat.G >= Tsc ? Math.max(Tcs, etat.G) : Math.min(Tcs, etat.G));
     // l'éclair (son et lueur) part quand le film passe sur un éclair de la tempête (une seule fois par image, même en défilement rapide)
     if (onEclair && !etat.calme && !etat.fige && etat.eclairAv >= 0 && ECLAIRS.some(e => (etat.eclairAv < e && T >= e) || (etat.eclairAv > e && T <= e))) onEclair();
     etat.eclairAv = T;
@@ -8422,13 +8461,27 @@ void main(){
         for (let j = 0; j < NPL; j++) { if (j === pi || (etat.bouge && Math.abs(j - pi) <= 1)) ouvrir(j); else if (Math.abs(j - pi) > 1) fermer(j); }
         vids.forEach((v, j) => v && v.classList.toggle('on', j === pi)); }
       const v = vids[pi], but = Math.min(loc, Math.max(0, ((v && v.duration) || 10) - .06));
-      viser(v, but, vite); if (v && v.readyState >= 1) etat.ecart = Math.abs(v.currentTime - but);
+      // glissement vers l'avant : la vidéo est lue (aucune recherche, donc aucun calage) ; sinon, recherche de l'image comme avant
+      const jouer = etat.glisse > 0 && v && !etat.nojeu && v.readyState >= 2 && !document.hidden && !haut.inert;
+      if (jouer) { if (v.paused && !v.seeking) { v._jeu = true; v.playbackRate = 1; const p = v.play(); if (p && p.catch) p.catch(e => { v._jeu = false; if (e && e.name === 'NotAllowedError') etat.nojeu = etat.refus = true; }); } }
+      else { vids.forEach(x => { if (x && x._jeu) { x._jeu = false; x.pause(); } }); viser(v, but, vite); }
+      if (v && v.readyState >= 1) etat.ecart = jouer ? 0 : Math.abs(v.currentTime - but);
       if (etat.bouge) { viser(vids[pi + 1], 0); if (vids[pi - 1]) viser(vids[pi - 1], Math.max(0, (vids[pi - 1].duration || 10) - .06)); }
       // repos : le film est garé sur l'image d'arrêt (et le restera, même si on fait défiler le texte) -> la boucle vivante prend le relais
-      { let nk = -1; for (const h of (etat.dir >= 0 ? H : [...H].reverse())) if (etat.dir >= 0 ? h > T + .03 : h < T - .03) { nk = H.indexOf(h); break; } precharger(nk); precharger(k); }
-      const hk = Math.min(H[k], NPL * 10 - .08), repos = Math.abs(T - hk) < .03 && Math.abs(Tc - hk) < .03 && AVEC_BOUCLE.indexOf(k) >= 0;   // le film s'arrête 0,08 s avant sa fin : la dernière boucle part de là
-      if (repos) { etat.repos += dtv; if (etat.repos > .35 && etat.boucle !== k) lancerBoucle(k); } else { etat.repos = 0; arreterBoucle(); }
-    } else if (etat.plan !== -1 || etat.boucle >= 0) { etat.plan = -1; for (let j = 0; j < NPL; j++) fermer(j); arreterBoucle(); }
+      { let nk = -1; for (const h of (etat.dir >= 0 ? H : [...H].reverse())) if (etat.dir >= 0 ? h > T + .03 : h < T - .03) { nk = H.indexOf(h); break; } amorcer(nk, k); }   // la boucle de l'arrêt suivant attend déjà sur sa première image
+      const hk = Math.min(H[k], NPL * 10 - .08), ici = Math.abs(T - hk) < .03 && AVEC_BOUCLE.indexOf(k) >= 0, repos = ici && Math.abs(Tc - hk) < .03;   // le film s'arrête 0,08 s avant sa fin : la dernière boucle part de là
+      if (etat.sortie && repos && etat.sortie.k === k) { etat.boucle = k; etat.sortie = null; etat.G = null; }   // on revient sur l'arrêt pendant la sortie : la boucle continue
+      if (repos) { etat.repos += dtv; if (etat.repos > .08 && etat.boucle !== k && !etat.sortie) lancerBoucle(k); }
+      else { etat.repos = 0;
+        if (etat.boucle >= 0 && !ici) {
+          // on quitte l'arrêt : le film reprend exactement là où en est la boucle ; elle reste visible jusqu'à ce que le film montre cette image (pas de fantôme)
+          const tf = tempsFilm(etat.boucle, boucleV.currentTime);
+          if (tf === null || boucleV.paused) arreterBoucle(); else { etat.sortie = { k: etat.boucle, t0: t }; etat.boucle = -1; etat.G = tf; etat.sgAv = Math.sign(tf - Tsc) || 1; }
+        } else if (etat.sortie && (t - etat.sortie.t0 > .7 || (v && v.classList.contains('pret') && !v.seeking && v.readyState >= 2 && Math.abs(v.currentTime - but) < .06))) {
+          const bs = boucleV; etat.sortie = null; bs.classList.remove('on'); setTimeout(() => { if (boucleV !== bs || etat.boucle < 0) bs.pause(); }, 250);
+        }
+      }
+    } else if (etat.plan !== -1 || etat.boucle >= 0 || etat.sortie) { etat.plan = -1; for (let j = 0; j < NPL; j++) fermer(j); arreterBoucle(); }
     const di = Math.min(5, Math.floor(etat.prog)); U.uDim.value = (DIM[di] + (DIM[di + 1] - DIM[di]) * Math.min(1, etat.prog - di)) * etat.dimK;
     U.uOrage.value = lisse(32.75, 36.3, T) * (1 - lisse(39, 45.6, T)); U.uDawn.value = lisse(53.1, 60, T) * .94; etat.T = T;
     // la lampe : elle suit le curseur en douceur et reste allumée tant qu'il est sur la page ; elle baisse un peu pendant que le film voyage
@@ -8447,12 +8500,13 @@ void main(){
   return {
     film: true, image, etat, U, NB: 0,
     // l'écran passe de la largeur à la hauteur (ou l'inverse) : on change de fichiers
-    taille() { const s = enHauteur() ? '-p' : ''; if (s === suf) return; suf = s; for (let j = 0; j < NPL; j++) fermer(j); etat.plan = -1; imgs.forEach(im => im.removeAttribute('src')); etat.img = -1; if (etat.boucle >= 0) { etat.boucle = -1; vider(boucleV); boucleV.classList.remove('on'); } },
+    taille() { const s = enHauteur() ? '-p' : ''; if (s === suf) return; suf = s; for (let j = 0; j < NPL; j++) fermer(j); etat.plan = -1; imgs.forEach(im => im.removeAttribute('src')); etat.img = -1; etat.boucle = -1; etat.sortie = null; BV.forEach(x => { x._k = -1; vider(x); x.classList.remove('on'); }); },
     aller(p) { if (Math.abs(p - etat.cible) > .001) etat.bouge = true; etat.cible = p; }, direct(p) { etat.cible = etat.prog = p; },
     main(x, y) { etat.mx = x; etat.my = y; etat.actif = 1; etat.tx = (x + 1) / 2 * innerWidth; etat.ty = (1 - y) / 2 * innerHeight; if (!etat.dedans) { etat.dedans = true; if (REDUIT) { etat.lx = etat.tx; etat.ly = etat.ty; } } lampe.classList.add('on'); },
     relacher() { etat.dedans = false; etat.actif = 0; lampe.classList.remove('on'); },
     // y a-t-il encore quelque chose à animer ? Sinon, le pilote s'arrête jusqu'au prochain défilement ou mouvement de souris
-    occupe() { return etat.prog !== etat.cible || (etat.G !== null && Math.abs(etat.G - Tde(etat.prog)) > .001 && !(etat.boucle >= 0)) || (etat.prog === etat.cible && etat.boucle < 0 && !etat.calme && !etat.leger && performance.now() / 1000 - etat.calmeDepuis < 1.2) || etat.intro > 0 || etat.ecart > .04 || (etat.dedans && Math.abs(etat.tx - etat.lx) + Math.abs(etat.ty - etat.ly) > .6) || (etat.repos > 0 && etat.boucle < 0) || !etat.video; },
+    occupe() { return etat.prog !== etat.cible || !!etat.sortie || etat.glisse !== 0 || (etat.G !== null && Math.abs(etat.G - Tde(etat.prog)) > .001 && !(etat.boucle >= 0)) || (etat.prog === etat.cible && etat.boucle < 0 && !etat.calme && !etat.leger && performance.now() / 1000 - etat.calmeDepuis < 1.2) || etat.intro > 0 || etat.ecart > .04 || (etat.dedans && Math.abs(etat.tx - etat.lx) + Math.abs(etat.ty - etat.ly) > .6) || (etat.repos > 0 && etat.boucle < 0) || !etat.video; },
+    boucleT() { return etat.boucle >= 0 && !boucleV.paused ? { k: etat.boucle, t: boucleV.currentTime, d: boucleV.duration || 0 } : null; },
     attenuer(k) { etat.dimK = k; }, calme(b) { etat.calme = b; }, figer(b) { etat.fige = b; },
     lanterneEcran(o) { o.x = etat.lx / innerWidth; o.y = etat.ly / innerHeight; o.devant = etat.actif > 0; return o; },
     faisceauEcran(o) { o.x = etat.lx / innerWidth + .02; o.y = etat.ly / innerHeight; o.devant = etat.actif > 0; return o; },
@@ -8527,11 +8581,11 @@ function setupNuit() {
   // ---------- son d'ambiance : la mer, le vent, la pluie, le tonnerre. Tout est fabriqué ici (aucun fichier) et reste coupé tant qu'on ne le demande pas ----------
   const son = (() => {
     // le son de la nuit, créé par le navigateur (aucun fichier audio). Il suit l'image du film : la mer, les vagues une à une, le vent, la pluie, le tonnerre, l'aube.
-    let ctx = null, maitre, gMer, gPluie, gVent, gSouffle, fSouffle, bruitB, bruitW, actif = false, tMaj = 0, Tav = null, tAv = 0, prochaineVague = 0, prochaineMouette = 0, dernierTonnerre = -9, minuteur = 0;
+    let boucleImage = null, enPause = false, tSusp = 0, grondeJusqua = 0, ctx = null, maitre, gMer, gPluie, gVent, gSouffle, fSouffle, bruitB, bruitW, actif = false, tMaj = 0, Tav = null, tAv = 0, prochaineVague = 0, prochaineMouette = 0, dernierTonnerre = -9, minuteur = 0;
     const A = { mer: .5, ressac: .4, vent: .06, pluie: 0, mou: 0 };
     // l'ambiance de chaque moment du film (temps du film en s : mer, ressac, vent, pluie, mouettes)
     // nuit calme -> haut du phare (plus de vent) -> l'île vue du ciel (les vagues se brisent) -> les lumières sur l'eau -> la tempête -> la Voie lactée (presque le silence) -> l'aube
-    const CLES = [[0, .55, .45, .06, 0, 0], [8, .5, .4, .1, 0, 0], [12, .38, .25, .2, 0, 0], [20, .62, .9, .12, 0, 0], [26, .5, .45, .08, 0, 0], [31, .55, .45, .1, .1, 0],
+    const CLES = [[0, .55, .45, .06, 0, 0], [8, .5, .4, .1, 0, 0], [12, .38, .25, .2, 0, 0], [20, .62, .65, .12, 0, 0], [26, .5, .45, .08, 0, 0], [31, .55, .45, .1, .1, 0],
       [34, .8, .8, .24, .7, 0], [36.8, 1, 1, .3, 1, 0], [41, .7, .6, .16, .35, 0], [46, .4, .25, .07, 0, 0], [50, .28, .12, .04, 0, 0], [54, .45, .35, .05, 0, .5], [60, .5, .4, .05, 0, 1]];
     const ambiance = T => { let i = 0; while (i < CLES.length - 2 && T > CLES[i + 1][0]) i++; const a = CLES[i], b = CLES[i + 1], u = Math.max(0, Math.min(1, (T - a[0]) / (b[0] - a[0]))), k = u * u * (3 - 2 * u);
       ['mer', 'ressac', 'vent', 'pluie', 'mou'].forEach((n, j) => { A[n] = a[j + 1] + (b[j + 1] - a[j + 1]) * k; }); };
@@ -8546,6 +8600,7 @@ function setupNuit() {
       const gain = v => { const g = ctx.createGain(); g.gain.value = v; return g; };
       const lfo = (fr, prof, cible) => { const o = ctx.createOscillator(), g = gain(prof); o.frequency.value = fr; o.connect(g); g.connect(cible); o.start(); };
       maitre = gain(0); maitre.connect(ctx.destination);
+      addEventListener('touchend', () => { if (actif && !enPause && ctx.state !== 'running') ctx.resume(); }, { passive: true });   // iPhone : le son verrouillé revient au toucher
       gMer = gain(.45); gMer.connect(maitre);                                  // le fond de la mer : un grondement grave qui respire (les vagues arrivent par-dessus, une à une)
       const m1 = gain(.5); source(bruitB).connect(filtre('lowpass', 360)).connect(m1); m1.connect(gMer); lfo(.11, .28, m1.gain);
       const m2 = gain(.1); source(bruitW).connect(filtre('bandpass', 1000, .6)).connect(m2); m2.connect(gMer); lfo(.083, .07, m2.gain);
@@ -8557,10 +8612,10 @@ function setupNuit() {
     const sortie = (v, p) => { const g = ctx.createGain(); g.gain.value = v; if (ctx.createStereoPanner) { const s = ctx.createStereoPanner(); s.pan.value = p; g.connect(s); s.connect(maitre); } else g.connect(maitre); return g; };
     const bruit = (buf, t, d, rate) => { const x = ctx.createBufferSource(); x.buffer = buf; x.loop = true; x.playbackRate.value = rate || 1; x.start(t, Math.random() * 2); x.stop(t + d); return x; };
     // une vague : elle enfle, se brise, puis l'écume pétille et s'étale
-    const vague = (t0, a) => {
-      const montee = 1.3 + Math.random() * 1.1, pk = t0 + montee, fin = pk + 2.4 + Math.random() * 1.8, out = sortie(1, (Math.random() * 2 - 1) * .55);
+    const vague = (t0, a, m) => {
+      const montee = m || 1.3 + Math.random() * 1.1, pk = t0 + montee, fin = pk + 2.4 + Math.random() * 1.8, out = sortie(1, (Math.random() * 2 - 1) * .55);
       const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(300, t0); lp.frequency.exponentialRampToValueAtTime(1300 + a * 1700, pk); lp.frequency.exponentialRampToValueAtTime(480, fin);
-      const g = ctx.createGain(); g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.1 + a * .22, pk - .15); g.gain.linearRampToValueAtTime(.3 + a * .5, pk + .08); g.gain.exponentialRampToValueAtTime(.0008, fin);
+      const g = ctx.createGain(); g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.02 + a * .3, pk - .15); g.gain.linearRampToValueAtTime(.04 + a * 1.3, pk + .08);   // une vraie crête : la vague se détache du fond g.gain.exponentialRampToValueAtTime(.0008, fin);
       bruit(bruitB, t0, fin - t0 + .05, .8 + Math.random() * .4).connect(lp).connect(g).connect(out);
       const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2200 + Math.random() * 1200;
       const g2 = ctx.createGain(); g2.gain.setValueAtTime(.0001, pk - .05); g2.gain.linearRampToValueAtTime(.04 + a * .08, pk + .25); g2.gain.exponentialRampToValueAtTime(.0005, fin);
@@ -8589,7 +8644,7 @@ function setupNuit() {
     };
     return {
       get actif() { return actif; }, possible: !!(window.AudioContext || window.webkitAudioContext),
-      basculer() { if (!ctx && !creer()) return false; actif = !actif; const t = ctx.currentTime; if (actif) ctx.resume(); maitre.gain.cancelScheduledValues(t); maitre.gain.setTargetAtTime(actif ? .5 : 0, t, actif ? .6 : .12);
+      basculer() { if (!ctx && !creer()) return false; actif = !actif; enPause = false; const t = ctx.currentTime; if (actif) ctx.resume(); maitre.gain.cancelScheduledValues(t); maitre.gain.setTargetAtTime(actif ? .5 : 0, t, actif ? .6 : .12);
         if (actif) { prochaineVague = t + .6; if (!minuteur) planifier(); } else { clearTimeout(minuteur); minuteur = 0; setTimeout(() => { if (!actif && ctx) ctx.suspend(); }, 800); } return actif; },
       // appelé à chaque image : T = temps du film montré à l'écran
       suivre(orage, jour, T) {
@@ -8600,17 +8655,21 @@ function setupNuit() {
           gSouffle.gain.cancelScheduledValues(t); gSouffle.gain.setTargetAtTime(Math.pow(w, .7) * .5, t, .12); gSouffle.gain.setTargetAtTime(0, t + .35, .35); fSouffle.frequency.setTargetAtTime(380 + w * 1100, t, .15);
         }
         if (t - tMaj < .25) return; tMaj = t; ambiance(T);
-        gPluie.gain.setTargetAtTime(A.pluie * .07, t, .6); gMer.gain.setTargetAtTime(A.mer * .85, t, .7); gVent.gain.setTargetAtTime(A.vent * .5 + .01, t, .7);
+        gPluie.gain.setTargetAtTime(A.pluie * .07, t, .6); gMer.gain.setTargetAtTime(A.mer * .85 * (1 - .25 * A.ressac), t, .7); gVent.gain.setTargetAtTime(A.vent * .5 + .01, t, .7);
       },
       // le tonnerre : il claque juste après l'éclair de l'image (l'orage est tout près), puis gronde ; jamais deux à la fois
-      tonnerre() { if (!actif) return; const now = ctx.currentTime; if (now - dernierTonnerre < 1.4) return; dernierTonnerre = now;
+      tonnerre() { if (!actif) return; const now = ctx.currentTime; if (now - dernierTonnerre < .8) return; dernierTonnerre = now; const deja = now < grondeJusqua; grondeJusqua = now + 3.2;   // les éclairs à 0,9 s d'écart ont chacun leur claquement ; les grondements ne s'empilent pas
         const t = now + .12 + Math.random() * .4;
         const ch = ctx.createBiquadFilter(); ch.type = 'highpass'; ch.frequency.value = 900; const cg = ctx.createGain(); cg.gain.setValueAtTime(.0001, t); cg.gain.exponentialRampToValueAtTime(.45, t + .015); cg.gain.exponentialRampToValueAtTime(.001, t + .35);
         bruit(bruitW, t, .4).connect(ch).connect(cg).connect(maitre);
         const fl = ctx.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.setValueAtTime(260, t); fl.frequency.exponentialRampToValueAtTime(60, t + 2.8);
-        const g = ctx.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(1.3, t + .09); g.gain.exponentialRampToValueAtTime(.4, t + .6); g.gain.exponentialRampToValueAtTime(.001, t + 3.6);
+        const g = ctx.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(deja ? .55 : 1.3, t + .09); g.gain.exponentialRampToValueAtTime(.4, t + .6); g.gain.exponentialRampToValueAtTime(.001, t + 3.6);
         bruit(bruitB, t, 3.8, .55 + Math.random() * .3).connect(fl).connect(g).connect(maitre); },
-      pause(b) { if (ctx && actif) { if (b) ctx.suspend(); else ctx.resume(); } }
+      // pause en fondu (onglet caché, fiche ou ChahéOS ouverts) ; au retour, le son revient en 0,5 s
+      pause(b) { if (!ctx || !actif || b === enPause) return; enPause = b; const t = ctx.currentTime; maitre.gain.cancelScheduledValues(t); maitre.gain.setValueAtTime(maitre.gain.value, t);
+        if (b) { maitre.gain.linearRampToValueAtTime(0, t + .05); clearTimeout(tSusp); tSusp = setTimeout(() => { if (enPause) ctx.suspend(); }, 90); }
+        else { clearTimeout(tSusp); ctx.resume(); maitre.gain.linearRampToValueAtTime(.5, t + .5); } },
+      suivreBoucle(f) { boucleImage = f; }
     };
   })();
   const couvert = () => document.hidden || (ovEl && !ovEl.hidden) || (mainEl && mainEl.inert);
@@ -8618,7 +8677,8 @@ function setupNuit() {
   function boucle(now) {
     raf = 0; if (!N) return;
     const calme = REDUCE || html.classList.contains('calm');
-    if (couvert()) { if (!calme) raf = requestAnimationFrame(boucle); avant = 0; return; }
+    if (couvert()) { son.pause(true); if (!calme) raf = requestAnimationFrame(boucle); avant = 0; return; }
+    son.pause(false);
     if (!calme && N.U.uDim.value > .28 && N.etat.actif <= 0 && N.U.uOrage.value < .05 && Math.abs(N.etat.cible - N.etat.prog) < .004) { saut = !saut; if (saut) { raf = requestAnimationFrame(boucle); return; } }
     N.calme(calme); N.figer(calme);
     const p = progDe(scrollY); if (calme) N.direct(p); else N.aller(p);
@@ -8637,6 +8697,7 @@ function setupNuit() {
   }
   const demander = () => { if (N && !raf) raf = requestAnimationFrame(boucle); };
 
+  window.nuitAube = () => N && N.U ? N.U.uDawn.value / .94 : 0;   // le drone (autre script) suit la lumière du film
   let pretOk; nuitCtl = { pret: new Promise(r => { pretOk = r; }), lanterne() { return N ? N.lanterneEcran({ x: 0, y: 0, devant: false }) : null; }, get film() { return !!(N && N.film); }, entree() { if (N && !REDUCE && !html.classList.contains('calm') && scrollY < 40) { N.entree(); N.image(performance.now()); } } };
   const demarrer = async () => {
     if (FILM_PLANS >= 6 && $('#film')) { N = creerFilm($('#film'), { plans: FILM_PLANS, petit: innerWidth < 760, leger: html.classList.contains('leger') || REDUCE, boucles: FILM_BOUCLES, reveil: () => demander() }); html.classList.add('film'); }
@@ -8658,8 +8719,11 @@ function setupNuit() {
       addEventListener('touchend', () => { clearTimeout(tRel); tRel = setTimeout(lacher, 1400); }, { passive: true }); addEventListener('touchstart', () => clearTimeout(tRel), { passive: true }); }
     let yAv = scrollY; addEventListener('scroll', () => { const y = scrollY; N.flux(Math.min(6, Math.abs(y - yAv) * .012)); yAv = y; rectsAt = -1e9; demander(); }, { passive: true });
     const hero = $('.hero'); if (hero) hero.addEventListener('pointerdown', e => { if (e.target.closest('a,button,input,[data-cv]') || REDUCE || html.classList.contains('calm')) return; N.sonar(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight * 2 - 1)); });
-    let rz2; addEventListener('resize', () => { clearTimeout(rz2); rz2 = setTimeout(() => { N.taille(); ancres(); rectsAt = -1e9; demander(); }, 120); });
+    let rz2, lw = innerWidth, lh = innerHeight; addEventListener('resize', () => { clearTimeout(rz2); rz2 = setTimeout(() => {
+      const barre = innerWidth === lw && Math.abs(innerHeight - lh) < 160 && matchMedia('(pointer: coarse)').matches; lw = innerWidth; if (!barre) lh = innerHeight;   // téléphone : seule la barre d'adresse a bougé
+      N.taille(); if (!barre) ancres(); rectsAt = -1e9; demander(); }, 120); });
     document.addEventListener('visibilitychange', () => { son.pause(document.hidden); demander(); });
+    son.suivreBoucle(() => N && N.boucleT ? N.boucleT() : null);
     if (N.film && FINE && !html.classList.contains('leger')) {
       const lc = document.createElement('i'); lc.className = 'lampe-carte'; lc.setAttribute('aria-hidden', 'true'); let hote = null;
       $('main').addEventListener('pointermove', e => {
@@ -9651,9 +9715,12 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
   function frame(now) {
     requestAnimationFrame(frame);
     if (document.hidden) { last = now; return; }
-    if (gov(now, clamp((now - last) / 1000, 0, .25))) return;
+    const dtr = (now - (frame.r || now)) / 1000; frame.r = now;   // le gouverneur mesure la vraie cadence de l'écran, pas notre cadence volontairement réduite
+    if (gov(now, clamp(dtr, 0, .25))) return;
     // posé (ni trajet, ni cascade, ni défilement, ni souris) : il flotte à 30 images/s, la moitié du travail pour une différence invisible
-    if (!path && !STN.on && !egg.on && arrivedAt && now - arrivedAt > 400 && now - mouse.t > 800 && Math.abs(scrollV) < 4 && Math.hypot(st.vx, st.vy) < 25 && !(S.chat && S.chat.isOpen()) && now - dessine < 30) return;
+    // cadence : 30 images/s au plus en vol ou en cascade, 24 pendant le défilement, 20 posé (il flotte toujours) : la vidéo du décor garde ses 24 images/s
+    { const pose = !path && !STN.on && !egg.on && arrivedAt && now - arrivedAt > 400 && now - mouse.t > 800 && Math.abs(scrollV) < 4 && Math.hypot(st.vx, st.vy) < 25 && !(S.chat && S.chat.isOpen());
+      if (now - dessine < (pose ? 49 : Math.abs(scrollV) >= 4 ? 40 : 32)) return; }
     dessine = now;
     const dt = clamp((now - last) / 1000, 0, .25); last = now;
     // mode calme : le drone se repose, un petit bouton fixe garde l’accès aux questions
@@ -9839,7 +9906,7 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
     const full = egg.on, vx0 = px + jx, vy0 = py + jy, CS2 = DZ * CVK;
     if (full !== curFull || (full && (W !== curW || H !== curH)) || (!full && DZ !== curSize)) {
       curFull = full; curW = W; curH = H; curSize = DZ;
-      renderer.setPixelRatio(Math.min(full ? 1.25 : 1.5, Q.cap, devicePixelRatio || 1));
+      renderer.setPixelRatio(Math.max(1, Math.min(full ? 1.25 : 1.5, Q.cap, (devicePixelRatio || 1) * .8)));
       if (full) { renderer.setSize(W, H, false); wrap.style.width = W + 'px'; wrap.style.height = H + 'px'; }
       else { renderer.setSize(CS2, CS2, false); wrap.style.width = wrap.style.height = CS2 + 'px'; camera.clearViewOffset(); camera.fov = 2 * Math.atan(TAN15 * CVK) * 180 / Math.PI; camera.aspect = 1; camera.updateProjectionMatrix(); }
     }
@@ -9847,6 +9914,7 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
       camera.fov = 2 * Math.atan(TAN15 * 2 * H / (DZ * st.sc)) * 180 / Math.PI; camera.aspect = W / H;
       camera.setViewOffset(2 * W, 2 * H, W - vx0, H - vy0, W, H);
     }
+    { const au = window.nuitAube ? window.nuitAube() : 1; renderer.toneMappingExposure = .82 + .26 * au; }   // la nuit, Root est éclairé comme le film (plus sombre) ; à l'aube, plein jour
     renderer.render(scene, camera);
     wrap.style.transform = full ? 'translate3d(0,0,0)' : `translate3d(${(px - CS2 / 2).toFixed(1)}px,${(py - CS2 / 2).toFixed(1)}px,0) scale(${st.sc.toFixed(3)})`;
     hit.style.transform = `translate3d(${(px - DZ * .25).toFixed(1)}px,${(py - DZ * .25).toFixed(1)}px,0) scale(${st.sc.toFixed(3)})`;

@@ -120,7 +120,7 @@ async function open(opts, query = '', br = browser) {
       check(lampeFixe, 'film : la lampe reste allumée sous le curseur immobile');
       if (BOUCLES.includes(2)) {
         await page.evaluate(() => { const y = document.getElementById('profil').getBoundingClientRect().top + scrollY; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); });
-        const b = await page.waitForFunction(() => { const v = document.querySelector('.film-b'); return v && v.classList.contains('on') && !v.paused && /boucle-2\.(webm|mp4)$/.test(v.currentSrc); }, null, { timeout: 20000 }).then(() => true, () => false);
+        const b = await page.waitForFunction(() => { const v = document.querySelector('.film-b.on'); return v && !v.paused && /boucle-2\.(webm|mp4)$/.test(v.currentSrc); }, null, { timeout: 20000 }).then(() => true, () => false);
         check(b, 'film : arrêté sur le Profil, la boucle vivante du chapitre se lance');
       }
     }
