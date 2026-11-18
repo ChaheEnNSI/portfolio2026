@@ -325,7 +325,8 @@ async function decorVivant(nom, br = browser) {
   if (!(await page.evaluate(() => document.documentElement.classList.contains('film') && !document.getElementById('film').classList.contains('leger')))) { console.log(`--    ${nom} : décor en images fixes ici, contrôles du film sautés`); await ctx.close(); return; }
   if (BOUCLES.includes(2)) {
     // arrêté entre l'accueil et le Profil : le film continue seul, sans jamais reculer, jusqu'à l'arrêt du Profil, dont la boucle part
-    await allerA(page, '#profil', -1.1);
+    // au milieu du chapitre entre l'accueil et le Profil (le film y est à mi-chemin entre deux arrêts, quel que soit le navigateur)
+    await page.evaluate(() => { const p = document.getElementById('profil').getBoundingClientRect().top + scrollY, y = (innerHeight * .82 + p - innerHeight * .62) / 2; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); });
     const suivi = await page.evaluate(async () => { const filmT = () => { const c = document.getElementById('film'); const v = c && [...c.querySelectorAll('.film-v')].find(x => x.classList.contains('on')); const m = v && /film-(\d)/.exec(v.currentSrc || ''); return m ? +m[1] * 10 + v.currentTime : null; }; let av = null, recul = 0; const t0 = performance.now();
       while (performance.now() - t0 < 30000) { await new Promise(r => setTimeout(r, 150)); const t = filmT(); if (t !== null && av !== null && t < av - .15) recul++; if (t !== null) av = t;
         const b = document.querySelector('.film-b.on'); if (b && !b.paused && /boucle-2(-p)?\./.test(b.currentSrc) && b.currentTime > .05) return { ok: true, recul, t: av }; }
@@ -333,6 +334,7 @@ async function decorVivant(nom, br = browser) {
     check(suivi.ok && suivi.recul === 0, `${nom} : arrêté entre deux chapitres, le film continue seul jusqu'au Profil puis sa boucle part, sans reculer (${JSON.stringify(suivi)})`);
     if (BOUCLES.includes(3)) {
       // relais : la boucle du Parcours part, puis revenir au Profil retrouve sa boucle sans la recharger
+      await allerA(page, '#profil'); await boucleJoue(page, 2, 20000);
       await allerA(page, '#parcours'); const b3 = await boucleJoue(page, 3, 20000);
       // la balise qui garde la boucle du Profil ne doit ni être vidée ni rechargée (les autres peuvent préparer l'arrêt suivant)
       await page.evaluate(() => { window.__vide = 0; window.__b2 = [...document.querySelectorAll('.film-b')].find(v => /boucle-2(-p)?\./.test(v.currentSrc)) || null; if (window.__b2) window.__b2.addEventListener('emptied', () => window.__vide++); });
