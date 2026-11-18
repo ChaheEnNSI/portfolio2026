@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-zU8xUqsDdDVDWDI2a0BBCfyCYaUzB8qSzLgD9yrQiQI=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-qOAfN6uEHz6eTafk0tYdajyRrp3z4mtZu1HoVCLdJFI=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8357,17 +8357,20 @@ function creerFilm(calque, opt) {
   { const activer = () => { if (!etat.leger) amorcer(0); setTimeout(() => { etat.video = true; reveil(); }, 450); }; if (document.readyState === 'complete') activer(); else addEventListener('load', activer, { once: true }); }
 
 
-  // L'EAU VIVANTE : par-dessus la boucle des arrêts où la mer est grande, la houle ondule et scintille en temps réel (WebGL, quelques lignes de calcul par pixel).
-  // Mesures faites sur les images d'arrêt : horizon, île à épargner, source de lumière reflétée (phare, lune, soleil), recadrage portrait.
+  // LE DÉCOR VIVANT (WebGL, 30 images/s, par-dessus la boucle de l'arrêt) :
+  // - la mer ondule et scintille là où elle est grande (houle en perspective, reflets de la lune / du phare / du soleil, reflet de la lampe du curseur) ;
+  // - à l'accueil, le faisceau du phare part de la lanterne et suit le curseur ; au repos il tourne seul, comme un vrai phare.
+  // Mesures faites sur les images d'arrêt : horizon, île à épargner, source reflétée, lanterne, recadrage portrait.
   const EAU = [
-    { force: 1, hor: .517, ile: [0, 0, 0, 0], src: [.495, .25, .75], chaud: .35, crop: .269 },     // 0 : le phare au loin, son reflet sur la mer
+    { force: 1, hor: .517, ile: [0, 0, 0, 0], src: [.495, .25, .75], chaud: .35, crop: .269, phare: { o: [.4905, .2535], film: [-1, .08] } },   // 0 : le phare au loin
     null, null,
     { force: 1, hor: .467, ile: [0, 0, 0, 0], src: [.885, .16, 1], chaud: 0, crop: .178 },          // 3 : les lumières sur l'eau, la lune à droite
     null, null,
     { force: .85, hor: .511, ile: [.5, .64, .19, .13], src: [.505, .47, .9], chaud: 1, crop: .278 }  // 6 : l'aube, le soleil derrière le phare
   ];
+  etat.tMain = -1e9; etat.faisO = { x: 0, y: 0, i: 0 }; etat.faisB = { x: 0, y: 0 }; etat.surFaisceau = null;
   const eau = (() => {
-    if (REDUIT || matchMedia('(pointer: coarse)').matches) return { reveil() {} };   // au doigt, pas de lampe à refléter : on économise la batterie
+    if (REDUIT) return { reveil() {} };
     const cv = el('canvas', 'film-m film-eau'); let gl = null;
     try { gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' }); } catch (e) {}
     if (!gl) { cv.remove(); return { reveil() {} }; }
@@ -8375,48 +8378,102 @@ function creerFilm(calque, opt) {
     const pg = gl.createProgram();
     gl.attachShader(pg, sh(gl.VERTEX_SHADER, 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}'));
     gl.attachShader(pg, sh(gl.FRAGMENT_SHADER, `precision mediump float;varying vec2 v;
-uniform vec2 uCrop;uniform float uT,uA,uHor,uChaud;uniform vec4 uIle;uniform vec3 uS;uniform vec3 uL;
+uniform sampler2D uImg;uniform float uImgOk;
+uniform vec2 uCrop;uniform float uT,uA,uE,uHor,uChaud;uniform vec4 uIle;uniform vec3 uS;uniform vec3 uL;
+uniform vec2 uO,uB;uniform vec4 uF;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}
 float H(vec2 w,float t){return sin(w.x*2.1+w.y-t*1.1)*.45+sin(-w.x*1.4+w.y*1.7-t*.8)*.35+sin(w.x*4.3+w.y*3.1-t*1.9)*.2+(n(w*2.2+vec2(t*.25,-t*.6))+.5*n(w*4.7+vec2(-t*.5,-t*1.1)))*.8+n(w*9.+vec2(t*.7,-t*2.))*.22;}
 float reflet(vec2 u,vec2 g,vec2 S,float ym,float d){vec2 r=g-vec2((u.x-S.x)*3.2/(.25+d),(u.y-ym)*.35);return exp(-dot(r,r)/.008);}
 void main(){
-  vec2 u=vec2(uCrop.x+v.x*uCrop.y,v.y);float d=u.y-uHor;
-  if(d<=0.){gl_FragColor=vec4(0.);return;}
-  float m=smoothstep(0.,.035,d);
-  if(uIle.z>0.){vec2 e=(u-uIle.xy)/uIle.zw;m*=smoothstep(.85,1.25,length(e));}
-  float z=1./(d+.015);vec2 w=vec2((u.x-.5)*z*2.4,z*1.3);float t=uT;
-  float h0=H(w,t);vec2 g=vec2(H(w+vec2(.03,0.),t)-h0,H(w+vec2(0.,.03),t)-h0)*6.;
-  float loin=smoothstep(0.,.1,d);
-  float gS=reflet(u,g,uS.xy,uHor+(uHor-uS.y)*.8,d)*uS.z;
-  float gL=reflet(u,g,uL.xy,uL.y<uHor?uHor+(uHor-uL.y)*.8:uL.y+.04,d)*uL.z*(1.-smoothstep(.15,.45,abs(u.x-uL.x)));
-  float ciel=smoothstep(.15,.6,-g.y)*.05;
-  vec3 c=(vec3(.8,.88,1.)*(1.-uChaud)+vec3(1.,.8,.55)*uChaud)*(gS*1.5+ciel)+vec3(1.,.82,.58)*gL*1.15;
-  c*=m*uA*loin*(1.-.5*smoothstep(.2,.45,d))*(1.-.45*uChaud);gl_FragColor=vec4(c,clamp(max(c.r,max(c.g,c.b)),0.,1.));
+  vec2 u=vec2(uCrop.x+v.x*uCrop.y,v.y);float d=u.y-uHor;vec3 c=vec3(0.);float t=uT;
+  if(uE>0.&&d>0.){
+    float m=smoothstep(0.,.035,d);
+    if(uIle.z>0.){vec2 e=(u-uIle.xy)/uIle.zw;m*=smoothstep(.85,1.25,length(e));}
+    float z=1./(d+.015);vec2 w=vec2((u.x-.5)*z*2.4,z*1.3);
+    float h0=H(w,t);vec2 g=vec2(H(w+vec2(.03,0.),t)-h0,H(w+vec2(0.,.03),t)-h0)*6.;
+    float loin=smoothstep(0.,.1,d);
+    float gS=reflet(u,g,uS.xy,uHor+(uHor-uS.y)*.8,d)*uS.z;
+    float gL=reflet(u,g,uL.xy,uL.y<uHor?uHor+(uHor-uL.y)*.8:uL.y+.04,d)*uL.z*(1.-smoothstep(.15,.45,abs(u.x-uL.x)));
+    float ciel=smoothstep(.15,.6,-g.y)*.05;
+    vec3 col=(vec3(.8,.88,1.)*(1.-uChaud)+vec3(1.,.8,.55)*uChaud)*(gS*1.5+ciel)+vec3(1.,.82,.58)*gL*1.15;
+    c+=col*m*uE*loin*(1.-.5*smoothstep(.2,.45,d))*(1.-.45*uChaud);
+  }
+  if(uF.x>0.){
+    vec2 q=vec2(u.x*1.7778,u.y),o=vec2(uO.x*1.7778,uO.y),b=vec2(uB.x*1.7778,uB.y),dir=normalize(b-o+vec2(1e-5,0.)),r=q-o;
+    float s=dot(r,dir),pd=abs(r.x*dir.y-r.y*dir.x),w=.0034+max(s,0.)*.072;
+    float cone=exp(-pd*pd/(w*w)*1.7)*smoothstep(0.,.02,s)*(1.-smoothstep(uF.z-.04,uF.z+.012,s));
+    float fog=.6+.4*n(vec2(s*6.5-t*.2,pd/w*1.2+t*.03))*(.55+.45*n(vec2(s*2.1-t*.07,pd/w*.5-t*.02)));
+    float nu=1.;if(uImgOk>0.){float l=dot(texture2D(uImg,v).rgb,vec3(.3,.55,.15));nu=.45+1.7*smoothstep(.12,.48,l);}
+    float I=cone*fog*nu/(1.+s*1.5)*uF.x;
+    vec2 pf=(q-b)*vec2(1.,3.6);float flaque=exp(-dot(pf,pf)/.0026)*uF.w*smoothstep(0.,.03,d)*(.75+.25*n(q*40.+vec2(0.,t*.6)));
+    float rl=length(r),halo=exp(-rl*rl/.00008)*(.5+uF.y)+exp(-rl*rl/.002)*(.05+uF.y*.2);
+    c+=vec3(1.,.9,.74)*(I*.3+halo*.85+flaque*.32);
+  }
+  c*=uA;gl_FragColor=vec4(c,clamp(max(c.r,max(c.g,c.b)),0.,1.));
 }`));
     gl.linkProgram(pg);
     if (!gl.getProgramParameter(pg, gl.LINK_STATUS)) { cv.remove(); return { reveil() {} }; }
     gl.useProgram(pg);
     const bu = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bu); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     const ap = gl.getAttribLocation(pg, 'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
-    const L = {}; ['uCrop', 'uT', 'uA', 'uHor', 'uChaud', 'uIle', 'uS', 'uL'].forEach(n => { L[n] = gl.getUniformLocation(pg, n); });
-    const DOUX = matchMedia('(pointer: coarse)').matches;   // téléphone : 30 images/s suffisent
+    const L = {}; ['uImg', 'uImgOk', 'uCrop', 'uT', 'uA', 'uE', 'uHor', 'uChaud', 'uIle', 'uS', 'uL', 'uO', 'uB', 'uF'].forEach(n => { L[n] = gl.getUniformLocation(pg, n); });
+    // l'image d'arrêt (déjà chargée par la page) : le faisceau éclaire davantage les nuages qu'il traverse
+    const tx = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tx);
+    [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]].forEach(([a, b]) => gl.texParameteri(gl.TEXTURE_2D, a, b));
+    gl.uniform1i(L.uImg, 0); let txK = '';
+    const TACT = matchMedia('(pointer: coarse)').matches, AR = 16 / 9;
     let raf = 0, a = 0, k = -1, av = 0, port = null, haut = calque;
+    // le faisceau : angle (image, axes égaux), longueur, éclat de la lanterne, intensité, flaque sur la mer ; fi : rotation quand il tourne seul
+    const F = { ang: Math.PI, len: 3, fl: .4, I: 0, fq: 0, fi: Math.PI / 2, auto: 0 };
     while (haut.parentElement && haut.parentElement !== document.body) haut = haut.parentElement;
-    const taille = () => { const p = suf === '-p'; if (p === port) return; port = p; cv.width = p ? 405 : 960; cv.height = 540; gl.viewport(0, 0, cv.width, cv.height); };
+    const taille = () => { const p = suf === '-p'; if (p === port) return; port = p; cv.width = p ? 405 : 960; cv.height = 540; gl.viewport(0, 0, cv.width, cv.height); txK = ''; };
     const cible = () => { const e = EAU[etat.boucle]; return e && !etat.leger && !etat.calme && !etat.fige && !haut.inert && boucleV.classList.contains('on') ? e.force : 0; };
+    const ecart = (x) => Math.atan2(Math.sin(x), Math.cos(x));
+    function faisceau(e, c, dt, now, cx, cw, ux, uy, r, sc) {
+      const ph = e.phare;
+      if (!ph) { F.I = 0; etat.faisO.i = 0; return; }
+      const im = imgs[k], cle = k + suf;
+      if (txK !== cle && im && im.complete && im.naturalWidth) { gl.bindTexture(gl.TEXTURE_2D, tx); try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im); txK = cle; } catch (er) { txK = 'x'; } }
+      const ox = ph.o[0] * AR, oy = ph.o[1], ANG_FILM = Math.atan2(ph.film[1], ph.film[0]);
+      const curX = (cx + ux * cw) * AR, curY = uy, dist = Math.hypot(curX - ox, curY - oy);
+      const tenu = etat.dedans && (TACT || now - etat.tMain < 7000);
+      if (a <= .002 && c > 0) { F.ang = ANG_FILM; F.len = 3; F.fl = .4; F.auto = tenu ? 0 : 1; }
+      let angT, lenT, flT, IT = 1, fqT = 0, kA = 9;
+      if (c <= 0) { angT = ANG_FILM; lenT = 3; flT = .4; }   // on quitte l'accueil : il revient à l'angle du film en s'éteignant
+      else if (tenu) {
+        if (F.auto > .5) F.auto = 0;
+        angT = dist > .03 ? Math.atan2(curY - oy, curX - ox) : F.ang;
+        const mer = curY > e.hor + .01; lenT = mer ? dist : 3; flT = .75; fqT = mer ? 1 : 0;
+      } else {   // il tourne seul : long vers les côtés, court et éclatant face à nous, plus pâle quand il part derrière la tour
+        if (F.auto < .5) { F.auto = 1; F.fi = Math.asin(Math.max(-1, Math.min(1, Math.cos(F.ang)))); }
+        F.fi += dt * Math.PI * 2 / 14; const sx = Math.sin(F.fi), cz = Math.cos(F.fi);
+        angT = Math.atan2(.035 * cz, sx); lenT = .03 + 1.25 * Math.abs(sx); flT = .3 + 1.4 * Math.pow(Math.max(0, cz), 6); IT = cz < 0 ? .45 + .55 * (1 + cz) : 1; kA = 14;
+      }
+      const ka = 1 - Math.exp(-dt * kA), kl = 1 - Math.exp(-dt * 5), kf = 1 - Math.exp(-dt * 6);
+      F.ang += ecart(angT - F.ang) * ka; F.len += (lenT - F.len) * kl; F.fl += (flT - F.fl) * kf; F.I += (IT - F.I) * kf; F.fq += (fqT - F.fq) * kl;
+      const dA = Math.min(F.len, 1), bx = ox + Math.cos(F.ang) * dA, by = oy + Math.sin(F.ang) * dA;
+      gl.uniform2f(L.uO, ph.o[0], ph.o[1]); gl.uniform2f(L.uB, bx / AR, by); gl.uniform4f(L.uF, F.I, F.fl, F.len, F.fq); gl.uniform1f(L.uImgOk, txK === cle ? 1 : 0);
+      // à l'écran (pour le nom qui s'allume le long du faisceau)
+      const ecr = (U, V) => [r.left + (r.width - cv.width * sc) / 2 + (U - cx) / cw * cv.width * sc, r.top + (r.height - cv.height * sc) / 2 + V * cv.height * sc];
+      const [lx, ly] = ecr(ph.o[0], ph.o[1]), [px, py] = ecr(bx / AR, by);
+      etat.faisO.x = lx; etat.faisO.y = ly; etat.faisO.i = a * F.I * Math.min(1, F.len / .25); etat.faisB.x = px; etat.faisB.y = py;
+      if (etat.surFaisceau) etat.surFaisceau(now);
+    }
     function tour(now) {
       raf = 0; const dt = Math.min(.1, (now - (av || now)) / 1000);
-      if (now - av < 30) { raf = requestAnimationFrame(tour); return; }   // 30 images/s suffisent aux reflets
+      if (now - av < 30) { raf = requestAnimationFrame(tour); return; }   // 30 images/s suffisent
       av = now; const c = cible(); if (c > 0) k = etat.boucle;
+      const e = EAU[k];
       a += Math.sign(c - a) * Math.min(Math.abs(c - a), dt / .9);
-      if (a <= 0 && c <= 0) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); return; }
-      const e = EAU[k]; if (!e) return; taille();
+      if (a <= 0 && c <= 0) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); if (etat.faisO.i) { etat.faisO.i = 0; if (etat.surFaisceau) etat.surFaisceau(now); } return; }
+      if (!e) return; taille();
       // la lampe du curseur : de l'écran vers l'image (même recadrage que la vidéo : object-fit cover, dans la scène qui respire)
       const r = cv.getBoundingClientRect(), sc = Math.max(r.width / cv.width, r.height / cv.height), cw = port ? .421875 : 1, cx = port ? e.crop : 0;
       const ux = (etat.lx - (r.left + (r.width - cv.width * sc) / 2)) / (cv.width * sc), uy = (etat.ly - (r.top + (r.height - cv.height * sc) / 2)) / (cv.height * sc);
-      gl.uniform2f(L.uCrop, cx, cw); gl.uniform1f(L.uT, now / 1000 % 3600); gl.uniform1f(L.uA, a); gl.uniform1f(L.uHor, e.hor); gl.uniform1f(L.uChaud, e.chaud);
+      gl.uniform2f(L.uCrop, cx, cw); gl.uniform1f(L.uT, now / 1000 % 3600); gl.uniform1f(L.uA, a); gl.uniform1f(L.uE, 1); gl.uniform1f(L.uHor, e.hor); gl.uniform1f(L.uChaud, e.chaud);
       gl.uniform4fv(L.uIle, e.ile); gl.uniform3fv(L.uS, e.src); gl.uniform3f(L.uL, cx + ux * cw, uy, etat.dedans && etat.lampeBouge !== 1 ? 1 : 0);
+      faisceau(e, c, dt, now, cx, cw, ux, uy, r, sc);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       raf = requestAnimationFrame(tour);
     }
@@ -8508,14 +8565,14 @@ void main(){
     // l'écran passe de la largeur à la hauteur (ou l'inverse) : on change de fichiers
     taille() { const s = enHauteur() ? '-p' : ''; if (s === suf) return; suf = s; for (let j = 0; j < NPL; j++) fermer(j); etat.plan = -1; imgs.forEach(im => im.removeAttribute('src')); etat.img = -1; etat.boucle = -1; etat.sortie = null; BV.forEach(x => { x._k = -1; vider(x); x.classList.remove('on'); }); },
     aller(p) { if (Math.abs(p - etat.cible) > .001) etat.bouge = true; etat.cible = p; }, direct(p) { etat.cible = etat.prog = p; },
-    main(x, y) { etat.mx = x; etat.my = y; etat.actif = 1; etat.tx = (x + 1) / 2 * innerWidth; etat.ty = (1 - y) / 2 * innerHeight; if (!etat.dedans) { etat.dedans = true; if (REDUIT) { etat.lx = etat.tx; etat.ly = etat.ty; } } lampe.classList.add('on'); },
+    main(x, y) { etat.tMain = performance.now(); etat.mx = x; etat.my = y; etat.actif = 1; etat.tx = (x + 1) / 2 * innerWidth; etat.ty = (1 - y) / 2 * innerHeight; if (!etat.dedans) { etat.dedans = true; if (REDUIT) { etat.lx = etat.tx; etat.ly = etat.ty; } } lampe.classList.add('on'); },
     relacher() { etat.dedans = false; etat.actif = 0; lampe.classList.remove('on'); },
     // y a-t-il encore quelque chose à animer ? Sinon, le pilote s'arrête jusqu'au prochain défilement ou mouvement de souris
     occupe() { return etat.prog !== etat.cible || !!etat.sortie || etat.glisse !== 0 || (etat.G !== null && Math.abs(etat.G - Tde(etat.prog)) > .001 && !(etat.boucle >= 0)) || (etat.prog === etat.cible && etat.boucle < 0 && !etat.calme && !etat.leger && performance.now() / 1000 - etat.calmeDepuis < 1.2) || etat.intro > 0 || etat.ecart > .04 || (etat.dedans && Math.abs(etat.tx - etat.lx) + Math.abs(etat.ty - etat.ly) > .6) || (etat.repos > 0 && etat.boucle < 0) || !etat.video; },
     boucleT() { return etat.boucle >= 0 && !boucleV.paused ? { k: etat.boucle, t: boucleV.currentTime, d: boucleV.duration || 0 } : null; },
     attenuer(k) { etat.dimK = k; }, calme(b) { etat.calme = b; }, figer(b) { etat.fige = b; },
-    lanterneEcran(o) { o.x = etat.lx / innerWidth; o.y = etat.ly / innerHeight; o.devant = etat.actif > 0; return o; },
-    faisceauEcran(o) { o.x = etat.lx / innerWidth + .02; o.y = etat.ly / innerHeight; o.devant = etat.actif > 0; return o; },
+    lanterneEcran(o) { o.x = etat.faisO.x / innerWidth; o.y = etat.faisO.y / innerHeight; o.devant = etat.faisO.i > .05; o.i = etat.faisO.i; return o; },
+    faisceauEcran(o) { o.x = etat.faisB.x / innerWidth; o.y = etat.faisB.y / innerHeight; o.devant = etat.faisO.i > .05; o.i = etat.faisO.i; return o; },
     entree() { if (!etat.fige && !etat.calme && !etat.leger) etat.intro = 1; },
     ciel() {}, figure() {}, flux() {}, sonar() { return false; }, quandPris() {}, quandEclair(f) { onEclair = f; }, qualite() {}, choc() {}, nuee() {}, tour() {}, fin() {}
   };
@@ -8562,7 +8619,7 @@ function setupNuit() {
     const ok = L1.devant && L2.devant, fl = Math.min(1, (N.etat.eclat || 0) * 1.5);
     for (let i = 0; i < chars.length; i++) {
       let lit = 0;
-      if (N.film) { if (ok) lit = 1 - Math.min(1, Math.max(0, (Math.hypot(rects[i][0] - lx, rects[i][1] - ly) - 70) / 210)); }
+      if (N.film) { if (ok) { const px = rects[i][0] - lx, py = rects[i][1] - ly, s = px * dx + py * dy; if (s > 0) { const d = Math.abs(px * dy - py * dx), w = 10 + s * .16; lit = (1 - Math.min(1, Math.max(0, (d - w * .5) / (w * 1.1)))) * Math.min(1, L1.i * 1.2); } } }
       else if (ok) { const px = rects[i][0] - lx, py = rects[i][1] - ly, s = px * dx + py * dy; if (s > 0) { const d = Math.abs(px * dy - py * dx), w = 24 + s * .1; lit = 1 - Math.min(1, Math.max(0, (d - w * .5) / (w * 1.25))); } }
       const bn = N.film ? (FINE ? .55 : .92) : BASE_NOM, o = (bn + (1 - bn) * Math.max(lit, fl)).toFixed(2);
       if (chars[i]._o !== o) { chars[i]._o = o; chars[i].style.setProperty('--l', o); }
@@ -8715,6 +8772,7 @@ function setupNuit() {
     N.quandEclair(() => { son.tonnerre(); html.classList.add('eclair'); clearTimeout(tEcl); tEcl = setTimeout(() => html.classList.remove('eclair'), 360); });
     ancres(); kV = lecture(scrollY); N.attenuer(kV); N.direct(progDe(scrollY)); N.figer(REDUCE || html.classList.contains('calm')); N.image(performance.now());
     html.classList.add('nuit-ok'); dire(); pretOk(true); demander();
+    if (N.film) N.etat.surFaisceau = now => { if (!html.classList.contains('calm') && scrollY < innerHeight * .75) eclairerNom(now); };   // le faisceau tourne seul : le nom suit même sans défilement
     // chaque famille de compétences a sa constellation : elle s’allume quand on survole (ou qu’on atteint au clavier) sa liste
     $$('#sk-list .sk').forEach((el, i) => { const on = () => N.figure(i), off = () => N.figure(-1); el.addEventListener('pointerenter', on); el.addEventListener('pointerleave', off); el.addEventListener('focusin', on); el.addEventListener('focusout', off); });
     const tenir = (x, y) => { if (!N) return; N.main(x / innerWidth * 2 - 1, -(y / innerHeight * 2 - 1)); if (!tenu) { tenu = true; dire(); } demander(); };
