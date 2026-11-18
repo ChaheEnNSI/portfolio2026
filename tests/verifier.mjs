@@ -316,6 +316,60 @@ for (const scheme of ['light', 'dark']) {
   await ctx.close();
 }
 
+// 5 bis. décor vivant : le film ne se fige pas (il continue seul jusqu'à l'arrêt suivant), les boucles se relaient sans recharger,
+// et le décor repart après un refus de lecture (iPhone en économie d'énergie) ou une coupure réseau
+const allerA = (page, sel, decale = 0) => page.evaluate(([sel, decale]) => { const y = document.querySelector(sel).getBoundingClientRect().top + scrollY + decale * innerHeight; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); }, [sel, decale]);
+const boucleJoue = (page, k, ms) => page.waitForFunction(k => { const v = document.querySelector('.film-b.on'); return !!v && !v.paused && new RegExp(`boucle-${k}(-p)?\\.(webm|mp4)$`).test(v.currentSrc) && v.currentTime > .05; }, k, { timeout: ms }).then(() => true, () => false);
+async function decorVivant(nom, br = browser) {
+  const { ctx, page } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' }, '', br);
+  if (!(await page.evaluate(() => document.documentElement.classList.contains('film') && !document.getElementById('film').classList.contains('leger')))) { console.log(`--    ${nom} : décor en images fixes ici, contrôles du film sautés`); await ctx.close(); return; }
+  if (BOUCLES.includes(2)) {
+    // arrêté entre l'accueil et le Profil : le film continue seul, sans jamais reculer, jusqu'à l'arrêt du Profil, dont la boucle part
+    await allerA(page, '#profil', -1.1);
+    const suivi = await page.evaluate(async () => { const filmT = () => { const c = document.getElementById('film'); const v = c && [...c.querySelectorAll('.film-v')].find(x => x.classList.contains('on')); const m = v && /film-(\d)/.exec(v.currentSrc || ''); return m ? +m[1] * 10 + v.currentTime : null; }; let av = null, recul = 0; const t0 = performance.now();
+      while (performance.now() - t0 < 30000) { await new Promise(r => setTimeout(r, 150)); const t = filmT(); if (t !== null && av !== null && t < av - .15) recul++; if (t !== null) av = t;
+        const b = document.querySelector('.film-b.on'); if (b && !b.paused && /boucle-2(-p)?\./.test(b.currentSrc) && b.currentTime > .05) return { ok: true, recul, t: av }; }
+      return { ok: false, recul, t: av }; });
+    check(suivi.ok && suivi.recul === 0, `${nom} : arrêté entre deux chapitres, le film continue seul jusqu'au Profil puis sa boucle part, sans reculer (${JSON.stringify(suivi)})`);
+    if (BOUCLES.includes(3)) {
+      // relais : la boucle du Parcours part, puis revenir au Profil retrouve sa boucle sans la recharger
+      await allerA(page, '#parcours'); const b3 = await boucleJoue(page, 3, 20000);
+      // la balise qui garde la boucle du Profil ne doit ni être vidée ni rechargée (les autres peuvent préparer l'arrêt suivant)
+      await page.evaluate(() => { window.__vide = 0; window.__b2 = [...document.querySelectorAll('.film-b')].find(v => /boucle-2(-p)?\./.test(v.currentSrc)) || null; if (window.__b2) window.__b2.addEventListener('emptied', () => window.__vide++); });
+      await allerA(page, '#profil'); const b2 = await boucleJoue(page, 2, 12000); const vide = await page.evaluate(() => window.__b2 && document.querySelector('.film-b.on') === window.__b2 ? window.__vide : 'autre balise');
+      check(b3 && b2 && vide === 0, `${nom} : les boucles se relaient (Parcours puis retour au Profil) sans recharger la vidéo (${b3}, ${b2}, ${vide} rechargement(s))`);
+    }
+  }
+  await ctx.close();
+}
+await decorVivant('film');
+if (BOUCLES.includes(0)) {
+  // lecture refusée jusqu'au premier geste (comme un iPhone en économie d'énergie) : au premier toucher, la boucle de l'accueil part
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' });
+  if (CDN_LOCAL) await ctx.route('https://cdn.jsdelivr.net/npm/**', async route => { const rel = new URL(route.request().url()).pathname.replace('/npm/', ''); try { await route.fulfill({ body: await readFile(path.join(CDN_LOCAL, rel)), contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' } }); } catch { await route.abort(); } });
+  await ctx.addInitScript(QUIET); await ctx.addInitScript(`try{Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>8})}catch(e){}`);
+  await ctx.addInitScript(() => { let geste = false; addEventListener('click', () => { geste = true; }, true); const p0 = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function () { if (geste) return p0.call(this); return Promise.reject(new DOMException('refus simulé', 'NotAllowedError')); }; });
+  const page = await ctx.newPage(); await page.goto(BASE); await page.waitForFunction(() => document.documentElement.classList.contains('ready'), null, { timeout: 45000 }); await page.waitForTimeout(5000);
+  const avant = await page.evaluate(() => !!document.querySelector('.film-b.on'));
+  await page.evaluate(() => document.body.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+  const apres = await boucleJoue(page, 0, 8000);
+  check(!avant && apres, `film : lecture refusée jusqu'au premier geste, la boucle de l'accueil part au premier toucher (${avant} puis ${apres})`);
+  await ctx.close();
+}
+if (BOUCLES.includes(2)) {
+  // coupure réseau : la boucle du Profil échoue une première fois (WebM et MP4), le décor la relance tout seul
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' });
+  if (CDN_LOCAL) await ctx.route('https://cdn.jsdelivr.net/npm/**', async route => { const rel = new URL(route.request().url()).pathname.replace('/npm/', ''); try { await route.fulfill({ body: await readFile(path.join(CDN_LOCAL, rel)), contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' } }); } catch { await route.abort(); } });
+  await ctx.addInitScript(QUIET); await ctx.addInitScript(`try{Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>8})}catch(e){}`);
+  const vus = new Set(); await ctx.route(/\/v\/boucle-2\.(webm|mp4)$/, route => { const k = route.request().url().split('.').pop(); if (!vus.has(k)) { vus.add(k); return route.abort('connectionreset'); } return route.continue(); });
+  const page = await ctx.newPage(); await page.goto(BASE); await page.waitForFunction(() => document.documentElement.classList.contains('ready'), null, { timeout: 45000 }); await page.waitForTimeout(2500);
+  await allerA(page, '#profil');
+  const ok = await boucleJoue(page, 2, 25000);
+  check(ok && vus.size > 0, `film : après une coupure réseau sur la boucle du Profil, le décor la relance tout seul (${ok}, ${[...vus].join('+') || 'aucune coupure'})`);
+  await ctx.close();
+}
+
 // 6. autres moteurs : Firefox et WebKit (le moteur de Safari) — affichage, CSP, fiche projet (avec ou sans WebGL : le site doit tenir dans les deux cas)
 for (const [nom, type] of [['Firefox', firefox], ['WebKit (Safari)', webkit]]) {
   let br;
@@ -343,6 +397,7 @@ for (const [nom, type] of [['Firefox', firefox], ['WebKit (Safari)', webkit]]) {
     }
     await ctx.close();
   }
+  if (type === firefox) await decorVivant(nom, br);
   await br.close();
 }
 

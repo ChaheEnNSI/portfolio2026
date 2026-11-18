@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-fZfHt7pdOApDs2bLp6qa0Yl44bnYfUBll6JlzlFkh8g=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-zU8xUqsDdDVDWDI2a0BBCfyCYaUzB8qSzLgD9yrQiQI=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8288,7 +8288,8 @@ function creerFilm(calque, opt) {
 
   // BOUCLES DES ARRÊTS : deux balises qui se relaient. Pendant le trajet, la boucle de l'arrêt suivant se charge dans la balise libre et attend,
   // en pause, sur sa première image (identique à l'image d'arrêt pour 1, 2, 3, 5, 6) : à l'arrivée elle part aussitôt, sans fondu. Revenir au même arrêt ne recharge rien.
-  const BV = [0, 1].map(() => { const v = video('film-m film-b'); v.loop = true; v.preload = 'none'; v._k = -1; return v; });
+  // ordinateur : trois balises (l'arrêt où l'on est, le précédent, le suivant) ; téléphone : deux (mémoire)
+  const BV = (matchMedia('(pointer: coarse)').matches ? [0, 1] : [0, 1, 2]).map(() => { const v = video('film-m film-b'); v.loop = true; v.preload = 'none'; v._k = -1; v._vu = 0; return v; });
   let boucleV = BV[0];                      // la balise montrée (ou la dernière montrée)
   const NET = [1, 2, 3, 5, 6];
   // ces boucles sont un aller-retour très lent autour de l'image d'arrêt : à chaque instant de la boucle correspond un temps du film
@@ -8299,14 +8300,15 @@ function creerFilm(calque, opt) {
     // iOS ne charge qu'après une lecture : on la lance et on l'arrête aussitôt sur sa première image
     if (APPLE) { const p = v.play(); if (p && p.then) p.then(() => { if (!(boucleV === v && etat.boucle === k)) { v.pause(); try { v.currentTime = 0; } catch (e) {} } }).catch(() => {}); } };
   // la balise libre : jamais celle qu'on montre, jamais celle qui garde la boucle de l'arrêt le plus proche (on est peut-être en train d'y arriver)
-  const libre = garder => { const vue = (etat.boucle >= 0 || etat.sortie) ? boucleV : null; return BV.find(x => x !== vue && x._k !== garder && x._k < 0) || BV.find(x => x !== vue && x._k !== garder) || null; };
+  const libre = garder => { const vue = (etat.boucle >= 0 || etat.sortie) ? boucleV : null, c = BV.filter(x => x !== vue && x._k !== garder);   // la vide d'abord, sinon la moins récemment montrée
+    return c.find(x => x._k < 0) || c.sort((a, b) => a._vu - b._vu)[0] || null; };
   const amorcer = (k, garder) => { if (k < 0 || AVEC_BOUCLE.indexOf(k) < 0 || etat.leger || BV.some(x => x._k === k)) return; const v = libre(garder); if (v) charger(v, k); };
   const lancerBoucle = k => {
     let v = BV.find(x => x._k === k); if (!v) { v = libre(k) || BV.find(x => x !== boucleV); charger(v, k); }
-    const autre = BV.find(x => x !== v); etat.boucle = k; etat.sortie = null; boucleV = v;
+    etat.boucle = k; etat.sortie = null; boucleV = v; v._vu = performance.now();
     v.classList.toggle('net', NET.indexOf(k) >= 0);
     if (v.paused && v.currentTime > .04) try { v.currentTime = 0; } catch (e) {}
-    let vu = false; const montre = () => { if (vu || etat.boucle !== k || boucleV !== v) return; vu = true; v.classList.add('on'); autre.classList.remove('on'); setTimeout(() => { if (boucleV !== autre || etat.boucle < 0) autre.pause(); }, 200); };
+    let vu = false; const montre = () => { if (vu || etat.boucle !== k || boucleV !== v) return; vu = true; v.classList.add('on'); BV.forEach(x => { if (x !== v) { x.classList.remove('on'); setTimeout(() => { if (boucleV !== x || etat.boucle < 0) x.pause(); }, 200); } }); };
     v._montre = montre; const p = v.play(); if (p && p.catch) p.catch(e => { if (e && e.name === 'NotAllowedError') etat.refus = true; });
     if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(montre);
   };
@@ -8324,7 +8326,11 @@ function creerFilm(calque, opt) {
     // chien de garde : une boucle montrée qui ne bouge plus (refus, pause imprévue, erreur réseau) est relancée
     let tv = -1, n = 0;
     setInterval(() => { if (document.hidden || haut.inert || etat.boucle < 0 || etat.sortie) { n = 0; return; } const v = boucleV;
-      if (v.paused || v.currentTime === tv) { if (++n >= 2) { n = 0; if (v.error) { const k = v._k; v._k = -1; charger(v, k); } const p = v.play(); if (p && p.catch) p.catch(() => {}); } } else n = 0; tv = v.currentTime; }, 1000);
+      if (v.paused || v.currentTime === tv || v.readyState < 2) { n++;
+        // toutes les sources en échec (réseau) : la balise n'a pas d'erreur propre mais n'a plus de source ; on la recharge
+        if (n >= 2 && (v.error || v.networkState === 3 || (v.readyState < 2 && n >= 3))) { n = 0; const k = v._k; v._k = -1; charger(v, k); const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+        else if (n >= 2 && v.readyState >= 2) { n = 0; const p = v.play(); if (p && p.catch) p.catch(() => {}); } }
+      else n = 0; tv = v.currentTime; }, 1000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden && !haut.inert && etat.boucle >= 0 && boucleV.paused) { const p = boucleV.play(); if (p && p.catch) p.catch(() => {}); } });
   }
 
