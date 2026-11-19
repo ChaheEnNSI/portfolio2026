@@ -112,6 +112,9 @@ async function open(opts, query = '', br = browser) {
     for (const x of [300, 360, 420, 480]) { await page.mouse.move(x, 300); await page.waitForTimeout(350); }
     const tenu = await page.waitForFunction(f => f ? !!document.querySelector('.film-lampe.on') : /Vous tenez|You hold/.test(document.getElementById('veille-t').textContent), film, { timeout: 8000 }).then(() => true, () => false);
     check(tenu, film ? 'film : la lampe suit le curseur' : 'nuit de veille : la souris prend le faisceau en main');
+    // (à l'accueil, curseur posé sur le ciel à gauche : le faisceau du phare traverse le nom en biais)
+    const lit = await page.waitForFunction(f => { const c = [...document.querySelectorAll('.hero-name .ch')].map(e => parseFloat(e.style.getPropertyValue('--l'))); return f ? Math.max(...c) - Math.min(...c) > .2 : c.some(v => v > .6) && c.some(v => v < .4); }, film, { timeout: 12000 }).then(() => true, () => false);
+    check(lit, 'nuit de veille : le faisceau éclaire les lettres du nom, pas tout le nom d’un coup');
     if (film) {
       const v0 = await page.evaluate(() => [...document.querySelectorAll('.film-v')].map(v => ((v.querySelector('source') || {}).src || '').split('/').pop()));
       check(v0.length <= 1 && v0.every(x => /^film-0\.(webm|mp4)$/.test(x)), `film : à l’accueil, seul le premier plan se charge (${v0.join(', ') || 'aucun'})`);
@@ -124,8 +127,6 @@ async function open(opts, query = '', br = browser) {
         check(b, 'film : arrêté sur le Profil, la boucle vivante du chapitre se lance');
       }
     }
-    const lit = await page.waitForFunction(f => { const c = [...document.querySelectorAll('.hero-name .ch')].map(e => parseFloat(e.style.getPropertyValue('--l'))); return f ? Math.max(...c) - Math.min(...c) > .2 : c.some(v => v > .6) && c.some(v => v < .4); }, film, { timeout: 12000 }).then(() => true, () => false);
-    check(lit, 'nuit de veille : le faisceau éclaire les lettres du nom, pas tout le nom d’un coup');
     await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
     const h = await page.waitForFunction(() => /^0[5-7]:/.test(document.getElementById('hd-heure-t').textContent), null, { timeout: 15000 }).then(() => true, () => false);
     check(h, `nuit de veille : l’heure du quart avance avec le défilement (${await page.textContent('#hd-heure-t')})`);
@@ -332,6 +333,16 @@ async function decorVivant(nom, br = browser) {
         const b = document.querySelector('.film-b.on'); if (b && !b.paused && /boucle-2(-p)?\./.test(b.currentSrc) && b.currentTime > .05) return { ok: true, recul, t: av }; }
       return { ok: false, recul, t: av }; });
     check(suivi.ok && suivi.recul === 0, `${nom} : arrêté entre deux chapitres, le film continue seul jusqu'au Profil puis sa boucle part, sans reculer (${JSON.stringify(suivi)})`);
+    // le tableau vivant (WebGL, sur la boucle) : à l'arrêt, l'image s'anime d'elle-même. Sur une machine trop lente (rendu logiciel), il se retire et laisse la boucle : c'est prévu.
+    const tv = await page.evaluate(async () => { if (!document.createElement('canvas').getContext('webgl')) return { etat: 'sans WebGL' }; const c = document.querySelector('.film-eau'); if (!c) return { etat: 'pas de calque' };
+      let vu = false, n0 = 0; const t0 = performance.now();
+      while (performance.now() - t0 < 25000) { await new Promise(r => setTimeout(r, 150));
+        if (c.classList.contains('plein') && c.classList.contains('on')) { if (!vu) { vu = true; n0 = c._n | 0; } else if ((c._n | 0) >= n0 + 2) return { etat: 'montré', vu, taille: c.width + 'x' + c.height, err: c.getContext('webgl').getError() }; }
+        if (c.dataset.vivant === 'retire') return { etat: vu ? 'montré, puis retiré (machine trop lente pour lui)' : 'retiré', vu, err: 0 }; }
+      return { etat: 'jamais montré', vu, vivant: c.dataset.vivant, classes: c.className }; });
+    if (tv.etat === 'sans WebGL') console.log(`--    ${nom} : pas de WebGL ici, tableau vivant non contrôlé`);
+    else check(tv.vu && !tv.err, `${nom} : au Profil, le tableau vivant s'affiche et s'anime (${tv.etat}${tv.taille ? ', ' + tv.taille : ''})`);
+    if (tv.vu) { const b = await page.evaluate(() => { const v = document.querySelector('.film-b.on'); return !!v && !v.paused; }); check(b, `${nom} : sous le tableau vivant, la boucle continue (elle reprend la main s'il se retire)`); }
     if (BOUCLES.includes(3)) {
       // relais : la boucle du Parcours part, puis revenir au Profil retrouve sa boucle sans la recharger
       await allerA(page, '#profil'); await boucleJoue(page, 2, 20000);

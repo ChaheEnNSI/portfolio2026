@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-qOAfN6uEHz6eTafk0tYdajyRrp3z4mtZu1HoVCLdJFI=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-GlClu5MDeFsKHnvaPgOzA5rPoZiTzS2RE71lgTLutys=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -2356,6 +2356,7 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 .film-v.on.pret{opacity:1}
 .film-b{transition:opacity .7s ease}
 .film-b.net{transition-duration:.12s}
+.film-b.coupe{transition:none}
 .film-b.on{opacity:1}
 .film-calque::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 46%,rgba(4,8,20,0) 52%,rgba(4,8,20,.5) 100%)}
 @media (hover: none), (pointer: coarse){.film-lampe{display:none}}
@@ -2365,6 +2366,9 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 @keyframes film-grain{0%{transform:translate(0,0)}17%{transform:translate(-22px,14px)}33%{transform:translate(18px,-26px)}50%{transform:translate(-30px,-8px)}67%{transform:translate(26px,20px)}83%{transform:translate(-8px,30px)}100%{transform:translate(0,0)}}
 .film-lampe{position:absolute;left:0;top:0;width:440px;height:440px;margin:-220px 0 0 -220px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,226,182,.16),rgba(255,212,160,.06) 45%,rgba(255,212,160,0) 74%);mix-blend-mode:screen;opacity:0;transition:opacity .7s ease-out;will-change:transform}
 .film-eau{opacity:1;mix-blend-mode:screen}
+.film-eau.plein{mix-blend-mode:normal;opacity:0;transition:none}
+.film-eau.plein.on{opacity:1;transition:opacity .6s ease}
+.film-eau.plein.part{transition:opacity .15s ease}
 .film-lampe.on{opacity:1}
 .film-lampe.on.bouge{opacity:.6}
 .film-calque.leger .film-lampe{mix-blend-mode:normal}
@@ -8295,7 +8299,7 @@ function creerFilm(calque, opt) {
   // ces boucles sont un aller-retour très lent autour de l'image d'arrêt : à chaque instant de la boucle correspond un temps du film
   // [image de départ dans l'aller-retour de 192 images, temps de l'arrêt, sens, amplitude en images]
   const PAL = { 1: [4, 10, 1, 16], 2: [188, 20, 1, 16], 3: [190, 30, 1, 16], 4: [0, 36.8, 1, 10], 5: [187, 50, 1, 16], 6: [3, 59.92, -1, 30] };
-  const tempsFilm = (k, tau) => { const p = PAL[k]; if (!p || !(tau >= 0)) return null; const n = (p[0] + tau * 24) % 192; return p[1] + p[2] * p[3] / 24 * (1 - Math.cos(2 * Math.PI * n / 192)) / 2; };
+  const tempsFilm = (k, tau) => { const p = PAL[k]; if (!p || !(tau >= 0)) return null; if (etat.tableau === k) return p[1]; const n = (p[0] + tau * 24) % 192; return p[1] + p[2] * p[3] / 24 * (1 - Math.cos(2 * Math.PI * n / 192)) / 2; };
   const charger = (v, k) => { if (v._k === k) return; v._k = k; v.classList.remove('on'); vider(v); v.preload = 'auto'; sources(v, `v/boucle-${k}`); try { v.load(); } catch (e) {}
     // iOS ne charge qu'après une lecture : on la lance et on l'arrête aussitôt sur sa première image
     if (APPLE) { const p = v.play(); if (p && p.then) p.then(() => { if (!(boucleV === v && etat.boucle === k)) { v.pause(); try { v.currentTime = 0; } catch (e) {} } }).catch(() => {}); } };
@@ -8308,7 +8312,7 @@ function creerFilm(calque, opt) {
     etat.boucle = k; etat.sortie = null; boucleV = v; v._vu = performance.now();
     v.classList.toggle('net', NET.indexOf(k) >= 0);
     if (v.paused && v.currentTime > .04) try { v.currentTime = 0; } catch (e) {}
-    let vu = false; const montre = () => { if (vu || etat.boucle !== k || boucleV !== v) return; vu = true; v.classList.add('on'); BV.forEach(x => { if (x !== v) { x.classList.remove('on'); setTimeout(() => { if (boucleV !== x || etat.boucle < 0) x.pause(); }, 200); } }); };
+    let vu = false; const montre = () => { if (vu || etat.boucle !== k || boucleV !== v) return; vu = true; v.classList.remove('coupe'); v.classList.add('on'); eau.reveil(); BV.forEach(x => { if (x !== v) { x.classList.remove('on'); setTimeout(() => { if (boucleV !== x || etat.boucle < 0) x.pause(); }, 200); } }); };
     v._montre = montre; const p = v.play(); if (p && p.catch) p.catch(e => { if (e && e.name === 'NotAllowedError') etat.refus = true; });
     if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(montre);
   };
@@ -8357,27 +8361,39 @@ function creerFilm(calque, opt) {
   { const activer = () => { if (!etat.leger) amorcer(0); setTimeout(() => { etat.video = true; reveil(); }, 450); }; if (document.readyState === 'complete') activer(); else addEventListener('load', activer, { once: true }); }
 
 
-  // LE DÉCOR VIVANT (WebGL, 30 images/s, par-dessus la boucle de l'arrêt) :
+  // LE DÉCOR VIVANT (WebGL, 30 images/s, sur la boucle de l'arrêt) :
   // - la mer ondule et scintille là où elle est grande (houle en perspective, reflets de la lune / du phare / du soleil, reflet de la lampe du curseur) ;
-  // - à l'accueil, le faisceau du phare part de la lanterne et suit le curseur ; au repos il tourne seul, comme un vrai phare.
+  // - à l'accueil, le faisceau du phare part de la lanterne et suit le curseur ; au repos il tourne seul, comme un vrai phare ;
+  // - aux autres arrêts, un « tableau vivant » : l'image de la boucle, animée selon ce qu'elle montre (cartes v/vivant-k.png : ce qui bouge, ce qui reste immobile).
   // Mesures faites sur les images d'arrêt : horizon, île à épargner, source reflétée, lanterne, recadrage portrait.
   const EAU = [
-    { force: 1, hor: .517, ile: [0, 0, 0, 0], src: [.495, .25, .75], chaud: .35, crop: .269, phare: { o: [.4905, .2535], film: [-1, .08] } },   // 0 : le phare au loin
-    null, null,
-    { force: 1, hor: .467, ile: [0, 0, 0, 0], src: [.885, .16, 1], chaud: 0, crop: .178 },          // 3 : les lumières sur l'eau, la lune à droite
-    null, null,
-    { force: .85, hor: .511, ile: [.5, .64, .19, .13], src: [.505, .47, .9], chaud: 1, crop: .278 }  // 6 : l'aube, le soleil derrière le phare
+    { force: 1, hor: .517, ile: [0, 0, 0, 0], src: [.495, .25, .75], chaud: .35, crop: .2687, phare: { o: [.4905, .2535], film: [-1, .08] } },   // 0 : le phare au loin
+    { crop: .2687, plein: 1 },                                                                       // 1 : la lanterne de près (lentille qui tourne, air dans le faisceau)
+    { crop: .2844, plein: 1 },                                                                       // 2 : l'île vue du ciel (écume, brume, lumière qui tourne)
+    { force: 1, hor: .467, ile: [0, 0, 0, 0], src: [.885, .16, 1], chaud: 0, crop: .1781, plein: 1 },   // 3 : les lumières sur l'eau (houle, bouées qui dansent), la lune à droite
+    { crop: .2492, plein: 1, eclairs: 1 },                                                           // 4 : la tempête (pluie, embruns, écume, éclairs)
+    { crop: .2781, plein: 1, meteores: 1 },                                                          // 5 : la Voie lactée (scintillement, étoiles filantes)
+    { force: .85, hor: .511, ile: [.5, .64, .19, .13], src: [.505, .47, .9], chaud: 1, crop: .2781, plein: 1 }  // 6 : l'aube (houle, brume, nuages, mouettes), le soleil derrière le phare
   ];
-  etat.tMain = -1e9; etat.faisO = { x: 0, y: 0, i: 0 }; etat.faisB = { x: 0, y: 0 }; etat.surFaisceau = null;
+  etat.tableau = -1; etat.aTab = 0; etat.tMain = -1e9; etat.faisO = { x: 0, y: 0, i: 0 }; etat.faisB = { x: 0, y: 0 }; etat.surFaisceau = null;
   const eau = (() => {
-    if (REDUIT) return { reveil() {} };
-    const cv = el('canvas', 'film-m film-eau'); let gl = null;
+    const RIEN = { reveil() {} };
+    if (REDUIT) return RIEN;
+    const cv = el('canvas', 'film-m film-eau'); BV[BV.length - 1].after(cv);   // sous la lampe et les bandes
+    let gl = null;
     try { gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' }); } catch (e) {}
-    if (!gl) { cv.remove(); return { reveil() {} }; }
-    const sh = (ty, src) => { const o = gl.createShader(ty); gl.shaderSource(o, src); gl.compileShader(o); return o; };
-    const pg = gl.createProgram();
-    gl.attachShader(pg, sh(gl.VERTEX_SHADER, 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}'));
-    gl.attachShader(pg, sh(gl.FRAGMENT_SHADER, `precision mediump float;varying vec2 v;
+    if (!gl) { cv.remove(); return RIEN; }
+    const VS = 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}';
+    // les programmes se compilent sans bloquer la page quand le navigateur le permet ; on n'interroge leur état qu'une fois prêts
+    const PAR = gl.getExtension('KHR_parallel_shader_compile');
+    const prog = fs => { const pg = gl.createProgram(); [[gl.VERTEX_SHADER, VS], [gl.FRAGMENT_SHADER, fs]].forEach(([t, x]) => { const o = gl.createShader(t); gl.shaderSource(o, x); gl.compileShader(o); gl.attachShader(pg, o); }); gl.bindAttribLocation(pg, 0, 'p'); gl.linkProgram(pg); const U = {}; return { pg, ok: null, u: n => U[n] || (U[n] = gl.getUniformLocation(pg, n)) }; };
+    const pret = P => { if (P.ok === null) { if (PAR && !gl.getProgramParameter(P.pg, PAR.COMPLETION_STATUS_KHR)) return false; P.ok = !!gl.getProgramParameter(P.pg, gl.LINK_STATUS); } return P.ok; };
+    const PV = prog(`#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+varying vec2 v;
 uniform sampler2D uImg;uniform float uImgOk;
 uniform vec2 uCrop;uniform float uT,uA,uE,uHor,uChaud;uniform vec4 uIle;uniform vec3 uS;uniform vec3 uL;
 uniform vec2 uO,uB;uniform vec4 uF;
@@ -8411,34 +8427,164 @@ void main(){
     c+=vec3(1.,.9,.74)*(I*.3+halo*.85+flaque*.32);
   }
   c*=uA;gl_FragColor=vec4(c,clamp(max(c.r,max(c.g,c.b)),0.,1.));
-}`));
-    gl.linkProgram(pg);
-    if (!gl.getProgramParameter(pg, gl.LINK_STATUS)) { cv.remove(); return { reveil() {} }; }
-    gl.useProgram(pg);
-    const bu = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bu); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-    const ap = gl.getAttribLocation(pg, 'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
-    const L = {}; ['uImg', 'uImgOk', 'uCrop', 'uT', 'uA', 'uE', 'uHor', 'uChaud', 'uIle', 'uS', 'uL', 'uO', 'uB', 'uF'].forEach(n => { L[n] = gl.getUniformLocation(pg, n); });
-    // l'image d'arrêt (déjà chargée par la page) : le faisceau éclaire davantage les nuages qu'il traverse
-    const tx = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tx);
-    [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]].forEach(([a, b]) => gl.texParameteri(gl.TEXTURE_2D, a, b));
-    gl.uniform1i(L.uImg, 0); let txK = '';
+}`);
+    // les tableaux vivants : un petit programme par arrêt (en-tête commun + corps de l'arrêt), préparé à l'approche de l'arrêt
+    const TETE = `#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+varying vec2 v;
+uniform sampler2D uV,uM;uniform vec2 uCrop,uRes;uniform float uT,uD,uA,uEcl,uVague;uniform vec4 uMet;
+const vec2 PX=vec2(1./1920.,1./1080.);
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}
+float fbm(vec2 p){return n(p)*.55+n(p*2.03+7.1)*.3+n(p*4.1+3.7)*.15;}
+float ea(float x){return atan(sin(x),cos(x));}
+float lum(vec3 c){return dot(c,vec3(.3,.59,.11));}
+vec3 vid(vec2 u){vec2 e=.5/uRes;return texture2D(uV,clamp(vec2((u.x-uCrop.x)/uCrop.y,u.y),e,1.-e)).rgb;}
+/* la carte : moitié haute = ce qui bouge (R eau blanche, G mer, B ciel), moitié basse = les points qui scintillent */
+vec3 zone(vec2 u){return texture2D(uM,vec2(u.x,clamp(u.y,.004,.996)*.5)).rgb;}
+float points(vec2 u){return texture2D(uM,vec2(u.x,.5+clamp(u.y,.004,.996)*.5)).r;}
+/* l'image coule le long d'un champ de vitesses (pixels d'image par seconde) : deux lectures décalées, fondues l'une dans l'autre.
+   Chacune repasse par l'image exacte, et leurs phases changent d'un endroit à l'autre : jamais de pulsation d'ensemble ni d'étirement sans fin. */
+vec3 coule(vec2 u,vec2 vps,float per){
+  float a=fract(uT/per+n(u*vec2(3.,2.))*.7),b=fract(a+.5),wa=1.-abs(2.*a-1.);
+  vec2 o=vps*per*uA*PX;
+  return mix(vid(u-o*(b-.5)),vid(u-o*(a-.5)),wa);
+}
+/* la mer en perspective : elle vient vers nous, de plus en plus vite en approchant (vitesses en px/s à l'horizon et tout en bas) */
+vec2 versNous(vec2 u,float hor,float v0,float v1){float d=max(0.,u.y-hor)/(1.-hor);return vec2((u.x-.5)*.7,1.)*(v0+(v1-v0)*d*sqrt(d));}
+/* la houle : un champ de vagues en perspective qui vient vers nous. xy = pente (elle déplace l'image), z = éclairage (crêtes plus claires, creux plus sombres) */
+float onde(vec2 w){float t=uT;return sin(w.x*1.7+w.y*1.9+t*1.25)*.5+sin(-w.x*1.1+w.y*2.7+t*1.6)*.32+sin(w.x*3.7+w.y*4.3+t*2.3)*.18+(n(w*1.7+vec2(t*.2,t*.55))-.5)*.9;}
+vec3 houle(vec2 u,float hor){
+  float d=max(0.,u.y-hor),z=1./(d+.02);vec2 w=vec2((u.x-.5)*z*2.2,z*1.25);
+  float h0=onde(w);vec2 g=vec2(onde(w+vec2(.06,0.))-h0,onde(w+vec2(0.,.06))-h0)/.06;
+  float f=smoothstep(.012,.07,d);
+  return vec3(g*(.2+min(1.,d*3.))*f,-g.y*f);
+}
+/* remous : l'image tremble sur place, poussée par un bruit qui bouge (en pixels) */
+vec2 remous(vec2 u,vec2 f,float px,float vit){float t=uT*vit;vec2 q=u*f;return (vec2(fbm(q+vec2(t,-t*.7)),fbm(q+vec2(5.2-t*.8,1.3+t)))-.5)*2.*px*PX;}
+/* une lumière qui passe : zones un peu plus claires, un peu plus sombres, portées par le vent (de -1 à 1) */
+float passe(vec2 u,vec2 f,vec2 d,float vit){return (fbm(u*f-d*uT*vit)-.5)*2.;}
+/* les reflets vifs de l'eau papillotent */
+vec3 paillettes(vec3 c,vec2 u,float hor,float s0,float s1,float k){float z=1./(max(0.,u.y-hor)+.03);return c*(1.+k*smoothstep(s0,s1,lum(c))*(n(vec2((u.x-.5)*z*70.,z*46.+uT*2.6))-.45)*2.);}
+/* les étoiles scintillent : seule la lumière de l'étoile varie, jamais le fond du ciel */
+vec3 scintille(vec3 c,float A,vec2 u,float f){
+  if(A<.01)return c;
+  vec2 e=vec2(3.,0.)*PX,g=vec2(0.,3.)*PX;vec3 b=min(min(vid(u+e),vid(u-e)),min(vid(u+g),vid(u-g)));
+  float tw=n(u*vec2(420.,236.)+vec2(uT*1.3,-uT*.9));
+  return c+max(c-b,0.)*A*f*(tw*tw*1.9-.7);
+}
+/* pluie : trois couches de traits fins qui tombent en biais, la plus proche plus grande et plus rapide (même aspect quelle que soit la définition) */
+float pluie(float t){
+  vec2 p=v*uRes*(1080./uRes.y);float r=0.;
+  for(int i=0;i<3;i++){
+    float fi=float(i),s=1.+fi*.8,cw=7.*s,ch=70.*s;
+    vec2 q=vec2((p.x+p.y*.2)/cw,(p.y-t*(900.+fi*500.))/ch+fi*3.7);
+    vec2 id=floor(q),f=fract(q);float o=h(id+fi*11.);
+    float dx=abs(f.x-.15-.7*o)*cw;
+    float y=fract(f.y+o*3.),L=.3+.4*h(id*1.9+fi);
+    r+=smoothstep(.55+fi*.35,0.,dx)*smoothstep(0.,.05,y)*smoothstep(L,L*.4,y)*step(.62,h(id*1.37+fi*5.))*(.5+fi*.25);
+  }
+  return r;
+}
+`, CORPS = { 1: `    /* 1 : la lanterne de près. La lentille tourne : un reflet traverse les vitres, un éclat quand elle nous fait face, et le faisceau (vers la droite) forcit puis faiblit ;
+       l'air bouge dans le faisceau, les nuages glissent, la mer bouge au loin, les étoiles scintillent. */
+    vec3 ho=houle(u,.62)*Z.g;
+    c=coule(u+ho.xy*1.6*PX,versNous(u,.62,2.,26.)*Z.g+vec2(7.,0.)*Z.b,3.4)*(1.+.08*ho.z);
+    c*=1.+.09*passe(u,vec2(3.,5.),vec2(1.,0.),.035)*Z.b;
+    c=paillettes(c,u,.62,.1,.3,.3*Z.g);
+    c=scintille(c,points(u),u,1.);
+    vec2 L=vec2(.519,.34),r=(u-L)*vec2(1.7778,1.);float rot=1.5708+uD*6.2832/10.,sr=sin(rot),cr=cos(rot),face=pow(max(0.,cr),8.);
+    float verre=smoothstep(.396,.41,u.x)*smoothstep(.566,.552,u.x)*smoothstep(.212,.228,u.y)*smoothstep(.45,.434,u.y);
+    float bande=exp(-pow((u.x-(.481+.08*sr))/.014,2.))*(.3+.7*smoothstep(-.4,.5,cr));
+    float rl=length(r),coin=smoothstep(.36,.18,abs(atan(r.y,max(r.x,.001))+.113))*smoothstep(.07,.13,r.x);
+    float air=fbm(vec2(r.x*7.-t*.35,r.y*18.+t*.05))-.42;
+    c*=1.+verre*(bande*.5+face*.45)+coin*(.2*sr+air*.5);
+    c+=vec3(1.,.9,.72)*exp(-rl*rl/.007)*face*.22;`, 2: `    /* 2 : l'île vue du ciel. Le faisceau du phare tourne et balaie la roche, l'écume et la mer (celui de l'image, figé, s'efface) ;
+       les vagues vont et viennent sur les rochers, la mer coule vers l'île, la brume glisse, de fins nuages passent sous nos yeux. */
+    vec2 rr=(u-vec2(.547,.48))*vec2(1.7778,1.),rn=normalize(rr+1e-5);float ang=atan(rr.y,rr.x);
+    float vag=sin(t*1.3-ang*3.+5.*n(vec2(ang*1.5,t*.12)));
+    c=coule(u+remous(u,vec2(5.,5.),2.5,.3)*Z.g,-rn*9.*Z.g+vec2(11.,-4.)*Z.b,3.2);
+    vec3 ce=coule(u+(rn*vag*7.+vec2(-rn.y,rn.x)*3.*sin(t*.7+ang*5.))*PX+remous(u,vec2(14.,14.),3.5,.55),vec2(-rn.y,rn.x)*14.+rn*8.,1.7);
+    c=mix(c,ce*(1.+.22*vag+.2*passe(u,vec2(11.,11.),-rn,.12)),Z.r);
+    c*=1.+.22*passe(u,vec2(2.5,2.5),vec2(1.,-.35),.03)*Z.b;
+    c+=vec3(.32,.46,.7)*pow(fbm(u*vec2(2.3,1.7)+vec2(t*.008,-t*.003)),3.)*.16*(.35+.65*Z.g);
+    vec2 q=(u-vec2(.513,.441))*vec2(1.7778,1.);float rq=length(q),an=atan(q.y,q.x),a0=2.82;
+    vec2 pp=u/PX-vec2(912.,481.);c=mix(c,vid(u+vec2(12.,36.)*PX),exp(-pp.x*pp.x/260.-pp.y*pp.y/480.)*.85);   /* la tache de lumière figée au pied de la lanterne */
+    float fige=smoothstep(.4,.2,abs(ea(an-a0)))*smoothstep(.035,.06,rq)*smoothstep(.34,.22,rq);
+    c=max(c-vec3(1.,.85,.55)*max(0.,c.r-c.b+.02)/.45*fige*.9,c*.35);
+    float da=ea(an-(a0+uD*6.2832/10.)),w=.13+.012/(rq+.03);
+    float cone=(.65*exp(-da*da/(w*w*.3))+.35*exp(-da*da/(w*w)))*smoothstep(.03,.055,rq)*(exp(-rq/.085)+.2*(1.-smoothstep(.15,.7,rq)));
+    c+=c*cone*1.5*(1.-.7*smoothstep(.2,.55,lum(c)))+mix(vec3(1.,.8,.5),vec3(1.,.93,.78),exp(-rq/.06))*cone*.6*(.75+.5*fbm(vec2(rq*9.-t*.3,an*5.)));`, 3: `    /* 3 : les lumières sur l'eau. La mer vient vers nous, le reflet de la lune papillote, les bouées dansent sur place et scintillent, les étoiles aussi. */
+    vec3 ho=houle(u,.468)*Z.g;
+    c=coule(u+ho.xy*4.2*PX,versNous(u,.468,3.,62.)*Z.g,2.6)*(1.+.16*ho.z);
+    c=paillettes(c,u,.468,.16,.5,.4*Z.g);
+    float bob=sin(t*1.7+u.x*23.)*2.4;
+    vec3 cl=vid(u+vec2(sin(t*1.1+u.x*17.)*.8,bob)*PX)*(1.+.2*(n(vec2(u.x*40.,t*2.6))-.5));
+    c=mix(c,cl,Z.r);
+    c=scintille(c,points(u),u,1.);`, 4: `    /* 4 : la tempête. Les embruns montent et s'ouvrent, la mer roule vers le rocher, les nuages filent, il pleut, des éclairs au loin. */
+    float sv=uVague,pr=max(0.,u.y-.55);
+    vec2 dm=normalize(vec2(.48-u.x,.46-u.y)+1e-5);
+    c=coule(u+remous(u*vec2(1.,2.6),vec2(5.,5.),2.+7.*pr,.45)*Z.g,dm*(8.+70.*pr)*Z.g+vec2(-12.,0.)*Z.b,2.4);
+    c*=1.+(.12*passe(u*vec2(1.,2.4),vec2(6.,6.),dm,.18)*Z.g+.1*passe(u,vec2(3.,5.),vec2(-1.,0.),.06)*Z.b);
+    vec2 de=normalize(vec2((u.x-.47)*.8,-1.));
+    vec3 ce=coule(u+remous(u,vec2(9.,7.),4.,.4),de*(22.+16.*sv),1.5)*(1.+.14*passe(u,vec2(5.,3.5),vec2(0.,-1.),.22)+.14*sv);
+    c=mix(c,ce,Z.r);
+    /* éclair : tout s'éclaire d'un coup, le ciel et les embruns surtout, lumière bleu froid */
+    c+=uEcl*(c*(.55+1.1*Z.b+.8*Z.r+.25*Z.g)+vec3(.45,.52,.7)*(.12*Z.b+.035));
+    c+=vec3(.62,.7,.85)*pluie(t)*(.085+.25*uEcl)*(.6+.4*(1.-Z.g));`, 5: `    /* 5 : la Voie lactée. Les étoiles scintillent, la Voie lactée respire à peine, une étoile filante de temps en temps. */
+    c*=1.+.05*passe(u,vec2(2.,2.),vec2(.7,-.3),.015)*Z.b;
+    c=scintille(c,points(u),u,1.3);
+    if(uMet.w>0.&&uMet.w<1.){
+      vec2 q=vec2(u.x*1.7778,u.y),di=vec2(cos(uMet.z),sin(uMet.z)),tete=vec2(uMet.x*1.7778,uMet.y)+di*.32*uMet.w,r=q-tete;
+      float s=dot(r,-di),pd=abs(r.x*di.y-r.y*di.x),queue=.1*(.4+uMet.w);
+      c+=vec3(.86,.9,1.)*smoothstep(queue,0.,s)*smoothstep(-.003,0.,s)*exp(-pd*pd/1.6e-6)*sin(3.1416*uMet.w)*1.2*Z.b;
+    }`, 6: `    /* 6 : l'aube. La mer vient vers nous, le reflet du soleil papillote, la brume basse file, les nuages glissent, trois mouettes passent au loin. */
+    vec3 ho=houle(u,.513)*Z.g;
+    c=coule(u+ho.xy*2.5*PX,versNous(u,.513,2.,38.)*Z.g+vec2(8.,0.)*Z.b,3.)*(1.+.08*ho.z);
+    c=paillettes(c,u,.513,.42,.8,.32*Z.g);
+    c*=1.+.1*passe(u,vec2(3.,6.),vec2(1.,0.),.03)*Z.b;
+    vec3 cb=coule(u+remous(u,vec2(3.,8.),2.5,.15),vec2(17.,0.),3.)*(1.+.12*passe(u,vec2(4.,10.),vec2(1.,0.),.045));
+    c=mix(c,cb,Z.r);
+    for(int i=0;i<3;i++){
+      float fi=float(i),ph=fract(t/42.+fi*.37),ta=.011+.003*fi;
+      vec2 pos=vec2(1.12-ph*1.24,.17+.075*fi+.015*sin(t*.45+fi*2.)),r=(u-pos)*vec2(1.7778,1.)/ta;
+      float bat=sin(t*(5.2+fi*.7)+fi*3.),yc=.38*bat*abs(r.x)-.22*r.x*r.x;
+      float oi=step(abs(r.x),1.)*smoothstep(.2,.05,abs(r.y-yc))*(1.-smoothstep(.8,1.,abs(r.x)));
+      c=mix(c,c*.32+vec3(.06,.045,.05),oi*.85);
+    }` }, PT = {};
+    const tableau = j => PT[j] || (PT[j] = prog(TETE + 'void main(){vec2 u=vec2(uCrop.x+v.x*uCrop.y,v.y);float t=uT;vec3 Z=zone(u),c0=vid(u),c=c0;\n' + CORPS[j] + '\ngl_FragColor=vec4(mix(c0,c,uA),1.);}'));
+    const bu = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bu); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    const texture = n => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + n); gl.bindTexture(gl.TEXTURE_2D, t); [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]].forEach(([x, y]) => gl.texParameteri(gl.TEXTURE_2D, x, y)); return t; };
+    const txImg = texture(0), txVid = texture(1), txM = texture(2);
+    const charge = (n, t, src) => { gl.activeTexture(gl.TEXTURE0 + n); gl.bindTexture(gl.TEXTURE_2D, t); try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src); return true; } catch (er) { return false; } };
+    // les cartes (ce qui bouge, ce qui reste immobile), chargées à l'approche de l'arrêt
+    const cartes = {};
+    let tProg = 0;   // un seul programme préparé à la fois (là où la compilation bloque la page, elle ne la bloque que brièvement)
+    const carte = j => { const e = EAU[j]; if (!e || !e.plein || !CORPS[j]) return null; if (!PT[j] && performance.now() - tProg > 700) { tProg = performance.now(); tableau(j); } let m = cartes[j]; if (!m) { m = cartes[j] = new Image(); m.decoding = 'async'; m.onload = () => relance(); m.src = `v/vivant-${j}.png`; } return m.complete && m.naturalWidth ? m : null; };
     const TACT = matchMedia('(pointer: coarse)').matches, AR = 16 / 9;
-    let raf = 0, a = 0, k = -1, av = 0, port = null, haut = calque;
+    let raf = 0, a = 0, k = -1, av = 0, haut = calque, txK = '', txMK = -1, txVK = '', plein = false, pleinOk = true, montre = 0, tMontre = 0, ech = 1, gT = 0, gN = 0, lourd = 0, tVis = 0, tDep = 0, echV = 1, vT = 0, vN = 0, sansEau = false, mort = false;
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) tVis = performance.now(); });
+    cv.addEventListener('webglcontextlost', () => { mort = true; etat.tableau = -1; etat.aTab = 0; etat.faisO.i = 0; cv.remove(); });   // contexte perdu (téléphone en veille...) : la boucle seule
+    const ecl = { t: 0, prochain: 0 }, met = { t: 0, prochain: 0, p: [0, 0, 0] };
     // le faisceau : angle (image, axes égaux), longueur, éclat de la lanterne, intensité, flaque sur la mer ; fi : rotation quand il tourne seul
-    const F = { ang: Math.PI, len: 3, fl: .4, I: 0, fq: 0, fi: Math.PI / 2, auto: 0 };
+    const F = { ang: Math.PI, len: 3, fl: .4, I: 0, fq: 0, fi: Math.PI / 2, auto: 0, frais: 1 };
     while (haut.parentElement && haut.parentElement !== document.body) haut = haut.parentElement;
-    const taille = () => { const p = suf === '-p'; if (p === port) return; port = p; cv.width = p ? 405 : 960; cv.height = 540; gl.viewport(0, 0, cv.width, cv.height); txK = ''; };
-    const cible = () => { const e = EAU[etat.boucle]; return e && !etat.leger && !etat.calme && !etat.fige && !haut.inert && boucleV.classList.contains('on') ? e.force : 0; };
-    const ecart = (x) => Math.atan2(Math.sin(x), Math.cos(x));
+    // l'arrêt montré (y compris pendant la sortie : la boucle reste visible jusqu'à ce que le film montre la même image)
+    const ici = () => etat.boucle >= 0 ? etat.boucle : etat.sortie ? etat.sortie.k : -1;
+    const cible = () => { const e = EAU[ici()]; return e && (e.hor || e.plein || e.phare) && !etat.leger && !etat.calme && !etat.fige && !haut.inert && boucleV.classList.contains('on') ? e.force || 1 : 0; };
+    const ecart = x => Math.atan2(Math.sin(x), Math.cos(x));
     function faisceau(e, c, dt, now, cx, cw, ux, uy, r, sc) {
       const ph = e.phare;
-      if (!ph) { F.I = 0; etat.faisO.i = 0; return; }
+      if (!ph) { F.I = 0; etat.faisO.i = 0; gl.uniform4f(PV.u('uF'), 0, 0, 0, 0); return; }
       const im = imgs[k], cle = k + suf;
-      if (txK !== cle && im && im.complete && im.naturalWidth) { gl.bindTexture(gl.TEXTURE_2D, tx); try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im); txK = cle; } catch (er) { txK = 'x'; } }
+      if (txK !== cle && im && im.complete && im.naturalWidth) txK = charge(0, txImg, im) ? cle : 'x';
       const ox = ph.o[0] * AR, oy = ph.o[1], ANG_FILM = Math.atan2(ph.film[1], ph.film[0]);
       const curX = (cx + ux * cw) * AR, curY = uy, dist = Math.hypot(curX - ox, curY - oy);
       const tenu = etat.dedans && (TACT || now - etat.tMain < 7000);
-      if (a <= .002 && c > 0) { F.ang = ANG_FILM; F.len = 3; F.fl = .4; F.auto = tenu ? 0 : 1; }
+      if (F.frais && c > 0) { F.frais = 0; F.ang = ANG_FILM; F.len = 3; F.fl = .4; F.I = 0; F.auto = tenu ? 0 : 1; }   // il part de l'angle du faisceau du film
       let angT, lenT, flT, IT = 1, fqT = 0, kA = 9;
       if (c <= 0) { angT = ANG_FILM; lenT = 3; flT = .4; }   // on quitte l'accueil : il revient à l'angle du film en s'éteignant
       else if (tenu) {
@@ -8453,7 +8599,7 @@ void main(){
       const ka = 1 - Math.exp(-dt * kA), kl = 1 - Math.exp(-dt * 5), kf = 1 - Math.exp(-dt * 6);
       F.ang += ecart(angT - F.ang) * ka; F.len += (lenT - F.len) * kl; F.fl += (flT - F.fl) * kf; F.I += (IT - F.I) * kf; F.fq += (fqT - F.fq) * kl;
       const dA = Math.min(F.len, 1), bx = ox + Math.cos(F.ang) * dA, by = oy + Math.sin(F.ang) * dA;
-      gl.uniform2f(L.uO, ph.o[0], ph.o[1]); gl.uniform2f(L.uB, bx / AR, by); gl.uniform4f(L.uF, F.I, F.fl, F.len, F.fq); gl.uniform1f(L.uImgOk, txK === cle ? 1 : 0);
+      gl.uniform2f(PV.u('uO'), ph.o[0], ph.o[1]); gl.uniform2f(PV.u('uB'), bx / AR, by); gl.uniform4f(PV.u('uF'), F.I, F.fl, F.len, F.fq); gl.uniform1f(PV.u('uImgOk'), txK === cle ? 1 : 0);
       // à l'écran (pour le nom qui s'allume le long du faisceau)
       const ecr = (U, V) => [r.left + (r.width - cv.width * sc) / 2 + (U - cx) / cw * cv.width * sc, r.top + (r.height - cv.height * sc) / 2 + V * cv.height * sc];
       const [lx, ly] = ecr(ph.o[0], ph.o[1]), [px, py] = ecr(bx / AR, by);
@@ -8461,24 +8607,83 @@ void main(){
       if (etat.surFaisceau) etat.surFaisceau(now);
     }
     function tour(now) {
-      raf = 0; const dt = Math.min(.1, (now - (av || now)) / 1000);
-      if (now - av < 30) { raf = requestAnimationFrame(tour); return; }   // 30 images/s suffisent
-      av = now; const c = cible(); if (c > 0) k = etat.boucle;
-      const e = EAU[k];
-      a += Math.sign(c - a) * Math.min(Math.abs(c - a), dt / .9);
+      raf = 0; if (mort) return;
+      if (!pret(PV)) { if (PV.ok === false) { mort = true; cv.remove(); } else raf = requestAnimationFrame(tour); return; }
+      const dR = now - (av || now), dt = Math.min(.1, dR / 1000);
+      if (dR < 27 && av) { raf = requestAnimationFrame(tour); return; }   // 30 images/s suffisent
+      av = now; const c = cible();
+      if (c > 0 && (k !== ici() || a <= 0)) { k = ici(); a = 0; F.frais = 1; tDep = now; }   // nouvel arrêt : tout part de l'image d'arrêt exacte, le mouvement s'installe en douceur
+      const e = EAU[k], sortant = !!(e && e.plein && etat.boucle < 0 && etat.sortie);   // on repart : le tableau se calme vite, le film reprend sur l'image d'arrêt
+      { const but = sortant ? 0 : c; a += Math.sign(but - a) * Math.min(Math.abs(but - a), dt / (sortant ? .22 : .9)); }
+      if (c > 0) { carte(k + 1); carte(k - 1); }
+      // le tableau vivant part de l'image d'arrêt (la caméra des boucles bouge un peu : les cartes ne la suivraient pas)
+      const m0 = e && e.plein && pleinOk ? carte(k) : null, P = m0 ? tableau(k) : null, m = P && pret(P) ? m0 : null, im = imgs[k];
+      const veut = !!(m && im && im.complete && im.naturalWidth && (c > 0 || (plein && a > 0)));
+      if (veut !== plein) { plein = veut; cv.classList.toggle('plein', plein); montre = 0; cv.classList.remove('on', 'part'); gT = gN = 0; }
+      etat.tableau = plein && montre === 2 && c > 0 ? k : -1;   // pour la sortie : le film repart de l'image d'arrêt, celle que montre le tableau
+      etat.aTab = etat.tableau >= 0 ? a : 0;                    // ... et il attend que le tableau se soit calmé
+      { const dv = plein ? 'tableau' : pleinOk ? 'voile' : 'retire'; if (cv.dataset.vivant !== dv) cv.dataset.vivant = dv; }
       if (a <= 0 && c <= 0) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); if (etat.faisO.i) { etat.faisO.i = 0; if (etat.surFaisceau) etat.surFaisceau(now); } return; }
-      if (!e) return; taille();
+      if (!e) return;
+      // le tableau tient-il la cadence ? sinon sa définition baisse d'un cran, puis il laisse la place à la boucle seule
+      if (plein && montre === 2 && c > 0 && now - tMontre > 800 && now - dR > tVis) {
+        gT += dR; gN++; lourd = dR > 250 ? lourd + 1 : 0;
+        if (lourd >= 2) pleinOk = false;   // deux images de suite à plus d'un quart de seconde : inutile d'insister
+        else if (gT >= 1000) { if (gT / gN > 55) { if (ech > .8) ech = .75; else if (ech > .65) ech = .6; else pleinOk = false; tMontre = now - 400; } gT = gN = 0; }
+      } else lourd = 0;
+      // même garde pour la mer qui scintille et le faisceau (sans tableau) : définition réduite, puis les reflets s'éteignent (le faisceau du phare reste)
+      if (!plein && c > 0 && a >= c && (e.hor || e.phare) && now - dR > tVis) { vT += dR; vN++; if (vT >= 1000) { if (vT / vN > 55) { if (echV > .7) echV = .67; else if (echV > .55) echV = .5; else sansEau = true; } vT = vN = 0; } } else vT = vN = 0;
+      // définition : celle de l'image, sans dépasser ce que l'écran peut montrer
+      const port = suf === '-p', r = cv.getBoundingClientRect();
+      let W = Math.round((port ? 405 : 960) * echV), Hh = Math.round(540 * echV);
+      if (plein) { const W0 = im.naturalWidth, H0 = im.naturalHeight, vis = Math.min(1, Math.max(r.width / W0, r.height / H0) * Math.min(devicePixelRatio || 1, 2)), s = Math.max(.3, Math.ceil(vis * 8) / 8 * ech); W = Math.round(W0 * s); Hh = Math.round(H0 * s); }
+      if (cv.width !== W || cv.height !== Hh) { cv.width = W; cv.height = Hh; gl.viewport(0, 0, W, Hh); }
       // la lampe du curseur : de l'écran vers l'image (même recadrage que la vidéo : object-fit cover, dans la scène qui respire)
-      const r = cv.getBoundingClientRect(), sc = Math.max(r.width / cv.width, r.height / cv.height), cw = port ? .421875 : 1, cx = port ? e.crop : 0;
-      const ux = (etat.lx - (r.left + (r.width - cv.width * sc) / 2)) / (cv.width * sc), uy = (etat.ly - (r.top + (r.height - cv.height * sc) / 2)) / (cv.height * sc);
-      gl.uniform2f(L.uCrop, cx, cw); gl.uniform1f(L.uT, now / 1000 % 3600); gl.uniform1f(L.uA, a); gl.uniform1f(L.uE, 1); gl.uniform1f(L.uHor, e.hor); gl.uniform1f(L.uChaud, e.chaud);
-      gl.uniform4fv(L.uIle, e.ile); gl.uniform3fv(L.uS, e.src); gl.uniform3f(L.uL, cx + ux * cw, uy, etat.dedans && etat.lampeBouge !== 1 ? 1 : 0);
-      faisceau(e, c, dt, now, cx, cw, ux, uy, r, sc);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      const sc = Math.max(r.width / W, r.height / Hh), cw = port ? .421875 : 1, cx = port ? e.crop : 0;
+      const ux = (etat.lx - (r.left + (r.width - W * sc) / 2)) / (W * sc), uy = (etat.ly - (r.top + (r.height - Hh * sc) / 2)) / (Hh * sc), T = now / 1000 % 3600;
+      gl.disable(gl.BLEND);
+      if (plein) {
+        if (txMK !== k && charge(2, txM, m)) txMK = k;
+        if (txVK !== k + suf && charge(1, txVid, im)) txVK = k + suf;
+        // la tempête : un éclair au loin toutes les 9 à 22 s, avec le tonnerre
+        let E = 0;
+        if (e.eclairs && c > 0 && a > .9) {
+          if (!ecl.prochain) ecl.prochain = now + 2500 + Math.random() * 4000;
+          else if (now >= ecl.prochain) { ecl.t = now; ecl.prochain = now + 9000 + Math.random() * 13000; if (onEclair) onEclair(); }
+        } else ecl.prochain = 0;
+        if (ecl.t) { const te = (now - ecl.t) / 1000; if (te > 1.5) ecl.t = 0; else E = (Math.exp(-te * 9) * (te < .07 ? 1 : .35) + (te > .16 ? Math.exp(-(te - .16) * 6) * .8 : 0)) * .6; }
+        // la Voie lactée : une étoile filante toutes les 6 à 14 s
+        let W4 = -1;
+        if (e.meteores && c > 0 && a > .9) {
+          if (!met.prochain) met.prochain = now + 2500 + Math.random() * 4000;
+          else if (now >= met.prochain) { const g = Math.random() < .5; met.t = now; met.p = [.2 + .6 * Math.random(), .05 + .25 * Math.random(), g ? 2.5 + .3 * Math.random() : .35 + .3 * Math.random()]; met.prochain = now + 6000 + Math.random() * 8000; }
+        } else met.prochain = 0;
+        if (met.t) { W4 = (now - met.t) / 750; if (W4 >= 1) { met.t = 0; W4 = -1; } }
+        gl.useProgram(P.pg); gl.uniform1i(P.u('uV'), 1); gl.uniform1i(P.u('uM'), 2);
+        gl.uniform2f(P.u('uCrop'), cx, cw); gl.uniform2f(P.u('uRes'), W, Hh); gl.uniform1f(P.u('uT'), T); gl.uniform1f(P.u('uD'), (now - tDep) / 1000); gl.uniform1f(P.u('uA'), a);
+        gl.uniform1f(P.u('uEcl'), E * a); gl.uniform4f(P.u('uMet'), met.p[0], met.p[1], met.p[2], W4); gl.uniform1f(P.u('uVague'), Math.pow(.5 + .5 * Math.sin(T * Math.PI * 2 / 5.5), 3));
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        // affiché en fondu : une première image dessinée (calque encore transparent), puis il apparaît
+        if (montre === 0) montre = 1;
+        else if (montre === 1 && c > 0) { montre = 2; tMontre = now; cv.classList.remove('part'); cv.classList.add('on'); }
+        else if (montre === 2 && (c > 0) !== cv.classList.contains('on')) { cv.classList.toggle('on', c > 0); cv.classList.toggle('part', !(c > 0)); }   // il s'efface en même temps que la boucle
+      } else { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); }
+      if (e.hor || e.phare) {   // la mer qui scintille et le faisceau du phare, par-dessus (en lumière ajoutée)
+        gl.useProgram(PV.pg); gl.uniform1i(PV.u('uImg'), 0); if (plein) { gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE); }
+        gl.uniform2f(PV.u('uCrop'), cx, cw); gl.uniform1f(PV.u('uT'), T); gl.uniform1f(PV.u('uA'), a); gl.uniform1f(PV.u('uE'), e.hor && !sansEau ? 1 : 0); gl.uniform1f(PV.u('uHor'), e.hor || 0); gl.uniform1f(PV.u('uChaud'), e.chaud || 0);
+        gl.uniform4fv(PV.u('uIle'), e.ile || [0, 0, 0, 0]); gl.uniform3fv(PV.u('uS'), e.src || [0, 0, 0]); gl.uniform3f(PV.u('uL'), cx + ux * cw, uy, etat.dedans && etat.lampeBouge !== 1 ? 1 : 0);
+        faisceau(e, c, dt, now, cx, cw, ux, uy, r, sc);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      } else {
+        if (etat.faisO.i) { etat.faisO.i = 0; F.I = 0; }   // pas de phare à cet arrêt : le nom ne garde pas un vieux faisceau
+        if (!plein) { if (e.plein && pleinOk && c > 0 && !(PT[k] && PT[k].ok === false)) setTimeout(relance, 300); return; }   // rien à dessiner (la carte arrive, ou le tableau a été retiré) : plus aucun calcul
+      }
+      cv._n = (cv._n | 0) + 1;   // pour les mesures : images dessinées
       raf = requestAnimationFrame(tour);
     }
-    BV.forEach(v => v.addEventListener('playing', () => { if (!raf) raf = requestAnimationFrame(tour); }));
-    return { reveil() { if (!raf && (a > 0 || cible() > 0)) raf = requestAnimationFrame(tour); } };
+    function relance() { if (!raf && !mort) raf = requestAnimationFrame(tour); }
+    BV.forEach(v => v.addEventListener('playing', relance));
+    return { reveil() { if (!raf && !mort && (a > 0 || cible() > 0)) raf = requestAnimationFrame(tour); } };
   })();
 
   function image(now) {
@@ -8493,10 +8698,11 @@ void main(){
     // G : position du film quand il ne suit pas exactement la page (il continue seul, ou il reprend là où en était la boucle).
     // Défiler vers G le laisse attendre que la page le rattrape ; défiler dans l'autre sens le ramène en douceur vers la page.
     const defile = etat.prog !== etat.cible, sensP = Math.sign(etat.cible - etat.prog);
+    const retenu = !!(etat.sortie && etat.sortie.tab && etat.aTab > .04 && t - etat.sortie.t0 < .4);
     if (etat.G !== null) {
       const sg = Math.sign(etat.G - Tsc);
       if (etat.leger || etat.fige || etat.calme || Math.abs(etat.G - Tsc) < .01 || (etat.sgAv && sg && sg !== etat.sgAv)) etat.G = null;
-      else if (defile && sensP && sensP !== sg) etat.G += (Tsc - etat.G) * (1 - Math.exp(-dtv * 2.5));
+      else if (defile && sensP && sensP !== sg && !retenu) etat.G += (Tsc - etat.G) * (1 - Math.exp(-dtv * 2.5));
       etat.sgAv = etat.G === null ? 0 : Math.sign(etat.G - Tsc);
     }
     etat.glisse = 0;
@@ -8533,13 +8739,17 @@ void main(){
       // repos : le film est garé sur l'image d'arrêt (et le restera, même si on fait défiler le texte) -> la boucle vivante prend le relais
       { let nk = -1; for (const h of (etat.dir >= 0 ? H : [...H].reverse())) if (etat.dir >= 0 ? h > T + .03 : h < T - .03) { nk = H.indexOf(h); break; } amorcer(nk, k); }   // la boucle de l'arrêt suivant attend déjà sur sa première image
       const hk = Math.min(H[k], NPL * 10 - .08), ici = Math.abs(T - hk) < .03 && AVEC_BOUCLE.indexOf(k) >= 0, repos = ici && Math.abs(Tc - hk) < .03;   // le film s'arrête 0,08 s avant sa fin : la dernière boucle part de là
-      if (etat.sortie && repos && etat.sortie.k === k) { etat.boucle = k; etat.sortie = null; etat.G = null; }   // on revient sur l'arrêt pendant la sortie : la boucle continue
-      if (repos) { etat.repos += dtv; if (etat.repos > .08 && etat.boucle !== k && !etat.sortie) lancerBoucle(k); }
+      const surPlace = Math.abs(Tsc - hk) < .03;   // la page elle-même est sur l'arrêt (et pas seulement le film, retenu sur son image)
+      if (etat.sortie && repos && surPlace && etat.sortie.k === k) { etat.boucle = k; etat.sortie = null; etat.G = null; }   // on revient sur l'arrêt pendant la sortie : la boucle continue
+      // sortie d'un tableau vivant : dès qu'il s'est calmé (le film est resté sur l'image d'arrêt), la boucle disparaît d'un coup sous lui, et il s'efface sur le film
+      if (etat.sortie && etat.sortie.tab && !retenu) { const bs = boucleV; etat.parti = etat.sortie.k; etat.sortie = null; bs.classList.add('coupe'); bs.classList.remove('on'); setTimeout(() => { if (boucleV !== bs || etat.boucle < 0) bs.pause(); }, 250); }
+      if (!ici) etat.parti = -1;
+      if (repos) { etat.repos += dtv; if (etat.repos > .08 && etat.boucle !== k && !etat.sortie && !(etat.parti === k && defile)) lancerBoucle(k); }   // (en repartant, on ne relance pas la boucle qu'on quitte)
       else { etat.repos = 0;
         if (etat.boucle >= 0 && !ici) {
           // on quitte l'arrêt : le film reprend exactement là où en est la boucle ; elle reste visible jusqu'à ce que le film montre cette image (pas de fantôme)
           const tf = tempsFilm(etat.boucle, boucleV.currentTime);
-          if (tf === null || boucleV.paused) arreterBoucle(); else { etat.sortie = { k: etat.boucle, t0: t }; etat.boucle = -1; etat.G = tf; etat.sgAv = Math.sign(tf - Tsc) || 1; }
+          if (tf === null || boucleV.paused) arreterBoucle(); else { etat.sortie = { k: etat.boucle, t0: t, tab: etat.tableau === etat.boucle }; etat.boucle = -1; etat.G = tf; etat.sgAv = Math.sign(tf - Tsc) || 1; }
         } else if (etat.sortie && (t - etat.sortie.t0 > .7 || (v && v.classList.contains('pret') && !v.seeking && v.readyState >= 2 && Math.abs(v.currentTime - but) < .06))) {
           const bs = boucleV; etat.sortie = null; bs.classList.remove('on'); setTimeout(() => { if (boucleV !== bs || etat.boucle < 0) bs.pause(); }, 250);
         }
