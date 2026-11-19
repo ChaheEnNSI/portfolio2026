@@ -329,7 +329,7 @@ async function decorVivant(nom, br = browser) {
     // au milieu du chapitre entre l'accueil et le Profil (le film y est à mi-chemin entre deux arrêts, quel que soit le navigateur)
     await page.evaluate(() => { const p = document.getElementById('profil').getBoundingClientRect().top + scrollY, y = (innerHeight * .82 + p - innerHeight * .62) / 2; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); });
     const suivi = await page.evaluate(async () => { const filmT = () => { const c = document.getElementById('film'); const v = c && [...c.querySelectorAll('.film-v')].find(x => x.classList.contains('on')); const m = v && /film-(\d)/.exec(v.currentSrc || ''); return m ? +m[1] * 10 + v.currentTime : null; }; let av = null, recul = 0; const t0 = performance.now();
-      while (performance.now() - t0 < 30000) { await new Promise(r => setTimeout(r, 150)); const t = filmT(); if (t !== null && av !== null && t < av - .15) recul++; if (t !== null) av = t;
+      while (performance.now() - t0 < 30000) { await new Promise(r => setTimeout(r, 150)); const t = filmT(); if (t !== null && av !== null && t < av - .3) recul++; if (t !== null) av = t;   // (un recalcul des repères des chapitres peut déplacer le film de 0,2 s : ce n'est pas un recul)
         const b = document.querySelector('.film-b.on'); if (b && !b.paused && /boucle-2(-p)?\./.test(b.currentSrc) && b.currentTime > .05) return { ok: true, recul, t: av }; }
       return { ok: false, recul, t: av }; });
     check(suivi.ok && suivi.recul === 0, `${nom} : arrêté entre deux chapitres, le film continue seul jusqu'au Profil puis sa boucle part, sans reculer (${JSON.stringify(suivi)})`);
@@ -377,7 +377,8 @@ if (BOUCLES.includes(2)) {
   await ctx.addInitScript(QUIET); await ctx.addInitScript(`try{Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>8})}catch(e){}`);
   const vus = new Set(); await ctx.route(/\/v\/boucle-2\.(webm|mp4)$/, route => { const k = route.request().url().split('.').pop(); if (!vus.has(k)) { vus.add(k); return route.abort('connectionreset'); } return route.continue(); });
   const page = await ctx.newPage(); await page.goto(BASE); await page.waitForFunction(() => document.documentElement.classList.contains('ready'), null, { timeout: 45000 }); await page.waitForTimeout(2500);
-  await allerA(page, '#profil');
+  // (sur une machine très lente, la remise en haut de page du chargement peut arriver après ce saut : on le refait tant que la page n'y est pas)
+  for (let i = 0; i < 5; i++) { await allerA(page, '#profil'); await page.waitForTimeout(900); if (await page.evaluate(() => scrollY > 200)) break; }
   const ok = await boucleJoue(page, 2, 25000);
   check(ok && vus.size > 0, `film : après une coupure réseau sur la boucle du Profil, le décor la relance tout seul (${ok}, ${[...vus].join('+') || 'aucune coupure'})`);
   await ctx.close();
