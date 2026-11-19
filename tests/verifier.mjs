@@ -343,6 +343,18 @@ async function decorVivant(nom, br = browser) {
     if (tv.etat === 'sans WebGL') console.log(`--    ${nom} : pas de WebGL ici, tableau vivant non contrôlé`);
     else check(tv.vu && !tv.err, `${nom} : au Profil, le tableau vivant s'affiche et s'anime (${tv.etat}${tv.taille ? ', ' + tv.taille : ''})`);
     if (tv.vu) { const b = await page.evaluate(() => { const v = document.querySelector('.film-b.on'); return !!v && !v.paused; }); check(b, `${nom} : sous le tableau vivant, la boucle continue (elle reprend la main s'il se retire)`); }
+    // un arrêt retient le film : en avançant la page par petits pas depuis le Profil, le décor reste d'abord sur l'arrêt, puis le quitte pour de bon.
+    // (Avant, dès le premier pas hors du palier, le film avançait d'un souffle, s'arrêtait, puis revenait se reposer sur l'arrêt : le décor disparaissait et revenait.)
+    await allerA(page, '#profil');
+    if (await boucleJoue(page, 2, 20000)) {
+      const pas = await page.evaluate(async () => { const surArret = () => { const b = document.querySelector('.film-b.on'); return !!b && /boucle-2(-p)?\./.test(b.currentSrc); }, att = ms => new Promise(r => setTimeout(r, ms));
+        const y0 = scrollY; let parti = 0;
+        for (let i = 1; i <= 20 && !parti; i++) { scrollTo(0, y0 + i * 30); const t0 = performance.now(); while (performance.now() - t0 < 2200) { await att(150); if (!surArret()) { parti = i * 30; break; } } }
+        if (!parti) return { ok: false, raison: "le décor n'a jamais quitté l'arrêt en 600 px" };
+        const t1 = performance.now(); while (performance.now() - t1 < 7000) { await att(150); if (surArret()) return { ok: false, parti, raison: `revenu sur l'arrêt ${Math.round(performance.now() - t1)} ms après l'avoir quitté` }; }
+        return { ok: true, parti }; });
+      check(pas.ok, `${nom} : par petits pas depuis le Profil, le décor quitte l'arrêt une seule fois, sans y revenir (${JSON.stringify(pas)})`);
+    } else check(false, `${nom} : la boucle du Profil ne part pas (contrôle des petits pas impossible)`);
     if (BOUCLES.includes(3)) {
       // relais : la boucle du Parcours part, puis revenir au Profil retrouve sa boucle sans la recharger
       await allerA(page, '#profil'); await boucleJoue(page, 2, 20000);

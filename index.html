@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-kbblnAhmKAwKMENZRS6pjSGP4YLKd5EUQDfjTeob+tc=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-xm3yNY+gTYDpgJyTjoux6VgYcK2v58t/jmK3/OHpdVk=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8710,26 +8710,42 @@ float pluie(float t){
       if (pv && pv._jeu) { const bout = pv.ended || pv.currentTime >= (pv.duration || 10) - .1, tv = bout ? (pc + 1) * 10 : pc * 10 + pv.currentTime;
         if (tv > etat.G) { const hs = H.find(h => Math.min(h, FIN) > etat.G + .03); etat.G = Math.min(tv, hs === undefined ? FIN : Math.min(hs, FIN)); } } }
     const retenu = !!(etat.sortie && etat.sortie.tab && etat.aTab > .04 && t - etat.sortie.t0 < .4);
+    // un arrêt retient le film : tant que la page ne s'en est pas éloignée de plus d'1 s de film, il reste sur son image et sa boucle continue
+    // (c'est la distance en dessous de laquelle, page posée, il y revenait : il avançait d'un souffle, s'arrêtait, puis reculait)
+    const glAv = etat.glisse;   // à l'image précédente, le film avançait-il seul, et dans quel sens
+    const retenir = () => { if (REDUIT || etat.leger || etat.fige || etat.calme || !etat.video || etat.sortie) return false;
+      // sur un arrêt : là où le film se trouve, ou là où il était encore à l'image précédente (un saut de la page ne l'en arrache pas avant qu'on ait regardé où elle va)
+      const sur = v => H.findIndex(h => Math.abs(Math.min(h, FIN) - v) < .03); let ia = sur(etat.G === null ? Tsc : etat.G); if (ia < 0 && etat.T != null) ia = sur(etat.T);
+      if (ia < 0 || AVEC_BOUCLE.indexOf(ia) < 0) return false;
+      const hh = Math.min(H[ia], FIN), e = Math.abs(Tcs - hh); if (e < .03 || e >= 1) return false; etat.G = hh; return true; };
+    let tenu = etat.tenu ? retenir() : false;   // déjà retenu : il le reste tant que la page est à moins d'1 s de film
     if (etat.G !== null) {
       const sg = Math.sign(etat.G - Tsc);
-      if (etat.leger || etat.fige || etat.calme || Math.abs(etat.G - Tsc) < .01 || (etat.sgAv && sg && sg !== etat.sgAv)) etat.G = null;
-      else if (defile && sensP && sensP !== sg && !retenu) etat.G += (Tsc - etat.G) * (1 - Math.exp(-dtv * 2.5));
+      if (etat.leger || etat.fige || etat.calme || (!tenu && (Math.abs(etat.G - Tsc) < .01 || (etat.sgAv && sg && sg !== etat.sgAv)))) etat.G = null;
+      else if (defile && sensP && sensP !== sg && !retenu && !tenu && !(glAv && sensP === glAv)) etat.G += (Tsc - etat.G) * (1 - Math.exp(-dtv * 2.5));   // (s'il avance déjà seul dans le sens de la page, il ne lui court pas après en plus)
       etat.sgAv = etat.G === null ? 0 : Math.sign(etat.G - Tsc);
     }
+    if (!tenu && retenir()) { tenu = true; etat.sgAv = Math.sign(etat.G - Tsc); }   // le film arrive sur un arrêt (ou s'y trouve) et la page s'arrête à moins d'1 s : il y reste
+    etat.tenu = tenu;
     etat.glisse = 0;
     { const cur = etat.G === null ? Tsc : etat.G, surArret = H.some(h => Math.abs(Math.min(h, FIN) - cur) < .03);
-      if (!REDUIT && !(etat.leger || etat.fige || etat.calme) && etat.video && !defile && t - etat.calmeDepuis > .7 && !surArret && !etat.sortie) {
+      const lent = defile && Math.abs(Tcs - Tsc) * 3.6 < GLISSE;   // la page ne tire plus le film qu'à moins de sa vitesse réelle : il peut enchaîner seul, sans s'arrêter d'abord
+      const partir = surArret && (Tcs - cur) * etat.dir >= 1;   // posé sur un arrêt alors que la page est déjà à plus d'1 s de film au-delà (dans le sens du défilement) : il ne s'y attarde pas
+      // le film avance déjà seul et la page défile dans le même sens, sans l'avoir rattrapé : il continue (avant, il se figeait une à deux secondes en l'attendant)
+      // (tant que la page va dans ce sens, puis le temps qu'elle se pose ; défiler dans l'autre sens l'interrompt comme avant)
+      const suit = glAv !== 0 && etat.G !== null && Math.sign(etat.G - Tsc) === glAv && (!defile || sensP === glAv);
+      if (!REDUIT && !(etat.leger || etat.fige || etat.calme) && etat.video && (suit || ((!defile || lent) && t - etat.calmeDepuis > .7)) && (!surArret || partir) && !etat.sortie) {
         const av = h => Math.min(h, FIN) > cur + .03, ar = h => h < cur - .03, nA = H.find(av), nR = [...H].reverse().find(ar);
         // dans le sens du dernier défilement (plus de rebond) ; mais à moins d'1 s de film de l'arrêt qu'on vient de quitter, le film s'y repose (pas de long retour en arrière)
-        let d = etat.dir, n = d > 0 ? nA : nR; const o = d > 0 ? nR : nA; if (o !== undefined && Math.abs(Math.min(o, FIN) - cur) < 1) { n = o; d = -d; }
-        { const hp = H.find(h => Math.abs(Math.min(h, FIN) - Tsc) < .03); if (hp !== undefined && Math.abs(Math.min(hp, FIN) - cur) >= .03) { n = hp; d = Math.min(hp, FIN) > cur ? 1 : -1; } }   // la page est sur un arrêt : le film la rejoint
-        if (n !== undefined) { const hn = Math.min(n, FIN), pc = Math.min(NPL - 1, Math.floor(cur / 10)), pv = vids[pc]; etat.glisse = d;
+        let d = etat.dir, n = d > 0 ? nA : nR; const o = d > 0 ? nR : nA; if (o !== undefined && Math.abs(Math.min(o, FIN) - cur) < 1 && Math.abs(Math.min(o, FIN) - Tcs) < 1) { n = o; d = -d; }
+        if (!defile) { const hp = H.find(h => Math.abs(Math.min(h, FIN) - Tsc) < .03); if (hp !== undefined && Math.abs(Math.min(hp, FIN) - cur) >= .03) { n = hp; d = Math.min(hp, FIN) > cur ? 1 : -1; } }   // la page est sur un arrêt : le film la rejoint
+        if (n !== undefined && (!defile || d === sensP)) { const hn = Math.min(n, FIN), pc = Math.min(NPL - 1, Math.floor(cur / 10)), pv = vids[pc]; etat.glisse = d;   // (enchaîner sans attendre : seulement dans le sens où la page l'emmenait)
           if (d > 0 && pv && pv._jeu && (pv.ended || (pv.paused && pv.currentTime >= (pv.duration || 10) - .1))) etat.G = hn;   // le plan s'est terminé pendant que la page était figée
           else if (d > 0 && pv && pv._jeu && !pv.paused) etat.G = pv.currentTime >= (pv.duration || 10) - .1 ? hn : Math.min(hn, Math.max(cur, pc * 10 + pv.currentTime));   // en avant : le film suit ce que la vidéo LUE montre
           else etat.G = cur + Math.sign(hn - cur) * Math.min(GLISSE * dtv, Math.abs(hn - cur));
           if (Math.abs(etat.G - hn) < .03) { etat.G = hn; etat.glisse = 0; }   // arrivé : on ne lance pas la lecture du plan suivant
           etat.sgAv = Math.sign(etat.G - Tsc); } } }
-    const T = etat.G === null ? Tsc : etat.G, Tc = etat.G === null ? Tcs : (etat.G >= Tsc ? Math.max(Tcs, etat.G) : Math.min(Tcs, etat.G));
+    const T = etat.G === null ? Tsc : etat.G, Tc = etat.G === null ? Tcs : tenu ? etat.G : (etat.G >= Tsc ? Math.max(Tcs, etat.G) : Math.min(Tcs, etat.G));
     // l'éclair (son et lueur) part quand le film passe sur un éclair de la tempête (une seule fois par image, même en défilement rapide)
     if (onEclair && !etat.calme && !etat.fige && etat.eclairAv >= 0 && ECLAIRS.some(e => (etat.eclairAv < e && T >= e) || (etat.eclairAv > e && T <= e))) onEclair();
     etat.eclairAv = T;
