@@ -265,6 +265,17 @@ for (const scheme of ['light', 'dark']) {
 {
   const { ctx, page } = await open({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' }, '?lang=en');
   check(await page.evaluate(() => document.documentElement.lang) === 'en', 'la version anglaise s’affiche avec ?lang=en');
+  const mlEn = await page.evaluate(() => { const m = document.getElementById('mentions'); return m ? m.innerText : ''; });
+  check(/Legal notice/.test(mlEn) && /Host:/.test(mlEn) && /GitHub/.test(mlEn) && !/Hébergeur/.test(mlEn), 'les mentions légales sont traduites en anglais');
+  await ctx.close();
+}
+// 3 bis. mentions légales : à la toute fin de la page, avec l’éditeur, l’hébergeur et l’adresse de contact
+{
+  const { ctx, page } = await open({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce', locale: 'fr-FR' });
+  const ml = await page.evaluate(() => { const m = document.getElementById('mentions'); if (!m) return null; const r = m.getBoundingClientRect(), suite = [...document.querySelectorAll('main *')].filter(e => e.offsetHeight > 0 && !m.contains(e) && !e.contains(m) && (m.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING) && e.getBoundingClientRect().top >= r.bottom - 1 && e.innerText && e.innerText.trim());
+    return { texte: m.innerText, mail: (document.getElementById('ml-mail') || {}).textContent || '', apres: suite.length }; });
+  check(!!ml && /Mentions légales/.test(ml.texte) && /Éditeur/.test(ml.texte) && /Chahé Papazian/.test(ml.texte) && /Hébergeur/.test(ml.texte) && /GitHub, Inc\./.test(ml.texte) && /Données personnelles/.test(ml.texte), 'les mentions légales sont présentes (éditeur, hébergeur, données personnelles)');
+  check(!!ml && /@/.test(ml.mail) && ml.apres === 0, `les mentions légales donnent une adresse de contact et ferment la page (${ml ? ml.apres : '?'} texte après elles)`);
   await ctx.close();
 }
 {
