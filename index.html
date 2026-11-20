@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-U1NfJgJCnz+SFLbaVzVl82ewMbVNmao09Sbj37Ahj+Y=' 'sha256-2+ohXyHlcWDb/gUzExInoUfAtH5J6a/4pe2hgcffd/g=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-77qBgGXp5kNONu983pH7h7F1KooaEr9x9JevX9sq0Dg=' 'sha256-2+ohXyHlcWDb/gUzExInoUfAtH5J6a/4pe2hgcffd/g=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -2337,7 +2337,7 @@ html.nuit,html.nuit body,html.nuit.ld-pre{background:#070C1C}
 @keyframes veille-tic{30%{transform:scale(1.06)}}
 .nuit.ld-on .veille,.nuit.ld-pre .veille{opacity:0}
 .nuit.calm .veille,.nuit:not(.anim) .veille{display:none}
-@media (max-width:899px){.nuit .hero-sum{padding:14px 16px;margin-inline:-8px;border-radius:18px;background:rgba(7,12,28,.58);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}.nuit .contact{background:linear-gradient(180deg,rgba(7,12,28,.5),rgba(7,12,28,.66) 38%,rgba(7,12,28,.9))}.nuit .hero-name{font-size:clamp(46px,17vw,124px)}.nuit .veille{left:max(var(--gut), env(safe-area-inset-left, 0px));right:auto;bottom:auto;top:calc(76px + env(safe-area-inset-top, 0px));font-size:13px;padding:8px 14px 8px 12px}.nuit .hero-quart{margin-top:64px}}
+@media (max-width:899px){.nuit .hero-sum{padding:14px 16px;margin-inline:-8px;border-radius:18px;background:rgba(7,12,28,.58);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}.nuit .contact{background:linear-gradient(180deg,rgba(7,12,28,.18),rgba(7,12,28,.62) 38%,rgba(7,12,28,.9))}.nuit .hero-name{font-size:clamp(46px,17vw,124px)}.nuit .veille{left:max(var(--gut), env(safe-area-inset-left, 0px));right:auto;bottom:auto;top:calc(76px + env(safe-area-inset-top, 0px));font-size:13px;padding:8px 14px 8px 12px}.nuit .hero-quart{margin-top:64px}}
 @media (max-height:640px) and (min-width:900px){.nuit .veille{display:none}}
 
 /* ---------- chapitres : texte posé sur la nuit ---------- */
@@ -2388,6 +2388,7 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 /* --- sections accordées au film --- */
 .film .dz-card{--fd:#0A1126}
 .film .dz-in{box-shadow:0 0 0 1px rgba(244,237,224,.13),0 1px 0 0 rgba(255,236,204,.16) inset,0 40px 80px -40px rgba(2,5,14,.8)}
+@media (max-width:899px){.film .dz-in{background:color-mix(in oklab,var(--fd) 70%,transparent)}}
 .film .pc-card::before{background:rgba(8,14,32,.7);border-color:rgba(244,237,224,.12);box-shadow:0 1px 0 0 rgba(255,236,204,.12) inset}
 /* la frise du parcours reprend la ligne de bouées du film : un chapelet de petites lumières, et une lampe allumée à chaque étape */
 .film .pc-axis{height:6px;top:17px;background:radial-gradient(circle,rgba(255,217,160,.55) 0 1.4px,rgba(255,217,160,0) 2px) 0 50%/16px 6px repeat-x}
@@ -2417,15 +2418,15 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 .nuit .pre-sheet{padding-bottom:clamp(96px,14vh,170px)}
 .nuit .globe-wrap{visibility:hidden}
 .nuit .ct-left>p,.nuit .ct-status{color:var(--ink)}
-:root.nuit[data-theme="dark"] .contact{background:radial-gradient(112% 62% at 0% 70%,rgba(7,12,28,.64),rgba(7,12,28,.34) 46%,rgba(7,12,28,0) 100%),linear-gradient(180deg,rgba(7,12,28,0) 58%,rgba(7,12,28,.5) 82%,rgba(7,12,28,.8))}
+:root.nuit[data-theme="dark"] .contact{background:linear-gradient(98deg,rgba(7,12,28,.64) 0%,rgba(7,12,28,.5) 32%,rgba(7,12,28,.14) 62%,rgba(7,12,28,0) 80%),linear-gradient(180deg,rgba(7,12,28,0) 58%,rgba(7,12,28,.5) 82%,rgba(7,12,28,.8))}
 @media (max-width:899px){:root.nuit[data-theme="dark"] .contact{background:linear-gradient(180deg,rgba(7,12,28,.12),rgba(7,12,28,.5) 26%,rgba(7,12,28,.62) 70%,rgba(7,12,28,.86))}}
 .bilan{display:none}
 .nuit .bilan{display:block;grid-column:1 / 13;margin:0 0 clamp(18px,3vh,30px);max-width:44ch;font-family:var(--display);font-stretch:100%;font-weight:450;font-size:clamp(19px,1.9vw,28px);line-height:1.25;letter-spacing:-.015em;color:var(--ink);text-shadow:0 1px 22px rgba(7,12,28,.85)}
 .nuit .bilan b{font-weight:600;color:var(--accent-ink);font-variant-numeric:tabular-nums}
 /* Contact, à l'aube : un voile derrière le texte seulement, et des lettres ombrées (le ciel clair mangeait le texte crème) */
-@media (min-width:900px){.nuit .contact{background:linear-gradient(98deg,rgba(7,12,28,.64) 0%,rgba(7,12,28,.5) 32%,rgba(7,12,28,.14) 62%,rgba(7,12,28,0) 80%)}}
 .nuit .contact .quart,.nuit .contact .ct-title{text-shadow:0 1px 2px rgba(7,12,28,.5),0 0 30px rgba(7,12,28,.6)}
 .nuit .contact .quart b,.nuit .contact .bilan b{color:#FFE1D8}
+.nuit .contact .quart span{color:var(--ink)}
 
 /* ---------- allumage : l'écran d'ouverture ---------- */
 .allum{display:none}
@@ -8539,7 +8540,7 @@ float pluie(float t){
     c+=c*cone*1.5*(1.-.7*smoothstep(.2,.55,lum(c)))+mix(vec3(1.,.8,.5),vec3(1.,.93,.78),exp(-rq/.06))*cone*.6*(.75+.5*fbm(vec2(rq*9.-t*.3,an*5.)));`, 3: `    /* 3 : les lumières sur l'eau. La mer vient vers nous, le reflet de la lune papillote, les bouées dansent sur place et scintillent, les étoiles aussi. */
     vec3 ho=houle(u,.468)*Z.g;
     c=coule(u+ho.xy*4.2*PX,versNous(u,.468,3.,62.)*Z.g,2.6)*(1.+.16*ho.z);
-    c=paillettes(c,u,.468,.16,.5,.4*Z.g);
+    c=paillettes(c,u,.468,.3,.7,.4*Z.g);   // seulement sur l'eau claire (le reflet de la lune) : sur l'eau sombre, les paillettes changeaient la matière de l'eau par rapport à la boucle
     float bob=sin(t*1.7+u.x*23.)*2.4;
     vec3 cl=vid(u+vec2(sin(t*1.1+u.x*17.)*.8,bob)*PX)*(1.+.2*(n(vec2(u.x*40.,t*2.6))-.5));
     c=mix(c,cl,Z.r);
