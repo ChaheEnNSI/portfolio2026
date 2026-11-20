@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-77qBgGXp5kNONu983pH7h7F1KooaEr9x9JevX9sq0Dg=' 'sha256-2+ohXyHlcWDb/gUzExInoUfAtH5J6a/4pe2hgcffd/g=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-32qaTQV9aB9Jx1HZekjm2BAmxI8C7m32I11pcKuiD6Q=' 'sha256-2+ohXyHlcWDb/gUzExInoUfAtH5J6a/4pe2hgcffd/g=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8640,7 +8640,9 @@ float pluie(float t){
       if (c > 0 && (k !== ici() || a <= 0)) { k = ici(); a = 0; F.frais = 1; tDep = now; }   // nouvel arrêt : tout part de l'image d'arrêt exacte, le mouvement s'installe en douceur
       const e = EAU[k], sortant = !!(e && e.plein && etat.boucle < 0 && etat.sortie);   // on repart : le tableau se calme vite, le film reprend sur l'image d'arrêt
       { const but = sortant ? 0 : c; a += Math.sign(but - a) * Math.min(Math.abs(but - a), dt / (sortant ? .22 : .9)); }
-      if (c > 0 && a >= c && now - tDep > 2500) { carte(k + 1); carte(k - 1); }   // les arrêts voisins se préparent une fois celui-ci installé
+      // une fois cet arrêt installé, TOUS les autres se préparent, du plus proche au plus lointain (programme : un à la fois ; carte ; image d'arrêt) :
+      // en arrivant n'importe où, même par le menu, le tableau est prêt et prend le relais de la boucle avant qu'elle n'ait dérivé (fondu court)
+      if (c > 0 && a >= c && now - tDep > 2500) for (let d = 1; d <= 6; d++) for (const j of [k + d, k - d]) if (j >= 1 && j <= 6 && EAU[j] && EAU[j].plein) { carte(j); const ij = imgs[j]; if (ij && !ij.getAttribute('src')) ij.src = `v/film-${j}${suf}.jpg`; }
       // le tableau vivant part de l'image d'arrêt (la caméra des boucles bouge un peu : les cartes ne la suivraient pas)
       const m0 = e && e.plein && pleinOk ? carte(k) : null, P = m0 ? tableau(k) : null, m = P && pret(P) ? m0 : null, im = imgs[k];
       const veut = !!(m && im && im.complete && im.naturalWidth && (c > 0 || (plein && a > 0)));
