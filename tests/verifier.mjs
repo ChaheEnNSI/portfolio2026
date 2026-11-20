@@ -267,6 +267,8 @@ for (const scheme of ['light', 'dark']) {
   check(await page.evaluate(() => document.documentElement.lang) === 'en', 'la version anglaise s’affiche avec ?lang=en');
   const mlEn = await page.evaluate(() => { const m = document.getElementById('mentions'); return m ? m.innerText : ''; });
   check(/Legal notice/.test(mlEn) && /Host:/.test(mlEn) && /GitHub/.test(mlEn) && !/Hébergeur/.test(mlEn), 'les mentions légales sont traduites en anglais');
+  { const dr = await page.evaluate(() => { const t = document.body.innerText + ' ' + [...document.querySelectorAll('[aria-label],[title]')].map(e => (e.getAttribute('aria-label') || '') + ' ' + (e.getAttribute('title') || '')).join(' '); const m = t.match(/.{0,30}\bdrone\b.{0,30}/i); return m ? m[0] : ''; });
+    check(!dr, `anglais : le compagnon s’appelle Root partout dans le texte visible (${dr || 'aucun « drone »'})`); }
   await ctx.close();
 }
 // 3 ter. vitesse plafonnée de la molette (Chromium ; Firefox et WebKit plus bas)
@@ -278,6 +280,8 @@ await molette('Chromium');
     return { texte: m.innerText, mail: (document.getElementById('ml-mail') || {}).textContent || '', apres: suite.length }; });
   check(!!ml && /Mentions légales/.test(ml.texte) && /Éditeur/.test(ml.texte) && /Chahé Papazian/.test(ml.texte) && /Hébergeur/.test(ml.texte) && /GitHub, Inc\./.test(ml.texte) && /Données personnelles/.test(ml.texte), 'les mentions légales sont présentes (éditeur, hébergeur, données personnelles)');
   check(!!ml && /@/.test(ml.mail) && ml.apres === 0, `les mentions légales donnent une adresse de contact et ferment la page (${ml ? ml.apres : '?'} texte après elles)`);
+  { const dr = await page.evaluate(() => { const t = document.body.innerText + ' ' + [...document.querySelectorAll('[aria-label],[title]')].map(e => (e.getAttribute('aria-label') || '') + ' ' + (e.getAttribute('title') || '')).join(' '); const m = t.match(/.{0,30}\bdrone\b.{0,30}/i); return m ? m[0] : ''; });
+    check(!dr, `français : le compagnon s’appelle Root partout dans le texte visible (${dr || 'aucun « drone »'})`); }
   await ctx.close();
 }
 {
