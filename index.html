@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-7hUUl19ESealBNhVX1XtabKFD/F1omWVC0iAaF+xROo=' 'sha256-bdmKnYuHzOUBn489e/2yuo6OrAzXH5jETVFtOFVwgds=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-U1NfJgJCnz+SFLbaVzVl82ewMbVNmao09Sbj37Ahj+Y=' 'sha256-2+ohXyHlcWDb/gUzExInoUfAtH5J6a/4pe2hgcffd/g=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -2337,7 +2337,7 @@ html.nuit,html.nuit body,html.nuit.ld-pre{background:#070C1C}
 @keyframes veille-tic{30%{transform:scale(1.06)}}
 .nuit.ld-on .veille,.nuit.ld-pre .veille{opacity:0}
 .nuit.calm .veille,.nuit:not(.anim) .veille{display:none}
-@media (max-width:899px){.nuit .hero-sum{padding:14px 16px;margin-inline:-8px;border-radius:18px;background:rgba(7,12,28,.58);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}.nuit .contact{background:linear-gradient(180deg,rgba(7,12,28,.18),rgba(7,12,28,.62) 38%,rgba(7,12,28,.9))}.nuit .hero-name{font-size:clamp(46px,17vw,124px)}.nuit .veille{left:max(var(--gut), env(safe-area-inset-left, 0px));right:auto;bottom:auto;top:calc(76px + env(safe-area-inset-top, 0px));font-size:13px;padding:8px 14px 8px 12px}.nuit .hero-quart{margin-top:64px}}
+@media (max-width:899px){.nuit .hero-sum{padding:14px 16px;margin-inline:-8px;border-radius:18px;background:rgba(7,12,28,.58);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}.nuit .contact{background:linear-gradient(180deg,rgba(7,12,28,.5),rgba(7,12,28,.66) 38%,rgba(7,12,28,.9))}.nuit .hero-name{font-size:clamp(46px,17vw,124px)}.nuit .veille{left:max(var(--gut), env(safe-area-inset-left, 0px));right:auto;bottom:auto;top:calc(76px + env(safe-area-inset-top, 0px));font-size:13px;padding:8px 14px 8px 12px}.nuit .hero-quart{margin-top:64px}}
 @media (max-height:640px) and (min-width:900px){.nuit .veille{display:none}}
 
 /* ---------- chapitres : texte posé sur la nuit ---------- */
@@ -2371,6 +2371,7 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 .film-eau{opacity:1;mix-blend-mode:screen}
 .film-eau.plein{mix-blend-mode:normal;opacity:0;transition:none}
 .film-eau.plein.on{opacity:1;transition:opacity .6s ease}
+.film-eau.plein.on.net{transition:opacity .14s ease}
 .film-eau.plein.part{transition:opacity .15s ease}
 .film-lampe.on{opacity:1}
 .film-lampe.on.bouge{opacity:.6}
@@ -2421,6 +2422,10 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 .bilan{display:none}
 .nuit .bilan{display:block;grid-column:1 / 13;margin:0 0 clamp(18px,3vh,30px);max-width:44ch;font-family:var(--display);font-stretch:100%;font-weight:450;font-size:clamp(19px,1.9vw,28px);line-height:1.25;letter-spacing:-.015em;color:var(--ink);text-shadow:0 1px 22px rgba(7,12,28,.85)}
 .nuit .bilan b{font-weight:600;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+/* Contact, à l'aube : un voile derrière le texte seulement, et des lettres ombrées (le ciel clair mangeait le texte crème) */
+@media (min-width:900px){.nuit .contact{background:linear-gradient(98deg,rgba(7,12,28,.64) 0%,rgba(7,12,28,.5) 32%,rgba(7,12,28,.14) 62%,rgba(7,12,28,0) 80%)}}
+.nuit .contact .quart,.nuit .contact .ct-title{text-shadow:0 1px 2px rgba(7,12,28,.5),0 0 30px rgba(7,12,28,.6)}
+.nuit .contact .quart b,.nuit .contact .bilan b{color:#FFE1D8}
 
 /* ---------- allumage : l'écran d'ouverture ---------- */
 .allum{display:none}
@@ -8638,7 +8643,7 @@ float pluie(float t){
       // le tableau vivant part de l'image d'arrêt (la caméra des boucles bouge un peu : les cartes ne la suivraient pas)
       const m0 = e && e.plein && pleinOk ? carte(k) : null, P = m0 ? tableau(k) : null, m = P && pret(P) ? m0 : null, im = imgs[k];
       const veut = !!(m && im && im.complete && im.naturalWidth && (c > 0 || (plein && a > 0)));
-      if (veut !== plein) { plein = veut; cv.classList.toggle('plein', plein); montre = 0; cv.classList.remove('on', 'part'); gT = gN = 0; }
+      if (veut !== plein) { plein = veut; cv.classList.toggle('plein', plein); montre = 0; cv.classList.remove('on', 'part', 'net'); gT = gN = 0; }
       etat.tableau = plein && montre === 2 && c > 0 ? k : -1;   // pour la sortie : le film repart de l'image d'arrêt, celle que montre le tableau
       etat.aTab = etat.tableau >= 0 ? a : 0;                    // ... et il attend que le tableau se soit calmé
       { const dv = plein ? 'tableau' : sonde ? 'sonde' : pleinOk ? 'voile' : 'retire'; if (cv.dataset.vivant !== dv) cv.dataset.vivant = dv; }
@@ -8655,7 +8660,7 @@ float pluie(float t){
       // définition : celle de l'image, sans dépasser ce que l'écran peut montrer
       const port = suf === '-p', r = cv.getBoundingClientRect();
       let W = Math.round((port ? 405 : 960) * echV), Hh = Math.round(540 * echV);
-      if (plein) { const W0 = im.naturalWidth, H0 = im.naturalHeight, vis = Math.min(1, Math.max(r.width / W0, r.height / H0) * Math.min(devicePixelRatio || 1, 2)), s = Math.max(.3, Math.ceil(vis * 8) / 8 * ech); W = Math.round(W0 * s); Hh = Math.round(H0 * s); }
+      if (plein) { const W0 = im.naturalWidth, H0 = im.naturalHeight, vis = Math.min(1, Math.max(r.width / W0, r.height / H0) * Math.min(devicePixelRatio || 1, 2)), s = Math.max(.3, (vis >= .7 ? 1 : Math.ceil(vis * 8) / 8) * ech); W = Math.round(W0 * s); Hh = Math.round(H0 * s); }
       if (cv.width !== W || cv.height !== Hh) { cv.width = W; cv.height = Hh; gl.viewport(0, 0, W, Hh); }
       // la lampe du curseur : de l'écran vers l'image (même recadrage que la vidéo : object-fit cover, dans la scène qui respire)
       const sc = Math.max(r.width / W, r.height / Hh), cw = port ? .421875 : 1, cx = port ? e.crop : 0;
@@ -8684,7 +8689,7 @@ float pluie(float t){
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         // affiché en fondu : une première image dessinée (calque encore transparent), puis il apparaît
         if (montre === 0) montre = 1;
-        else if (montre === 1 && c > 0) { montre = 2; tMontre = now; cv.classList.remove('part'); cv.classList.add('on'); }
+        else if (montre === 1 && c > 0) { montre = 2; tMontre = now; cv.classList.remove('part'); cv.classList.toggle('net', now - tDep < 450); cv.classList.add('on'); }   // (arrivé juste après la boucle : fondu très court, les deux images sont encore les mêmes)
         else if (montre === 2 && (c > 0) !== cv.classList.contains('on')) { cv.classList.toggle('on', c > 0); cv.classList.toggle('part', !(c > 0)); }   // il s'efface en même temps que la boucle
       } else { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); }
       if (e.hor || e.phare) {   // la mer qui scintille et le faisceau du phare, par-dessus (en lumière ajoutée)
@@ -8848,9 +8853,9 @@ function setupNuit() {
   const elH = $('#hd-heure-t'), veille = $('#veille'), vT = $('#veille-t'), bilan = $('#bilan'), voile = $('.nuit-voile'), ovEl = $('#ov'), mainEl = $('main');
   const secs = ['#profil', '#parcours', '#projets', '#competences', '#contact'].map(s => $(s));
   let N = null, A = [0, 1, 2, 3, 4, 5, 6], vh = innerHeight, raf = 0, lastH = '', lastV = -1, chars = [], rects = [], rectsAt = -1e9, tenu = false, pris = 0, total = 12;
-  let YS = [0, 0, 0, 0, 0], PADH = [0, 0, 0, 0, 0], PADB = [0, 0, 0, 0, 0];
+  let YS = [0, 0, 0, 0, 0], PADH = [0, 0, 0, 0, 0], PADB = [0, 0, 0, 0, 0], maxY = 1;
   const ancres = () => {
-    vh = innerHeight; const y = el => el.getBoundingClientRect().top + scrollY, max = Math.max(1, document.documentElement.scrollHeight - vh);
+    vh = innerHeight; const y = el => el.getBoundingClientRect().top + scrollY, max = Math.max(1, document.documentElement.scrollHeight - vh); maxY = max;
     YS = secs.map(y); PADH = secs.map(el => parseFloat(getComputedStyle(el).paddingTop) || 0); PADB = secs.map(el => parseFloat(getComputedStyle(el).paddingBottom) || 0);
     A = [0, html.classList.contains('hero-pin') ? vh * .82 : Math.min(vh * .9, YS[0] * .6), ...secs.map((el, i) => Math.min(max, YS[i] + PADH[i] - vh * .62))];
     for (let i = 1; i < A.length; i++) if (A[i] <= A[i - 1]) A[i] = A[i - 1] + 1;
@@ -8893,7 +8898,10 @@ function setupNuit() {
 
   // plans dégagés : à l'ouverture de chaque chapitre le décor est en pleine lumière ; le voile ne vient que pour la lecture
   let kV = 1, tEcl = 0, chAv = -1;
-  const lecture = y => { let i = 0; while (i < A.length - 2 && y > A[i + 1]) i++; if (i < 1) return 1; const fin = YS[i - 1] - (i >= 2 ? PADB[i - 2] : 0) - y, sortie = lisse(vh * .22, vh * .7, fin); return i < 2 ? sortie : lisse(vh * .05, vh * .42, y - A[i]) * sortie; };
+  const lecture = y => { let i = 0; while (i < A.length - 2 && y > A[i + 1]) i++; if (i < 1) return 1;
+    // Contact : le décor s'ouvre en pleine lumière, puis le voile revient pour la lecture (avant, il ne revenait jamais : les bandes restaient et le texte les traversait)
+    { const aC = A[A.length - 1]; if (y > aC) return lisse(vh * .04, Math.max(vh * .1, Math.min(vh * .3, (maxY - aC) * .75)), y - aC); }
+    const fin = YS[i - 1] - (i >= 2 ? PADB[i - 2] : 0) - y, sortie = lisse(vh * .22, vh * .7, fin); return i < 2 ? sortie : lisse(vh * .05, vh * .42, y - A[i]) * sortie; };
   // ---------- son d'ambiance : la mer, le vent, la pluie, le tonnerre. Tout est fabriqué ici (aucun fichier) et reste coupé tant qu'on ne le demande pas ----------
   const son = (() => {
     // le son de la nuit, créé par le navigateur (aucun fichier audio). Il suit l'image du film : la mer, les vagues une à une, le vent, la pluie, le tonnerre, l'aube.
@@ -9394,7 +9402,7 @@ window.__site = { projets: PROJETS.map(p => p.titre), chat: chatCtl, L, tour: to
       let x = A.bx, y = A.by, z = A.bz; P[0] = x; P[1] = y; P[2] = z;
       for (let i = 0; i < NJ; i++) {
         const souple = 1 + i * .45, raide = 46 / souple * (1 + 5 * geste), amort = 5.5 * (1 + 1.2 * geste), fl = .55 + i * .1;
-        const ln = pose.lx * nx + ly * ny + pose.lz * nz_, lb = pose.lx * bx + ly * by + pose.lz * bz;   // la traînée de l'eau, vue de cette articulation : le bras s'aligne peu à peu sur le courant
+        const ln = clamp(pose.lx * nx + ly * ny + pose.lz * nz_, -.6, .6), lb = clamp(pose.lx * bx + ly * by + pose.lz * bz, -.6, .6);   // la traînée de l'eau, vue de cette articulation : le bras s'aligne peu à peu sur le courant
         let tb = lerp(lerp(A.rest[i], NAGE[i], serre), FREIN[i], ouvre * OUVJ[j]);
         tb += k * (Math.sin(kt * 1.7 + j * 1.3 - i * .7) * (.05 + i * .024) * (1 - .5 * serre) + (i < 3 ? .05 * Math.sin(t * 2.2 - i * .4) : 0)) + pose.coup * COUP[i] * pose.nage + ln * fl * 1.5;
         if (pose.charge > 0) tb += .05 * pose.charge * Math.sin(t * 41 + j * 2 + i);                                                    // il tremble
@@ -9844,7 +9852,10 @@ vec3 transformed = aC + (position - aC) * smoothstep(0., .22, pA) * (1. + .1 * s
     if (termOn !== lastTerm) { lastTerm = termOn; nextPlan = 0; obsAt = -1e9; }   // le terminal s’ouvre : il lui laisse la place
     const tourSp = !chatOpen && !egg.on && S.tour && S.tour.spot();
     if (chatOpen) {
-      if (W <= 560) { const cb = $('#chat').getBoundingClientRect(); spot = { x: W * .5, y: cb.top - DZ * .32, sc: .8, hz: 1, ha: 2, ph: 0 }; path = null; }
+      const cb = $('#chat').getBoundingClientRect();
+      if (W <= 560) { spot = { x: W * .5, y: cb.top - DZ * .32, sc: .8, hz: 1, ha: 2, ph: 0 }; path = null; }
+      else if (cb.width > 40) { const cs2 = $('#chat').style, sc = W < 760 ? .64 : .8, hw = DZ * .25 * sc;
+        spot = { x: cs2.getPropertyValue('--ox') === '100%' ? cb.right + 14 + hw : cb.left - 14 - hw, y: cs2.getPropertyValue('--oy') === '100%' ? cb.bottom - 60 : cb.top + 70, sc, hz: 1, ha: 2, ph: 0 }; path = null; }
     } else if (tourSp) {
       if (STN.on) stuntStop(now);
       spot = { x: tourSp.x, y: tourSp.y, sc: W < 760 ? .64 : .8, hz: 1, ha: 2, ph: 0, tour: true }; path = null;   // visite guidée : il se pose sur la carte
@@ -9902,7 +9913,7 @@ vec3 transformed = aC + (position - aC) * smoothstep(0., .22, pA) * (1. + .1 * s
     const py = st.y + st.lift + st.drag + (Math.sin(t * (1.6 + hz) + ph) * ha + nz(t * .27 + ph) * 2.4) * hov + pose.sy;
 
     // posture : un poulpe nage le manteau en avant ; il le penche vers là où il va, et se redresse en freinant
-    st.roll = damp(st.roll, clamp(-st.vx / 300, -1, 1) * .6 * clamp(speed / 170, 0, 1) + clamp(-st.ax / 5200, -.25, .25) + nz(t * .4 + 2) * .045 * hov + fx.roll + STN.roll, 6, dt);
+    st.roll = damp(st.roll, clamp(-st.vx / 300, -1, 1) * (REDUCE ? .22 : .6) * clamp(speed / 170, 0, 1) + clamp(-st.ax / 5200, -.25, .25) + nz(t * .4 + 2) * .045 * hov + fx.roll + STN.roll, 6, dt);
     st.pitch = damp(st.pitch, clamp(st.ay / 5200, -.2, .2) + clamp(st.drag / 300, -.05, .05), 8, dt);
 
     // regard
@@ -9971,9 +9982,10 @@ vec3 transformed = aC + (position - aC) * smoothstep(0., .22, pA) * (1. + .1 * s
       }
     }
     // la nage : plus il va vite, plus il serre les bras et avance par à-coups ; quand il freine, il les ouvre
-    { const vN = Math.max(speed, 1), dec = clamp((-(st.ax * st.vx + st.ay * st.vy) / vN - 150) / 600, 0, 1) * clamp(speed / 70, 0, 1);
-      pose.nage = damp(pose.nage, egg.on ? 0 : clamp((speed - 40) / 200, 0, 1) * (1 - dec), 6, dt);
-      pose.frein = damp(pose.frein, Math.max(dec, .6 * st.hop, peur), 9, dt);
+    { const vN = Math.max(speed, 1), dec = clamp((-(st.ax * st.vx + st.ay * st.vy) / vN - 60) / 260, 0, 1) * clamp(speed / 60, 0, 1);
+      const doux = REDUCE ? .35 : 1;                                                       // mouvement réduit : les trajets sont très brefs, la pose de nage reste discrète
+      pose.nage = damp(pose.nage, egg.on ? 0 : clamp((speed - 40) / 200, 0, 1) * (1 - dec) * doux, 6, dt);
+      pose.frein = damp(pose.frein, Math.max(dec * doux, .6 * st.hop, peur), 9, dt);
       pose.charge = charge;
       pose.ph = (pose.ph + dt * (1.1 + speed / 500)) % 1;
       const ouv = pose.ph < .3 ? 1 - sm(pose.ph / .3) : sm((pose.ph - .3) / .7), elan = REDUCE ? 0 : 4.5 * pose.nage * Math.sin(Math.PI * clamp(pose.ph / .55, 0, 1));
@@ -9981,7 +9993,7 @@ vec3 transformed = aC + (position - aC) * smoothstep(0., .22, pA) * (1. + .1 * s
       // la traînée de l'eau, ramenée dans le repère de son corps : ses bras partent à l'opposé du mouvement
       const rz = egg.on ? 0 : st.roll + STN.spinZ, cr = Math.cos(rz), sr = Math.sin(rz);
       const Lx = clamp(-st.vx / 520 - st.ax / 5200, -1.3, 1.3), Ly = clamp(st.vy / 520 + st.ay / 5200, -1.3, 1.3), l1 = Lx * cr + Ly * sr;
-      const ry = st.yaw * 1.1; pose.lx = l1 * Math.cos(ry); pose.lz = l1 * Math.sin(ry); pose.ly = -Lx * sr + Ly * cr; }
+      const ry = st.yaw * 1.1; pose.lx = l1 * Math.cos(ry) * doux; pose.lz = l1 * Math.sin(ry) * doux; pose.ly = (-Lx * sr + Ly * cr) * doux; }
     if (STN.on) stuntPose(now, t); else Object.assign(Pz, Pz0);
     // la tête (et ses lunettes) se tourne vers ce qu'il regarde ; tout le corps suit
     drone.scale.setScalar(egg.on ? egg.scale : 1);
@@ -10007,7 +10019,7 @@ vec3 transformed = aC + (position - aC) * smoothstep(0., .22, pA) * (1. + .1 * s
       camera.fov = 2 * Math.atan(TAN15 * 2 * H / (DZ * st.sc)) * 180 / Math.PI; camera.aspect = W / H;
       camera.setViewOffset(2 * W, 2 * H, W - vx0, H - vy0, W, H);
     }
-    { const au = window.nuitAube ? window.nuitAube() : 1; renderer.toneMappingExposure = .82 + .26 * au; }   // la nuit, Root est éclairé comme le film (plus sombre) ; à l'aube, plein jour
+    { const au = window.nuitAube ? window.nuitAube() : 1; renderer.toneMappingExposure = .82 + .18 * au; }   // la nuit, Root est éclairé comme le film (plus sombre) ; à l'aube, plein jour
     renderer.render(scene, camera);
     wrap.style.transform = full ? 'translate3d(0,0,0)' : `translate3d(${(px - CS2 / 2).toFixed(1)}px,${(py - CS2 / 2).toFixed(1)}px,0) scale(${st.sc.toFixed(3)})`;
     hit.style.transform = `translate3d(${(px - DZ * .25).toFixed(1)}px,${(py - DZ * .25).toFixed(1)}px,0) scale(${st.sc.toFixed(3)})`;
