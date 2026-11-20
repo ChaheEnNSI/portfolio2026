@@ -2,11 +2,10 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-niYyhST97OY2H9iRvmoNEvbcJ/mikzCALfJGPf5ya0s=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-7hUUl19ESealBNhVX1XtabKFD/F1omWVC0iAaF+xROo=' 'sha256-bdmKnYuHzOUBn489e/2yuo6OrAzXH5jETVFtOFVwgds=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Portfolio de Chahé Papazian, alternant ingénieur sécurité et réseaux chez Econocom, en cycle ingénieur à l’EFREI Paris.">
 <meta name="theme-color" content="#070C1C">
 <link rel="preload" as="image" href="v/film-0.jpg" fetchpriority="high" media="(orientation: landscape)"><link rel="preload" as="image" href="v/film-0-p.jpg" fetchpriority="high" media="(orientation: portrait)">
@@ -1755,7 +1754,7 @@ body:has(.fx) .ids{display:none}
 .idr-acts .pill-btn.go{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .idr-acts .pill-btn.go:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .idr-acts .pill-btn:focus-visible{outline:2px solid var(--accent-ink);outline-offset:3px}
-/* poulet : easter-egg du terminal / drone. Un poulet (dessin original) surgit ; on l’enregistre si on veut */
+/* poulet : easter-egg du terminal / de la discussion. Un poulet (dessin original) surgit ; on l’enregistre si on veut */
 .pou{position:fixed;inset:0;z-index:126;display:grid;place-items:center;padding:20px;background:color-mix(in srgb,var(--bg) 62%,transparent)}
 .pou[hidden]{display:none}
 .pou-card{width:min(430px,100%);padding:clamp(20px,4vw,30px);border-radius:18px;background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:0 30px 80px -30px rgba(15,26,48,.5);text-align:center;animation:cvx-pop .5s var(--e-out) both}
@@ -1780,7 +1779,7 @@ body:has(.fx) .ids{display:none}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom, 0px));z-index:130;transform:translate(-50%,16px);opacity:0;pointer-events:none;padding:12px 18px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:14px;font-weight:500;transition:opacity .3s,transform .6s var(--e-out);max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
-/* ---------- Conversation du drone ---------- */
+/* ---------- Conversation de Root ---------- */
 .chat{position:fixed;left:16px;top:96px;z-index:95;width:min(370px,calc(100vw - 32px));max-height:min(72vh,580px);display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:20px;box-shadow:0 34px 90px -28px rgba(15,25,47,.5),0 2px 0 rgba(255,255,255,.05) inset;overflow:hidden;transform-origin:var(--ox,100%) var(--oy,50%)}
 .chat-head{display:flex;align-items:center;gap:10px;padding:14px 14px 14px 18px;border-bottom:1px solid var(--line)}
 .chat-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
@@ -1813,7 +1812,7 @@ body:has(.fx) .ids{display:none}
 .chat-opt.ghost{border-style:dashed}
 @media (max-width:560px){.chat{left:12px!important;right:12px;top:auto!important;bottom:calc(12px + env(safe-area-inset-bottom, 0px));width:auto;max-height:64vh;transform-origin:85% 100%}}
 
-/* ---------- Drone ---------- */
+/* ---------- Root, le compagnon ---------- */
 :root{--dz:140px}
 @media (max-width:760px){:root{--dz:96px}}
 .drone{position:fixed;left:0;top:0;z-index:60;width:var(--dz);height:var(--dz);pointer-events:none;opacity:0;transition:opacity .6s;will-change:transform}
@@ -1822,7 +1821,7 @@ body:has(.fx) .ids{display:none}
 .drone-hit{position:fixed;left:0;top:0;z-index:61;width:calc(var(--dz) * .5);height:calc(var(--dz) * .5);border-radius:50%;will-change:transform;background:transparent}
 .drone-hit:focus-visible{outline:2px solid var(--accent-ink);outline-offset:6px}
 .drone-hit.fallback{transform:none!important;left:auto;top:auto;right:16px;bottom:calc(16px + env(safe-area-inset-bottom, 0px));width:56px;height:56px;background:var(--surface);border:1px solid var(--line);box-shadow:0 14px 34px -12px rgba(15,25,47,.45)}
-.drone-hit.fallback::before{content:"";position:absolute;inset:15px;border-radius:50%;background:var(--accent);box-shadow:inset 0 0 0 6px var(--ink)}
+.drone-hit.fallback::before{content:"";position:absolute;inset:6px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23FF6B5B' stroke-width='4.6' stroke-linecap='round'%3E%3Cpath d='M13 29c-3 3-6 3-8 1'/%3E%3Cpath d='M18 32c-1 5-4 7-8 7'/%3E%3Cpath d='M24 33v8'/%3E%3Cpath d='M30 32c1 5 4 7 8 7'/%3E%3Cpath d='M35 29c3 3 6 3 8 1'/%3E%3C/g%3E%3Cellipse cx='24' cy='19.5' rx='14.5' ry='14' fill='%23FF6B5B'/%3E%3Cpath d='M12.6 12.6c2-3.6 6-6.2 10.6-6.6' fill='none' stroke='%23FFB3A6' stroke-width='2.2' stroke-linecap='round' opacity='.8'/%3E%3Cpath d='M10.5 16.6h27v2.2c0 3.3-2.6 6-5.9 6h-1.9c-2.5 0-4.6-1.6-5.4-3.9h-.6c-.8 2.3-2.9 3.9-5.4 3.9h-1.9c-3.3 0-5.9-2.7-5.9-6z' fill='%230B1022'/%3E%3Cpath d='M14 18.4l3.6 0M27.6 18.4l3.6 0' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' opacity='.85'/%3E%3Cpath d='M20.6 28.6c2.2 1.5 4.9 1.3 6.6-.3' fill='none' stroke='%230B1022' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
 .drone-shot{--c:var(--accent);--f:0;position:fixed;left:0;top:0;z-index:62;pointer-events:none;width:var(--s,180px);height:var(--s,180px);opacity:0;border-radius:6px;
   background:linear-gradient(var(--c),var(--c)) 0 0/24px 3px,linear-gradient(var(--c),var(--c)) 0 0/3px 24px,linear-gradient(var(--c),var(--c)) 100% 0/24px 3px,linear-gradient(var(--c),var(--c)) 100% 0/3px 24px,
   linear-gradient(var(--c),var(--c)) 0 100%/24px 3px,linear-gradient(var(--c),var(--c)) 0 100%/3px 24px,linear-gradient(var(--c),var(--c)) 100% 100%/24px 3px,linear-gradient(var(--c),var(--c)) 100% 100%/3px 24px;background-repeat:no-repeat}
@@ -2158,7 +2157,7 @@ html.term-on .term-tab,html.chat-on .term-tab,html.tour-on .term-tab,html.ld-on 
   .t-r{grid-template-columns:var(--cm,var(--cols))}.t-hm{display:none}.t-w2{grid-column:2 / -1}
   .k-help{--cm:13ch 1fr}.k-trace{--cm:3ch 1fr}.k-nmap{--cm:10ch 1fr}.k-ls{--cm:11ch 1fr}.k-cert{--cm:5ch 1fr}
 }
-/* ---------- Visite guidée : le drone verrouille chaque cible et commente ---------- */
+/* ---------- Visite guidée : Root verrouille chaque cible et commente ---------- */
 .tour-ring{position:fixed;left:0;top:0;z-index:59;width:0;height:0;pointer-events:none;visibility:hidden;--rc:var(--accent);--ro:var(--on-accent)}
 .tour-ring.on{visibility:visible}
 .tour-lock{position:absolute;inset:0;border-radius:14px;opacity:0}
@@ -2484,7 +2483,7 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
       <button class="pill-btn hd-tl" id="tl-btn" type="button" data-tl aria-haspopup="dialog" data-t="tlBtn">En 30 s</button>
       <button class="pill-btn hd-cv mag" data-cv>CV <span aria-hidden="true">↓</span></button>
       <button class="pill-btn son-btn" id="son-btn" data-son type="button" aria-pressed="false" hidden><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z"/><path class="son-on" d="M15.5 9a4.2 4.2 0 0 1 0 6M18.3 6.4a8 8 0 0 1 0 11.2"/><path class="son-off" d="M16 9.5l5 5M21 9.5l-5 5"/></svg><span class="son-l" data-t="son">Son</span></button>
-      <button class="pill-btn calm-btn" id="calm-btn" data-calm type="button" aria-pressed="false" title="Mode calme : masque le drone et ses animations" data-tt="calmT"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="calm-l" data-t="calm">Mode calme</span></button>
+      <button class="pill-btn calm-btn" id="calm-btn" data-calm type="button" aria-pressed="false" title="Mode calme : masque Root et ses animations" data-tt="calmT"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="calm-l" data-t="calm">Mode calme</span></button>
       <button class="pill-btn theme-btn" id="theme-btn" type="button" aria-pressed="false" aria-label="Thème sombre" title="Thème clair ou sombre" data-ta="themeL" data-tt="themeT"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path class="th-fill" d="M12 3.8a8.2 8.2 0 0 1 0 16.4z" fill="currentColor"/></svg></button>
       <button class="pill-btn lang-btn" id="lang-btn" type="button" lang="en" aria-label="EN, read in English">EN</button>
       <button class="pill-btn hd-menu" id="menu-btn" aria-expanded="false" aria-controls="menu" data-t="menu">Menu</button>
@@ -2497,7 +2496,7 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
     <button class="pill-btn menu-close" id="menu-close" data-t="close">Fermer</button>
     <ol id="menu-list"></ol>
     <button class="pill-btn son-btn menu-son" data-son type="button" aria-pressed="false" hidden><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z"/><path class="son-on" d="M15.5 9a4.2 4.2 0 0 1 0 6M18.3 6.4a8 8 0 0 1 0 11.2"/><path class="son-off" d="M16 9.5l5 5M21 9.5l-5 5"/></svg><span data-t="sonM">Son d’ambiance</span></button>
-    <button class="pill-btn calm-btn menu-calm" data-calm type="button" aria-pressed="false"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span data-t="calmM">Mode calme : sans le drone</span></button>
+    <button class="pill-btn calm-btn menu-calm" data-calm type="button" aria-pressed="false"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span data-t="calmM">Mode calme : sans Root</span></button>
     <div class="menu-foot lbl" id="menu-foot"></div>
   </div>
 </div>
@@ -2637,7 +2636,7 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
           <canvas class="globe" id="globe" aria-label="Globe interactif : connexions depuis Paris, Villejuif (EFREI) et Puteaux (Econocom)" data-ta="globe" role="img"></canvas>
         </div>
       </div>
-      <!-- flag 1/3 — bien vu, tu lis le code source. base64 : Q0hBSEV7cjAwdF9nYXJkZV90b3Vqb3Vyc19zZXNfbHVuZXR0ZXN9 . Les 2 autres sont dans la console et le terminal (commande « secu »). Donne-les au drone, ou à « submit » dans le terminal. -->
+      <!-- flag 1/3 — bien vu, tu lis le code source. base64 : Q0hBSEV7cjAwdF9nYXJkZV90b3Vqb3Vyc19zZXNfbHVuZXR0ZXN9 . Les 2 autres sont dans la console et le terminal (commande « secu »). Donne-les à Root, ou à « submit » dans le terminal. -->
       <p class="secu" data-reveal><span class="secu-ico" id="secu-ico" aria-hidden="true"></span><span><b data-t="secuT">Ce site, côté sécurité :</b> <span data-t="secuS">aucun traceur, aucune donnée envoyée (une règle de sécurité l’interdit), et chaque bibliothèque externe est vérifiée par son empreinte.</span> <a class="secu-a" href="https://chaheennsi.github.io/portfolio2026/.well-known/security.txt" data-t="secuL">Signaler une faille</a></span></p>
       <footer class="foot">
         <span class="lbl" id="foot-copy"></span>
@@ -2700,16 +2699,16 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
   </div>
 </div>
 <div class="drone" id="drone" aria-hidden="true"><canvas id="drone-cv"></canvas></div>
-<button class="drone-hit" id="drone-hit" aria-label="Poser une question au drone" data-ta="ask" aria-haspopup="dialog" aria-expanded="false" data-cursor="Parler" data-tc="Parler" hidden></button>
+<button class="drone-hit" id="drone-hit" aria-label="Poser une question à Root" data-ta="ask" aria-haspopup="dialog" aria-expanded="false" data-cursor="Parler" data-tc="Parler" hidden></button>
 <div class="drone-say" id="drone-say" role="status" aria-live="polite"></div>
 <div class="drone-shot" id="drone-shot" aria-hidden="true"></div>
 <div class="drone-tether" id="drone-tether" aria-hidden="true"><i></i></div>
 <div class="chat" id="chat" role="dialog" aria-label="Questions sur Chahé" data-ta="chat" hidden>
-  <div class="chat-head"><span class="chat-dot" aria-hidden="true"></span><span class="lbl" data-t="drone">Drone · Guide du site</span><button class="chat-x" aria-label="Fermer la conversation" data-ta="chatx">✕</button></div>
+  <div class="chat-head"><span class="chat-dot" aria-hidden="true"></span><span class="lbl" data-t="drone">Root · Guide du site</span><button class="chat-x" aria-label="Fermer la conversation" data-ta="chatx">✕</button></div>
   <div class="chat-log" id="chat-log" aria-live="polite" data-lenis-prevent></div>
   <div class="chat-opts" id="chat-opts"></div>
   <form class="chat-ask" id="chat-ask" autocomplete="off">
-    <input id="chat-in" type="text" maxlength="300" enterkeyhint="send" spellcheck="true" placeholder="Pose ta question…" data-tp="askph" aria-label="Ta question pour le drone" data-ta="askl">
+    <input id="chat-in" type="text" maxlength="300" enterkeyhint="send" spellcheck="true" placeholder="Pose ta question…" data-tp="askph" aria-label="Ta question pour Root" data-ta="askl">
     <button type="submit" class="chat-send" id="chat-send" aria-label="Envoyer" data-ta="send"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </form>
 </div>
@@ -2900,13 +2899,13 @@ const UI_EN = {
   'En cours': 'In progress', 'Obtenue': 'Earned', 'Voir l’attestation': 'View certificate', 'Ouvrir': 'Open', 'Retourner': 'Flip', 'Parler': 'Chat', 'Curriculum vitæ': 'CV', 'en cours': 'now',
   'Projets': 'Projects', 'Rôle': 'Role', 'Cadre': 'Type', 'Outils': 'Tools', 'Schéma de principe': 'How it works',
   'Faille exploitée': 'Exploited flaw', 'Correction': 'Fix',
-  'Adresse copiée': 'Address copied', 'Mode calme : le drone se repose': 'Calm mode: the drone is resting', 'Le drone reprend du service': 'The drone is back on duty', 'Adresse sélectionnée, copie-la avec Ctrl+C': 'Address selected, copy it with Ctrl+C', 'CV enregistré': 'CV saved',
+  'Adresse copiée': 'Address copied', 'Mode calme : Root se repose': 'Calm mode: Root is resting', 'Root reprend du service': 'Root is back on duty', 'Adresse sélectionnée, copie-la avec Ctrl+C': 'Address selected, copy it with Ctrl+C', 'CV enregistré': 'CV saved',
   
   'Connexion au réseau': 'Connecting to the network', 'Chiffrement de la session': 'Encrypting the session', 'Vérification des accès': 'Checking access', 'Accès autorisé': 'Access granted',
-  'Fais-moi visiter': 'Show me around', 'Surprends-moi': 'Surprise me', 'Le drone écrit': 'The drone is typing',
+  'Fais-moi visiter': 'Show me around', 'Surprends-moi': 'Surprise me', 'Root écrit': 'Root is typing',
   'Fin de la visite. Une question ? Clique-moi, ou ouvre le terminal en bas.': 'End of the tour. A question? Click me, or open the terminal at the bottom.', 'Suis-moi !': 'Follow me!', 'D’accord ! La visite reste disponible en haut de la page.': 'Okay! The tour stays available at the top of the page.', 'Psst… un terminal se cache ici. Ouvre-le et pose-moi tes questions !': 'Psst… a terminal is hiding here. Open it and ask me anything!', 'Le terminal est toujours là : tape help, ou pose ta question.': 'The terminal is still here: type help, or ask your question.',
   'Salut ! Clique-moi si tu as une question sur Chahé.': 'Hi! Click me if you have a question about Chahé.',
-  'Ouf ! Toujours en un seul morceau.': 'Phew! Still in one piece.', 'Tiens bon, Root !': 'Hold on, Root!', 'Rattrapé !': 'Got you!', 'Bien joué, Root !': 'Nice one, Root!', 'Ta-da !': 'Ta-da!', 'Wiii !': 'Wheee!', 'Cowabunga !': 'Cowabunga!', 'Cheese !': 'Cheese!', 'Oh oh…': 'Uh-oh…', 'Double-clique-moi dessus !': 'Double-click me!', 'Tape deux fois sur moi !': 'Double-tap me!',
+  'Oups… un peu d’encre. Simple réflexe !': 'Oops… a little ink. Pure reflex!', 'Coucou !': 'Hi there!', 'Ta-da !': 'Ta-da!', 'Wiii !': 'Wheee!', 'Cheese !': 'Cheese!', 'Oh oh…': 'Uh-oh…', 'Double-clique-moi dessus !': 'Double-click me!', 'Tape deux fois sur moi !': 'Double-tap me!',
   // éléments fixes de la page (attribut data-t, data-ta, data-tc, data-talt)
   'skip': 'Skip to content', 'nav': 'Sections', 'menu': 'Menu', 'close': 'Close', 'home': 'Home', 'role': 'Security & networks',
   'hero': 'Apprentice <em>security &amp; network</em> engineer at Econocom, in the engineering programme at EFREI Paris. I run infrastructures, monitor them and keep them safe.',
@@ -2919,13 +2918,13 @@ const UI_EN = {
   'contact': 'A question, an opportunity, or just want to talk security? Write to me, I’ll get back to you quickly.', 'copy': 'Copy address',
   'globe': 'Interactive globe: connections from Paris, Villejuif (EFREI) and Puteaux (Econocom)', 'coords': 'Paris · 48.85° N · 2.35° E', 'coords2': '48.85° N · 2.35° E', 'top': 'Back to top',
   'dgcap': 'How it works', 'ctx': 'Context', 'did': 'What I did', 'prev': '← Previous project', 'next': 'Next project →', 'skipld': 'Skip →',
-  'drone': 'Drone · Site guide', 'chatx': 'Close the chat', 'chat': 'Questions about Chahé', 'ask': 'Ask the drone a question',
-  'askph': 'Ask your question…', 'askl': 'Your question for the drone', 'send': 'Send', 
+  'drone': 'Root · Site guide', 'chatx': 'Close the chat', 'chat': 'Questions about Chahé', 'ask': 'Ask Root a question',
+  'askph': 'Ask your question…', 'askl': 'Your question for Root', 'send': 'Send', 
   'hsk1': 'Today', 'hsk2': 'Before', 'hsk3': 'Next', 'hs1': 'I run and secure production networks, as an apprentice at <em>Econocom</em> and an engineering student at EFREI Paris.',
   'hs2': 'Two years at Anetys (ISMS, Active Directory), and Vigie, my open-source detection tool.', 'hs3': 'Cybersecurity engineer, on the defensive side: detection and incident response.',
   'tourbtn': 'Guided tour', 'ovBrief': 'At a glance', 'ovEnjeu': 'The challenge', 'ovRes': 'The outcome', 'ovHow': 'How it works', 'ovRet': 'What I took away', 'ovshare': 'Share this project', 'ovprev': 'Previous project', 'ovnext': 'Next project', 'tiK': 'Guided tour · 1 min', 'tiH': 'Shall I show you around?', 'tiP': 'In five steps, I’ll show you the essentials: his profile, his journey, his projects, his skills, and how to reach him.', 'tiGo': 'Let’s go', 'tiNo': 'No thanks, I’ll look around', 'tpGo': 'Guided tour · 1 min', 'tpX': 'Don’t offer the tour again',
   'clair': 'In plain words', 'avant': 'Before', 'apres': 'After', 'status': 'Apprentice at Econocom · open to a chat', 'write': 'Write to me', 'secuT': 'This site, security-wise:', 'secuL': 'Report a vulnerability', 'secuS': 'no trackers, no data sent anywhere (a security rule forbids it), and every external library is checked against its fingerprint.',
-  'calm': 'Calm mode', 'themeL': 'Dark theme', 'themeT': 'Light or dark theme', 'Lien du projet copié': 'Project link copied', 'Partager ce projet': 'Share this project', 'calmM': 'Calm mode: no drone', 'calmT': 'Calm mode: hides the drone and its animations', 'hzprev': 'Previous featured project', 'hznext': 'Next featured project',
+  'calm': 'Calm mode', 'themeL': 'Dark theme', 'themeT': 'Light or dark theme', 'Lien du projet copié': 'Project link copied', 'Partager ce projet': 'Share this project', 'calmM': 'Calm mode: without Root', 'calmT': 'Calm mode: hides Root and his animations', 'hzprev': 'Previous featured project', 'hznext': 'Next featured project',
   'mlT': 'Legal notice', 'mlE': 'Publisher and publication director:', 'mlE2': 'Chahé Papazian, personal non-commercial website. Contact:', 'mlH': 'Host:',
   'mlH2': 'GitHub Pages, GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, United States.', 'mlD': 'Personal data:',
   'mlD2': 'no cookies, no trackers: this site sends no data anywhere. Whatever is typed in the chat or the terminal never leaves the page. A few preferences (language, theme, sound, calm mode, guided tour) stay in the visitor’s browser. As with any website, the host and jsDelivr (which serves the JavaScript libraries) see the visitor’s IP address when the page loads.',
@@ -4310,8 +4309,8 @@ function makeFox3D(THREE, canvas, opts = {}) {
   size();
   return { render: t => { pose(t); renderer.render(scene, cam); }, size, lowRes: () => { if (renderer.getPixelRatio() <= 1) return false; renderer.setPixelRatio(1); size(); return true; }, dispose: () => renderer.dispose() };
 }
-/* ---------- Easter-egg « poulet » : taper « poulet » dans le terminal ou dans le drone fait surgir un poulet
-   (dessin original, avec les lunettes du drone). Un bouton l’enregistre en PNG si le visiteur le veut :
+/* ---------- Easter-egg « poulet » : taper « poulet » dans le terminal ou dans la discussion fait surgir un poulet
+   (dessin original, avec les lunettes de Root). Un bouton l’enregistre en PNG si le visiteur le veut :
    un site ne peut pas, et ne doit pas, déposer un fichier tout seul sur une machine. ---------- */
 const CHICK = `<g class="po-legL"><path d="M96 168v26" stroke="#F0A52E" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M96 194l-9 7M96 194l9 7M96 194v8" stroke="#F0A52E" stroke-width="6" stroke-linecap="round" fill="none"/></g>
 <g class="po-legR"><path d="M124 168v26" stroke="#E8942A" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M124 194l-9 7M124 194l9 7M124 194v8" stroke="#E8942A" stroke-width="6" stroke-linecap="round" fill="none"/></g>
@@ -4340,16 +4339,9 @@ function chickenPNG() {
   img.onerror = () => toast(TT('Enregistrement indisponible ici.', 'Saving isn’t available here.'));
   img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
-// enregistrement : dans l’aperçu claude.ai, la capability « downloads » (le visiteur confirme) ; sur le vrai site, un lien de téléchargement
+// enregistrement de l'image : un lien de téléchargement
 async function deliverPNG(blob, filename = 'image.png', okMsg) {
   const done = () => toast(okMsg || TT('Enregistré', 'Saved'));
-  let dl = null;
-  try { dl = (window.claude && typeof claude.use === 'function') ? await claude.use('downloads') : null; } catch (e) { dl = null; }
-  if (dl) {
-    try { await dl.save({ filename, data: blob }); done(); }
-    catch (e) { const code = e && e.code; if (code === 'declined') return; toast(TT('Enregistrement indisponible ici.', 'Saving isn’t available here.')); }
-    return;
-  }
   const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 5000);
   done();
 }
@@ -4542,7 +4534,7 @@ function setupCv() {
   let foxRaf = 0, fox3 = null, fox3Load = null;
   const can3 = $('#cvx-fox3d'), card = $('.cvx-msg-card', msg);
   can3.setAttribute('aria-label', TT('Un renard qui danse le scuba', 'A fox doing the scuba dance'));
-  // la version 3D : Three.js (déjà utilisé par le drone) est chargé au premier clic ; sinon le dessin 2D reste
+  // la version 3D : Three.js (déjà utilisé par Root) est chargé au premier clic ; sinon le dessin 2D reste
   const loadFox3 = () => fox3Load || (fox3Load = Promise.all([import('three'), import('three/addons/environments/RoomEnvironment.js')])
     .then(([THREE, E]) => { can3.hidden = false; fox3 = makeFox3D(THREE, can3, { env: E.RoomEnvironment, force: /[?&]fox3d=1/.test(location.search) }); fox3.render(.2);   /* une image tout de suite : les shaders se compilent pendant le faux déchiffrement, pas à l’apparition du message */
       card.classList.add('f3d'); fox.setAttribute('aria-hidden', 'true'); return fox3; })
@@ -4622,8 +4614,8 @@ function setupCv() {
 }
 
 /* =====================================================================
-   LE DRONE PARLE : questions sur Chahé, réponses, actions, visite guidée
-   (le rendu 3D du drone vit dans le module en bas de page)
+   ROOT PARLE : questions sur Chahé, réponses, actions, visite guidée
+   (le rendu 3D de Root vit dans le module en bas de page)
    ===================================================================== */
 const PI_ = id => PROJETS.findIndex(p => p.id === id);
 const QA = [
@@ -4647,7 +4639,7 @@ const QA = [
   { id: 'goal', q: 'Que vise-t-il ensuite ?', a: 'Devenir ingénieur en cybersécurité, côté défense : protéger les réseaux et les identités, détecter les attaques et y répondre. D’abord en décrochant son diplôme d’ingénieur à l’EFREI, en alternance chez Econocom.', act: [['Voir son parcours', () => goParcours(PARCOURS.length - 1)]] },
   { id: 'site', q: 'Comment est fait ce site ?', a: 'À la main : GSAP pour les animations, un canvas pour le réseau de l’ouverture, et Three.js pour moi. Petit secret : double-clique sur moi.', act: [['Voir les projets', () => sceneTo('projets')]] }
 ];
-const HELLO = ['Salut ! Que veux-tu savoir sur Chahé ?', 'Je suis le drone de sécurité du site. Une question sur Chahé ?', 'Bonjour ! Qu’est-ce qui t’intéresse chez Chahé ?', 'Je fais le guide. Tu cherches quoi ?'];
+const HELLO = ['Salut ! Que veux-tu savoir sur Chahé ?', 'Je suis Root, le poulpe de garde du site. Une question sur Chahé ?', 'Bonjour ! Qu’est-ce qui t’intéresse chez Chahé ?', 'Je fais le guide. Tu cherches quoi ?'];
 const AGAIN = ['Autre chose ?', 'Une autre question ?', 'Je t’en dis plus ?', 'Tu veux voir autre chose ?'];
 if (EN) {
   const QA_EN = [
@@ -4672,7 +4664,7 @@ if (EN) {
     ['How was this site built?', 'By hand: GSAP for the animations, a canvas for the opening network, and Three.js for me. Little secret: double-click me.', ['See the projects']]
   ];
   QA_EN.forEach(([q, a, acts], i) => { const x = QA[i]; if (!x) return; x.q = q; x.a = a; (acts || []).forEach((l, k) => { if (x.act && x.act[k]) x.act[k][0] = l; }); });
-  HELLO.splice(0, HELLO.length, 'Hi! What would you like to know about Chahé?', 'I’m the site’s security drone. Any question about Chahé?', 'Hello! What interests you about Chahé?', 'I’m your guide. What are you looking for?');
+  HELLO.splice(0, HELLO.length, 'Hi! What would you like to know about Chahé?', 'I’m Root, the site’s guard octopus. Any question about Chahé?', 'Hello! What interests you about Chahé?', 'I’m your guide. What are you looking for?');
   AGAIN.splice(0, AGAIN.length, 'Anything else?', 'Another question?', 'Want to know more?', 'Want to see something else?');
 }
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
@@ -4684,7 +4676,7 @@ function droneSay(text, ms = 2600) { document.dispatchEvent(new CustomEvent('dro
 
 /* BRAIN START */
 /* =====================================================================
-   LE CERVEAU DU DRONE : comprend une question écrite librement (fautes de frappe,
+   LE CERVEAU DE ROOT : comprend une question écrite librement (fautes de frappe,
    français ou anglais, relances du type « et ses outils ? ») et répond à partir
    du contenu du site. Aucune donnée ne quitte la page.
    ===================================================================== */
@@ -4850,7 +4842,7 @@ function makeBrain(D, DBG) {
   const projActs = id => { const p = P(id) || {}; const a = [actOpen(id)]; (p.liens || []).slice(0, 1).forEach(([l, u]) => a.push([l, () => A.url(u)])); return a; };
 
 
-  // ---------- petit lexique : le drone explique les mots techniques, puis montre où Chahé s’en sert
+  // ---------- petit lexique : Root explique les mots techniques, puis montre où Chahé s’en sert
   const GLOSS = [
     [['soc:3', 'centre operationnel:3', 'security operation* center:3', 'security operation* centre:3'], 'vigie',
       'Un SOC, ou centre opérationnel de sécurité, c’est l’équipe qui surveille un système d’information en continu pour repérer les attaques et y réagir.',
@@ -5089,18 +5081,18 @@ function makeBrain(D, DBG) {
     ['Salut ! Pose-moi ta question sur Chahé.', 'Bonjour ! Qu’est-ce que tu veux savoir sur lui ?', 'Hello ! Je t’écoute.'], ['Hi! Ask me anything about Chahé.', 'Hello! What would you like to know about him?', 'Hey! I’m listening.'], { polite: true });
   SMALL('thanks', ['merci:3', 'thanks:3', 'thank you:3', 'thx:3', 'mrc:2.5', 'cimer:3', 'ty:2'], ['Avec plaisir !', 'De rien, c’est mon travail.', 'Avec plaisir. Autre chose ?'], ['You’re welcome!', 'My pleasure, it’s my job.', 'Happy to help. Anything else?'], { polite: true });
   SMALL('bye', ['au revoir:3', 'bye:3', 'a plus:3', 'a bientot:3', 'ciao:3', 'see you:3', 'goodbye:3', 'bonne journee:3', 'bonne soiree:3', 'have a nice day:3', 'tchao:3'], ['À bientôt ! Et si tu as une opportunité pour lui, écris-lui.', 'Bonne continuation sur le site !'], ['See you! And if you have an opportunity for him, write to him.', 'Enjoy the rest of the site!'], { acts: () => [actMail()], polite: true });
-  SMALL('how', ['ca va:3', 'comment vas tu:3', 'comment tu vas:3', 'how are you:3', 'how s it going:3', 'tu vas bien:3', 'la forme:2.5'], ['En pleine forme, batterie à 100 %. Et toi, une question sur Chahé ?', 'Très bien ! Root aussi, il agite ses huit bras.'], ['Fully charged, thanks! Any question about Chahé?', 'Great! Root too, he’s waving all eight arms.'], { polite: true });
-  SMALL('drone', ['qui es tu:3', 'tu es qui:3', 't es qui:3', 'tu es quoi:3', 't es quoi:3', 'who are you:3', 'what are you:3', 'robot:2', 'drone:2', 'bot:2', 'ia:2', 'ai:2', 'intelligence artificielle:3', 'artificial intelligence:3', 'chatgpt:3', 'gpt:2.5', 'claude:2', 'es tu une ia:3', 'are you an ai:3', 'are you real:3', 'humain:2', 'human:2'],
-    ['Je suis le drone de sécurité du site, et voici Root, mon copilote. Je réponds aux questions sur Chahé à partir de ce qu’il présente ici.'], ['I’m the site’s security drone, and this is Root, my co-pilot. I answer questions about Chahé based on what he presents here.']);
+  SMALL('how', ['ca va:3', 'comment vas tu:3', 'comment tu vas:3', 'how are you:3', 'how s it going:3', 'tu vas bien:3', 'la forme:2.5'], ['En pleine forme, huit bras sur huit. Et toi, une question sur Chahé ?', 'Très bien ! J’en agite mes huit bras.'], ['In great shape, eight arms out of eight. Any question about Chahé?', 'Great! I’m waving all eight arms.'], { polite: true });
+  SMALL('drone', ['qui es tu:3', 'tu es qui:3', 't es qui:3', 'tu es quoi:3', 't es quoi:3', 'who are you:3', 'what are you:3', 'robot:2', 'drone:2', 'bot:2', 'ia:2', 'ai:2', 'intelligence artificielle:3', 'artificial intelligence:3', 'chatgpt:3', 'gpt:2.5', 'es tu une ia:3', 'are you an ai:3', 'are you real:3', 'humain:2', 'human:2'],
+    ['Je suis Root, le poulpe de garde du site : huit bras et des lunettes noires. Je réponds aux questions sur Chahé à partir de ce qu’il présente ici.'], ['I’m Root, the site’s guard octopus: eight arms and dark sunglasses. I answer questions about Chahé based on what he presents here.']);
   SMALL('cat', ['poulpe:3', 'le poulpe:3', 'ton poulpe:3', 'pieuvre:3', 'octopus:3', 'tentacule*:2.5', 'algue*:2.5', 'seaweed:2.5', 'chat:2.5', 'le chat:3', 'ton chat:3', 'un chat:2.5', 'chaton:3', 'root:2', 'cat:2.5', 'animal:2', 'lunettes:1.5', 'sunglasses:1.5', 'qui est sur toi:3'],
-    ['C’est Root, mon copilote. Il a les droits administrateur, huit bras… et les lunettes de soleil.', 'Root, mon poulpe copilote, remonté du fond avec ses algues. Il ne lâche jamais prise, même quand j’explose.'], ['That’s Root, my co-pilot. He has admin rights, eight arms… and the sunglasses.', 'Root, my co-pilot octopus, up from the deep with his seaweed. He never lets go, not even when I explode.']);
+    ['C’est moi, Root ! J’ai les droits administrateur, huit bras… et les lunettes de soleil.', 'Root, c’est moi : un poulpe remonté du fond avec ses algues. Je ne lâche jamais prise, et jamais mes lunettes.'], ['That’s me, Root! I have admin rights, eight arms… and the sunglasses.', 'Root, that’s me: an octopus up from the deep with his seaweed. I never let go, least of all of my sunglasses.']);
   SMALL('joke', ['blague*:3', 'joke*:3', 'fais moi rire:3', 'make me laugh:3', 'drole:2', 'funny:2', 'humour:2.5', 'humor:2.5'],
-    ['Un paquet UDP entre dans un bar. Personne ne sait s’il est arrivé.', 'Combien d’essais pour deviner le mot de passe de Chahé ? Aucun : il a activé la MFA.', 'Root a les droits administrateur. Moi, seulement la lecture.'], ['A UDP packet walks into a bar. Nobody knows if it arrived.', 'How many tries to guess Chahé’s password? None: he turned on MFA.', 'Root has admin rights. I only get read access.']);
+    ['Un paquet UDP entre dans un bar. Personne ne sait s’il est arrivé.', 'Combien d’essais pour deviner le mot de passe de Chahé ? Aucun : il a activé la MFA.', 'Je m’appelle Root : j’ai tous les droits. Toi, seulement la lecture.'], ['A UDP packet walks into a bar. Nobody knows if it arrived.', 'How many tries to guess Chahé’s password? None: he turned on MFA.', 'My name is Root: I have every permission. You only get read access.']);
   SMALL('help', ['aide*:2.5', 'help:3', 'que peux tu faire:3', 'tu sais faire quoi:3', 'what can you do:3', 'comment ca marche:2.5', 'how does this work:2.5', 'quoi demander:3', 'what to ask:3', 'options:2'],
     ['Pose-moi une question sur son parcours, ses projets, ses compétences ou ses certifications, avec tes mots. Je peux aussi t’ouvrir un projet, te montrer son CV ou te faire visiter le site.'], ['Ask me about his background, projects, skills or certifications, in your own words. I can also open a project, show you his CV or show you around the site.'], { sugg: 3 });
   SMALL('insult', ['nul:2', 'idiot:3', 'stupide:3', 'debile:3', 'con:2.5', 'merde:3', 'stupid:3', 'dumb:3', 'useless:3', 'sucks:3', 'tu sers a rien:3', 'ferme la:3', 'shut up:3'], ['Aïe. Je reste poli, c’est dans mon code. Une question sur Chahé ?'], ['Ouch. I stay polite, it’s in my code. Any question about Chahé?'], { polite: true });
-  SMALL('compliment', ['trop bien:3', 'genial:2.5', 'super:1.5', 'cool:1.5', 'bravo:2.5', 'joli:2', 'magnifique:2.5', 'impressionn*:2.5', 'incroyable:2.5', 'awesome:2.5', 'amazing:2.5', 'nice:1.5', 'great:1.5', 'beau:2', 'trop beau:3.5', 'belle:2', 'canon:2', 'stylé:2.5', 'beautiful:2.5', 'love it:2.5', 'love this:2.5', 'is amazing:3', 'is great:3', 'is beautiful:3', 'is nice:3', 'so cool:3', 'looks great:3', 'est beau:3', 'est magnifique:3', 'est genial:3', 'wow:2', 'j adore:2.5', 'je t aime:3', 'love you:3', 'mignon:2.5', 'cute:2.5'], ['Merci ! Je transmets à Chahé, c’est lui qui m’a construit.', 'Merci, Root en change de couleur derrière ses lunettes.'], ['Thanks! I’ll tell Chahé, he built me.', 'Thanks, Root is changing colour behind his sunglasses.'], {});
-  SMALL('secret', ['secret*:2.5', 'easter egg:3', 'easteregg:3', 'astuce*:2', 'surprise:2', 'cache:1.5', 'hidden:2', 'trick*:2', 'explose*:2.5', 'explode*:2.5'], ['Double-clique sur moi. Root, lui, a l’habitude.'], ['Double-click me. Root is used to it.']);
+  SMALL('compliment', ['trop bien:3', 'genial:2.5', 'super:1.5', 'cool:1.5', 'bravo:2.5', 'joli:2', 'magnifique:2.5', 'impressionn*:2.5', 'incroyable:2.5', 'awesome:2.5', 'amazing:2.5', 'nice:1.5', 'great:1.5', 'beau:2', 'trop beau:3.5', 'belle:2', 'canon:2', 'stylé:2.5', 'beautiful:2.5', 'love it:2.5', 'love this:2.5', 'is amazing:3', 'is great:3', 'is beautiful:3', 'is nice:3', 'so cool:3', 'looks great:3', 'est beau:3', 'est magnifique:3', 'est genial:3', 'wow:2', 'j adore:2.5', 'je t aime:3', 'love you:3', 'mignon:2.5', 'cute:2.5'], ['Merci ! Je transmets à Chahé, c’est lui qui m’a dessiné.', 'Merci, j’en change de couleur derrière mes lunettes.'], ['Thanks! I’ll tell Chahé, he drew me.', 'Thanks, I’m changing colour behind my sunglasses.'], {});
+  SMALL('secret', ['secret*:2.5', 'easter egg:3', 'easteregg:3', 'astuce*:2', 'surprise:2', 'cache:1.5', 'hidden:2', 'trick*:2', 'explose*:2.5', 'explode*:2.5'], ['Double-clique sur moi. Attention, ça tache.'], ['Double-click me. Careful, it stains.']);
   SMALL('yes', ['oui:2', 'ouais:2', 'yes:2', 'yeah:2', 'yep:2', 'ok:1.5', 'okay:1.5', 'd accord:2', 'vas y:2', 'go:1.5', 'sure:2'], ['Vas-y, je t’écoute.', 'Je t’écoute : pose ta question.'], ['Go ahead, I’m listening.', 'I’m listening: ask away.'], { short: true, polite: true });
   SMALL('no', ['non:2', 'no:2', 'nope:2', 'rien:2', 'nothing:2', 'c est bon:2.5', 'that s all:3', 'non merci:3', 'no thanks:3'], ['D’accord. Je reste dans le coin si besoin.', 'Pas de souci, je reste dans le coin.'], ['Alright. I’ll be around if you need me.', 'No problem, I’ll stay close.'], { short: true, polite: true });
 
@@ -5231,9 +5223,9 @@ function makeBrain(D, DBG) {
 /* BRAIN END */
 
 /* =====================================================================
-   LE RAPPORT DU DRONE : ce qu'un SOC aurait vu de ta visite (provenance, navigateur, lecture).
+   LE RAPPORT DE ROOT : ce qu'un SOC aurait vu de ta visite (provenance, navigateur, lecture).
    Tout est calculé dans ton navigateur ; rien n'est envoyé ni conservé.
-   Le drone te le résume quand tu arrives au contact, ou si tu lui demandes ce qu'il sait de toi.
+   Root te le résume quand tu arrives au contact, ou si tu lui demandes ce qu'il sait de toi.
    ===================================================================== */
 function setupVisit() {
   const T = (fr, en) => EN ? en : fr;
@@ -5424,7 +5416,7 @@ function setupVisit() {
 // ---- Le petit CTF : trois drapeaux cachés (code source, console, terminal), un seul validateur partagé.
 const CTF = (() => {
   const TT2 = (fr, en) => EN ? en : fr;
-  const FLAGS = { 1: 'r00t_garde_toujours_ses_lunettes', 2: 'le_drone_veille_meme_hors_ligne', 3: 'root_le_chat_signe_ses_logs' };
+  const FLAGS = { 1: 'r00t_garde_toujours_ses_lunettes', 2: 'root_veille_meme_hors_ligne', 3: 'root_le_poulpe_signe_ses_logs' };
   const WHERE = { 1: TT2('le code source', 'the page source'), 2: TT2('la console', 'the console'), 3: TT2('le terminal (secu)', 'the terminal (secu)') };
   const found = new Set();
   const norm = x => String(x || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -5433,7 +5425,7 @@ const CTF = (() => {
     for (const k in FLAGS) { const nf = norm(FLAGS[k]); if (nf && v.includes(nf)) { const dup = found.has(k); found.add(k); return { status: dup ? 'dup' : 'new', key: k, n: found.size }; } }
     return { status: 'none', n: found.size };
   }
-  return { check, flags: FLAGS, where: WHERE, found: () => found, total: 3, re: /chahe\s*\{|r00t_garde_toujours_ses_lunettes|le_drone_veille_meme_hors_ligne|root_le_chat_signe_ses_logs/i };
+  return { check, flags: FLAGS, where: WHERE, found: () => found, total: 3, re: /chahe\s*\{|r00t_garde_toujours_ses_lunettes|root_veille_meme_hors_ligne|root_le_poulpe_signe_ses_logs/i };
 })();
 
 function setupChat() {
@@ -5448,7 +5440,7 @@ function setupChat() {
   };
   const scrollLog = () => { log.scrollTop = log.scrollHeight; };
   const add = (who, text) => { const m = document.createElement('p'); m.className = 'msg ' + who; m.textContent = text; log.appendChild(m); scrollLog(); return m; };
-  const dots = m => { m.innerHTML = `<span class="typing" aria-label="${esc(L('Le drone écrit'))}"><i></i><i></i><i></i></span>`; scrollLog(); };
+  const dots = m => { m.innerHTML = `<span class="typing" aria-label="${esc(L('Root écrit'))}"><i></i><i></i><i></i></span>`; scrollLog(); };
   const typeIn = (text, into) => new Promise(res => {
     const m = into || add('bot', ''); if (!into) dots(m);
     setTimeout(() => {
@@ -5482,7 +5474,7 @@ function setupChat() {
   async function askText(raw) {
     const text = String(raw || '').replace(/\s+/g, ' ').trim().slice(0, 300);
     if (!text) return;
-    if (busy) { if ((askText.tries = (askText.tries || 0) + 1) < 40) setTimeout(() => askText(raw), 200); return; }   // le drone finit sa phrase, puis répond
+    if (busy) { if ((askText.tries = (askText.tries || 0) + 1) < 40) setTimeout(() => askText(raw), 200); return; }   // Root finit sa phrase, puis répond
     askText.tries = 0;
     busy = true; send.disabled = true; input.value = ''; setOpts([]); add('me', text);
     if (SOC.chat && !/r00t_garde/i.test(text)) SOC.chat(text);
@@ -5526,7 +5518,7 @@ function setupChat() {
     vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit);
   }
   function place() {
-    // le panneau s'ouvre à côté du drone et grandit vers le haut ou vers le bas selon la place
+    // le panneau s'ouvre à côté de Root et grandit vers le haut ou vers le bas selon la place
     if (innerWidth <= 560) { ['left', 'top', 'bottom', 'maxHeight'].forEach(k => { box.style[k] = ''; }); return; }
     const r = lastOrigin || { left: innerWidth - 120, top: innerHeight - 160, width: 60, height: 60 };
     const w = box.offsetWidth, cx = r.left + r.width / 2, cy = r.top + r.height / 2, leftSide = cx > innerWidth / 2, low = cy > innerHeight * .5;
@@ -5563,14 +5555,14 @@ function setupChat() {
   addEventListener('keydown', e => { if (e.key === 'Escape' && open) close(); });
   document.addEventListener('pointerdown', e => { if (open && !box.contains(e.target) && !hit.contains(e.target)) close(); });
   addEventListener('resize', () => { if (open) place(); });
-  // sans drone 3D (pas de WebGL, module bloqué) : un petit bouton fixe garde l’accès aux questions
+  // sans Root en 3D (pas de WebGL, module bloqué) : un petit bouton fixe garde l’accès aux questions
   setTimeout(() => { if (!html.classList.contains('drone-ready')) { hit.hidden = false; hit.classList.add('fallback'); } }, 9000);
   return { open: openChat, close, isOpen: () => open, touring: () => !!(tourCtl && tourCtl.busy()) };
 }
 
 /* =====================================================================
    VISITE GUIDÉE : cinq étapes que l’on fait défiler à son rythme.
-   Le drone se pose sur la carte, verrouille chaque cible (cadre de visée)
+   Root se pose sur la carte, verrouille chaque cible (cadre de visée)
    et la commente ; on peut ouvrir le projet, copier l’adresse, etc.
    ===================================================================== */
 function setupTour() {
@@ -5664,7 +5656,7 @@ function setupTour() {
     G.killTweensOf([lock, scan, beam]);
     G.fromTo(lock, { scale: 1.08, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .6, ease: 'expo.out' });
     G.fromTo(scan, { y: 0, autoAlpha: 0 }, { y: Math.max(0, rc.h - 2), autoAlpha: 1, duration: .95, ease: 'power2.inOut', delay: .15, onComplete: () => G.to(scan, { autoAlpha: 0, duration: .3 }) });
-    // un trait part du drone vers le cadre : c’est lui qui vise
+    // un trait part de Root vers le cadre : c’est lui qui vise
     if (!hit.hidden) {
       const hr = hit.getBoundingClientRect(), x0 = hr.left + hr.width / 2, y0 = hr.top + hr.height / 2;
       const cx = clamp(x0, rc.x, rc.x + rc.w), cy = clamp(y0, rc.y, rc.y + rc.h), d = Math.hypot(cx - x0, cy - y0);
@@ -5676,7 +5668,7 @@ function setupTour() {
       }
     }
   }
-  // la carte se range dans le coin qui cache le moins la cible ; le drone se pose dessus
+  // la carte se range dans le coin qui cache le moins la cible ; Root se pose dessus
   function placeCard() {
     const W = innerWidth, H = innerHeight, cw = card.offsetWidth, ch = card.offsetHeight, b = parseFloat(getComputedStyle(card).bottom) || 24;
     const top = H - b - ch;
@@ -5750,7 +5742,7 @@ function setupTour() {
   const mark = v => { try { localStorage.setItem('tour-offer', v); } catch (e) {} };
   function placeInvite() {
     const W = innerWidth, H = innerHeight, cw = inv.offsetWidth, ch = inv.offsetHeight, b = parseFloat(getComputedStyle(inv).bottom) || 24, top = H - b - ch;
-    invSp = W <= 700 ? { x: W - 72, y: top - 26 } : { x: W - 24 - cw + 44, y: top - 30 };   // le drone se pose sur le coin de la carte
+    invSp = W <= 700 ? { x: W - 72, y: top - 26 } : { x: W - 24 - cw + 44, y: top - 30 };   // Root se pose sur le coin de la carte
   }
   const onInvScroll = () => { if (invOpen && Math.abs(scrollY - invY) > innerHeight * 1.1) closeInvite(true); };
   function showPill(v) {
@@ -5808,8 +5800,8 @@ let gltOn = false;
 function golitin(onBlack) {
   if (gltOn) return; gltOn = true;
   const R = (a, b) => a + Math.random() * (b - a), pick = a => a[Math.random() * a.length | 0];
-  const PATHS = ['profil', 'projets', 'cv.pdf', 'competences', 'contact', 'vigie', 'drone', 'golitin', 'index.html'];
-  const SAYS = EN ? ['root access granted', 'deleting the CSS…', 'drone not responding', 'loading chaos 87 %', 'everything is fine (no)', 'unplugging the internet'] : ['accès root obtenu', 'suppression du CSS…', 'le drone ne répond plus', 'chargement du chaos 87 %', 'tout va bien (non)', 'débranchement d’internet'];
+  const PATHS = ['profil', 'projets', 'cv.pdf', 'competences', 'contact', 'vigie', 'poulpe', 'golitin', 'index.html'];
+  const SAYS = EN ? ['root access granted', 'deleting the CSS…', 'Root not responding', 'loading chaos 87 %', 'everything is fine (no)', 'unplugging the internet'] : ['accès root obtenu', 'suppression du CSS…', 'Root ne répond plus', 'chargement du chaos 87 %', 'tout va bien (non)', 'débranchement d’internet'];
   const WIN = [
     [30, () => `<div class="glt-w os"><p class="glt-tb"><span>404.exe</span><span>✕</span></p><div class="glt-bd"><b>!</b><p>${TT('Page introuvable.<br>golitin l’a mangée.', 'Page not found.<br>golitin ate it.')}</p></div><p class="glt-ft"><span>OK</span><span>${TT('Annuler', 'Cancel')}</span></p></div>`],
     [14, () => `<div class="glt-w nf"><p class="glt-nf-h">404 Not Found</p><hr><p>golitin/6.6.6</p></div>`],
@@ -5844,7 +5836,7 @@ function golitin(onBlack) {
     () => `GET /${pick(PATHS)} → 404`,
     () => `segfault at 0x${(Math.random() * 0xffffffff >>> 0).toString(16).padStart(8, '0')}`,
     () => `golitin: ${pick(SAYS)}`,
-    () => `ERR_${pick(['GOLITIN', 'PAGE_GONE', 'TOO_MANY_404', 'DRONE_PANIC', 'CSS_NOT_FOUND'])}`
+    () => `ERR_${pick(['GOLITIN', 'PAGE_GONE', 'TOO_MANY_404', 'OCTOPUS_PANIC', 'CSS_NOT_FOUND'])}`
   ])();
   // les boucles du chaos (plus ça avance, plus ça s’emballe)
   const k = () => Math.min(1, (performance.now() - t0) / DUR);
@@ -7477,7 +7469,7 @@ function osBuild() {
 /* =====================================================================
    TERMINAL : une languette discrète en bas de page ouvre un mini terminal.
    Quelques commandes pour lire le profil autrement (traceroute du parcours,
-   nmap des compétences…) ; une phrase libre part au cerveau du drone.
+   nmap des compétences…) ; une phrase libre part au cerveau de Root.
    ===================================================================== */
 function setupTerm() {
   const T = (fr, en) => EN ? en : fr;
@@ -7536,7 +7528,7 @@ function setupTerm() {
     ['secu', T('comment ce site est protégé', 'how this site is protected')],
     ['xray', T('voir ce site en rayons X (ses protections)', 'see this site in X-ray (its protections)')],
     ['cle', T('ta clé de session + un fond d’écran unique', 'your session key + a unique wallpaper')],
-    ['tour', T('la visite guidée avec le drone', 'the guided tour with the drone')],
+    ['tour', T('la visite guidée avec Root', 'the guided tour with Root')],
     ['last', T('ce que ce site sait de ta visite', 'what this site knows about your visit')],
     ['incidents', T('le rapport de sécurité de ta visite (façon SOC)', 'the security report of your visit (SOC-style)')],
     ['clear, exit', T('effacer, fermer', 'clear, close')]
@@ -7548,7 +7540,7 @@ function setupTerm() {
   const def = (names, fn, noarg) => names.split(' ').forEach(n => { CMD[n] = fn; if (noarg) NOARG.add(n); });
   def('help aide man', () => print([
     ...HELP.map(([c, d]) => row('k-help', [[/[<,]/.test(c) ? c : btn(c, () => exec(c)), 't-b'], [d, 't-dim']])),
-    line(T('Une question ? Écris-la telle quelle, le drone répond. (Et quelques commandes sont cachées.)', 'A question? Just type it, the drone answers. (And a few commands are hidden.)'), 't-dim')
+    line(T('Une question ? Écris-la telle quelle, Root répond. (Et quelques commandes sont cachées.)', 'A question? Just type it, Root answers. (And a few commands are hidden.)'), 't-dim')
   ], 16), true);
   def('whoami whois', () => print([
     line([sp('chahe', 't-ok'), ` · ${PROFIL.prenom} ${PROFIL.nom}`]),
@@ -7598,7 +7590,7 @@ function setupTerm() {
     away(() => openProject(x));
   });
   def('vigie', (args, raw) => {
-    if (args.length && !/^(scan|-)/.test(n0(args[0]))) return answer(brain.reply(raw));   // « vigie ? », « vigie c’est quoi » : le drone répond
+    if (args.length && !/^(scan|-)/.test(n0(args[0]))) return answer(brain.reply(raw));   // « vigie ? », « vigie c’est quoi » : Root répond
     print(line(T(`lecture de samples/ (${VIGIE_RUN.files} fichiers)…`, `reading samples/ (${VIGIE_RUN.files} files)…`), 't-dim'), 0);
     print(vigieLines().map(vgLine), 70);
     return print(line([T('-- Sortie de Vigie sur les logs de démo, rejouée ici. ', '-- Vigie’s output on the demo logs (translated), replayed here. '), btn('open vigie', () => exec('open vigie')), '   ', link(T('le code ↗', 'the code ↗'), VG_URL.code)], 't-dim'), 0);
@@ -7631,7 +7623,7 @@ function setupTerm() {
       ...SECU.map(([k, v]) => row('k-help', [[k, 't-ok'], v])),
       keep.length ? line(T('CSP active : ', 'Active CSP: ') + keep.join(' · '), 't-dim') : null,
       document.querySelectorAll('script[integrity]').length ? line(T(`Scripts externes vérifiés par empreinte (SRI) : ${document.querySelectorAll('script[integrity]').length}`, `External scripts checked by fingerprint (SRI): ${document.querySelectorAll('script[integrity]').length}`), 't-dim') : null,
-      line(T('# signature des logs (base64) : ', '# log signature (base64): ') + 'Q0hBSEV7cm9vdF9sZV9jaGF0X3NpZ25lX3Nlc19sb2dzfQ==', 't-dim'),
+      line(T('# signature des logs (base64) : ', '# log signature (base64): ') + 'Q0hBSEV7cm9vdF9sZV9wb3VscGVfc2lnbmVfc2VzX2xvZ3N9', 't-dim'),
       line([T('Voir le site en rayons X : ', 'See the site in X-ray: '), btn(T('rayons X', 'x-ray'), () => exec('xray'))], 't-dim')
     ], 50);
   }, true);
@@ -7674,14 +7666,14 @@ function setupTerm() {
     return print([
       line(T('[sudo] mot de passe pour visiteur : ********', '[sudo] password for guest: ********'), 't-dim'),
       hire ? line([T('Pas besoin de sudo pour ça : un mail suffit. ', 'No need for sudo here: an email will do. '), btn('contact', () => exec('contact'))], 't-ok')
-           : line(T('visiteur n’est pas dans le fichier sudoers. Cet incident sera signalé… au drone.', 'guest is not in the sudoers file. This incident will be reported… to the drone.'), 't-hot')
+           : line(T('visiteur n’est pas dans le fichier sudoers. Cet incident sera signalé… à Root.', 'guest is not in the sudoers file. This incident will be reported… to Root.'), 't-hot')
     ], 450);
   });
   def('rm', (args, cmd) => {
     const a = n0(args.join(' '));
     const boom = /-[a-z]*r[a-z]*f|-[a-z]*f[a-z]*r/.test(a) || /(^|\s)[\/~.][\/*]?(\s|$)/.test(a) || a.includes('*');
     if (boom && !fxBusy) { print(line(T('rm : suppression récursive de tout le système de fichiers…', 'rm: recursively removing the whole file system…'), 't-hot')); away(rmBoom); return; }
-    print(line(T('rm : refusé. Root, le poulpe du drone, garde ce système de fichiers.', 'rm: denied. Root, the drone’s octopus, guards this file system.'), 't-hot'));
+    print(line(T('rm : refusé. Root, le poulpe de garde, veille sur ce système de fichiers.', 'rm: denied. Root, the guard octopus, watches over this file system.'), 't-hot'));
   });
   def('cat', args => {
     const a = n0(args[0]);
@@ -7724,7 +7716,7 @@ function setupTerm() {
   const closest = c => { if (c.length < 2) return null; let best = null, bd = 3; NAMES.forEach(n => { const d = lev(c, n); if (d < bd && d <= (n.length >= 4 ? 2 : 1)) { bd = d; best = n; } }); return best; };
 
   function answer(r) {
-    const nodes = [line([sp('drone', 't-acc'), sp(' › ', 't-dim'), r.text])];
+    const nodes = [line([sp('root', 't-acc'), sp(' › ', 't-dim'), r.text])];
     const extra = (r.acts || []).slice(0, 3).map(([l, fn]) => btn(l + ' →', () => away(fn)))
       .concat((r.clarify || []).slice(0, 3).map(q => btn(q, () => exec(q))));
     if (extra.length) nodes.push(line(extra.flatMap((b, k) => [k ? '   ' : null, b])));
@@ -7745,7 +7737,7 @@ function setupTerm() {
     if (/^vraie?s?[ -]?richesses?$/.test(nc)) { print(line(T('→ ouverture de l’édition « vraie richesse »…', '→ opening the “true wealth” edition…'), 't-dim')); away(openRichesse); return; }
     if (/^badreaux?$/.test(nc)) { print(line(T('→ lecture de la bande-annonce…', '→ playing the trailer…'), 't-dim')); away(cineBadreau); return; }
     const parts = cmd.split(' '), c = n0(parts[0]), args = parts.slice(1), fn = CMD[c];
-    // une commande connue (« nmap chahe » passe, « projets réseau ou sécurité ? » part au drone)
+    // une commande connue (« nmap chahe » passe, « projets réseau ou sécurité ? » part à Root)
     if (fn && !(NOARG.has(c) && args.length > 1)) { try { fn(args, cmd); } catch (e) { print(line(String((e && e.message) || e), 't-hot')); } return; }
     const r = brain.reply(cmd);
     if (r.unknown && parts.length < 3 && !/\?\s*$/.test(cmd)) {
@@ -7840,7 +7832,7 @@ function setupTerm() {
 /* =====================================================================
    DÉFINITIONS AU SURVOL : les mots techniques sont soulignés en pointillé ;
    on survole, on touche ou on tabule dessus, et une phrase simple s'affiche.
-   Les définitions viennent du cerveau du drone (le même glossaire).
+   Les définitions viennent du cerveau de Root (le même glossaire).
    ===================================================================== */
 function setupGlossary() {
   const tip = $('#gl-tip'), tT = $('#gl-term'), tD = $('#gl-def');
@@ -7921,7 +7913,7 @@ function setupGlossary() {
   return { scan };
 }
 
-/* ---------- Mode calme : le drone se repose, rien ne bouge en dehors du défilement ---------- */
+/* ---------- Mode calme : Root se repose, rien ne bouge en dehors du défilement ---------- */
 // thème clair / sombre : suit le système, jusqu’à ce que le visiteur choisisse (choix gardé dans ce navigateur)
 function setupTheme() {
   const btn = $('#theme-btn'); if (!btn) return;
@@ -7951,7 +7943,7 @@ function setupCalm() {
   try { on = localStorage.getItem('calm') === '1'; } catch (e) {}
   const set = v => { on = v; html.classList.toggle('calm', v); if (v) artVideo(null); bs.forEach(b => b.setAttribute('aria-pressed', String(v))); try { localStorage.setItem('calm', v ? '1' : '0'); } catch (e) {} };
   set(on);
-  bs.forEach(b => b.addEventListener('click', () => { set(!on); toast(on ? 'Mode calme : le drone se repose' : 'Le drone reprend du service'); }));
+  bs.forEach(b => b.addEventListener('click', () => { set(!on); toast(on ? 'Mode calme : Root se repose' : 'Root reprend du service'); }));
 }
 
 /* =====================================================================
@@ -9021,7 +9013,7 @@ function setupNuit() {
   }
   const demander = () => { if (N && !raf) raf = requestAnimationFrame(boucle); };
 
-  window.nuitAube = () => N && N.U ? N.U.uDawn.value / .94 : 0;   // le drone (autre script) suit la lumière du film
+  window.nuitAube = () => N && N.U ? N.U.uDawn.value / .94 : 0;   // Root (autre script) suit la lumière du film
   let pretOk; nuitCtl = { pret: new Promise(r => { pretOk = r; }), lanterne() { return N ? N.lanterneEcran({ x: 0, y: 0, devant: false }) : null; }, get film() { return !!(N && N.film); }, entree() { if (N && !REDUCE && !html.classList.contains('calm') && scrollY < 40) { N.entree(); N.image(performance.now()); } } };
   const demarrer = async () => {
     if (FILM_PLANS >= 6 && $('#film')) { N = creerFilm($('#film'), { plans: FILM_PLANS, petit: innerWidth < 760, leger: html.classList.contains('leger') || REDUCE, boucles: FILM_BOUCLES, reveil: () => demander() }); html.classList.add('film'); }
@@ -9136,11 +9128,11 @@ setupNuit();
 $('#hero-tour').addEventListener('click', () => startTour());
 // pour les curieux qui ouvrent la console
 try {
-  console.log('%c' + (EN ? 'Root and the drone are watching 👀' : 'Root et le drone te surveillent 👀'), 'font:600 15px system-ui,sans-serif;color:#FF6B5B');
+  console.log('%c' + (EN ? 'Root is watching you, behind his sunglasses 👀' : 'Root te surveille, derrière ses lunettes 👀'), 'font:600 15px system-ui,sans-serif;color:#FF6B5B');
   console.log(EN ? 'Inspecting the code? Good analyst reflex. There’s a little CTF — 3 flags to find.' : 'Tu inspectes le code ? Bon réflexe d’analyste. Il y a un petit CTF — 3 flags à trouver.');
   console.log('%cflag 2/3', 'font:700 13px ui-monospace,monospace;color:#FF6B5B');
-  console.log('CHAHE{le_drone_veille_meme_hors_ligne}');
-  console.log(EN ? 'Two more: one in the page source, one in the terminal (try “secu”). Give them to the drone (chat) or to “submit” (terminal).' : 'Deux autres : une dans le code source, une dans le terminal (essaie « secu »). Donne-les au drone (chat) ou à « submit » (terminal).');
+  console.log('CHAHE{root_veille_meme_hors_ligne}');
+  console.log(EN ? 'Two more: one in the page source, one in the terminal (try “secu”). Give them to Root (chat) or to “submit” (terminal).' : 'Deux autres : une dans le code source, une dans le terminal (essaie « secu »). Donne-les à Root (chat) ou à « submit » (terminal).');
 } catch (e) {}
 
 document.addEventListener('click', e => {
@@ -9189,7 +9181,7 @@ if (MOTION) {
   if (deepEl) setTimeout(() => { jumpTo(deepEl, false); openShared(); }, 120);
   else if (relang) backTo(relangY);
 }
-// à l’arrivée, le drone propose la visite guidée (une seule fois, jamais imposée)
+// à l’arrivée, Root propose la visite guidée (une seule fois, jamais imposée)
 if (!deepEl) tourCtl.offer();
 
 const repaint = () => { drawAllCovers(); dotsCtl.refresh(); globeCtl.refresh(); pcCtl.refresh(); };
@@ -9224,10 +9216,11 @@ window.__site = { projets: PROJETS.map(p => p.titre), chat: chatCtl, L, tour: to
 
 <script type="module">
 
-/* Drone de sécurité : un compagnon discret.
+/* Root, le poulpe de garde : un compagnon discret.
    - Au repos, il se range dans la marge en bas à droite, plus petit, là où il ne cache rien.
    - Quand un nouveau titre de section arrive et qu'on lit (pas quand on fait défiler vite), il vient se poser à côté, puis retourne à sa place.
-   - Vol à poussée limitée : il accélère et freine comme un objet qui a du poids, et ne s'incline que sur l'accélération.
+   - Nage à poussée limitée : il accélère et freine comme un corps qui a du poids ; il penche le manteau vers là où il va,
+     serre les bras derrière lui, et les ouvre pour freiner.
    - À l'arrêt, il flotte (bruit lent, pas de rebond mécanique) et regarde ce qui compte : le titre, le curseur proche, la conversation. */
 (() => {
   const S = window.__site; if (!S) return;
@@ -9265,164 +9258,193 @@ window.__site = { projets: PROJETS.map(p => p.titre), chat: chatCtl, L, tour: to
   const rim = new THREE.PointLight(0x8DB6FF, 18, 9, 2); rim.position.set(1.5, 1.4, -3); scene.add(rim);   // la lune, derrière
   const mer = new THREE.PointLight(0x2F9FB0, 5, 7, 2); mer.position.set(-.5, -3, 2); scene.add(mer);       // le reflet de la mer, par en dessous
 
-  // --- modèle : un drone marin, blanc comme le phare, bande rouge, rivets et hublot de cuivre, lanterne, anneau-bouée
-  const ACC = new THREE.Color('#FF6B5B'), HOT = new THREE.Color('#FFB24A');   // la lanterne et le cadenas brillent comme le phare
-  const shell = new THREE.MeshPhysicalMaterial({ color: 0xF3F2FB, roughness: .3, metalness: .06, clearcoat: 1, clearcoatRoughness: .16 });
-  const dark = new THREE.MeshPhysicalMaterial({ color: 0x17153D, roughness: .32, metalness: .45, clearcoat: .7, clearcoatRoughness: .2 });
-  const glass = new THREE.MeshPhysicalMaterial({ color: 0x07061A, roughness: .04, metalness: .3, clearcoat: 1, clearcoatRoughness: .02 });
-  const glow = new THREE.MeshStandardMaterial({ color: ACC.clone(), emissive: ACC.clone(), emissiveIntensity: 1.5, roughness: .35 });
-  const hotM = new THREE.MeshStandardMaterial({ color: HOT.clone(), emissive: HOT.clone(), emissiveIntensity: 1.6, roughness: .4 });
-  const ringM = new THREE.MeshStandardMaterial({ color: ACC.clone(), emissive: ACC.clone(), emissiveIntensity: .6, roughness: .25, metalness: .3 });
-  const rouge = new THREE.MeshPhysicalMaterial({ color: 0xD9473A, roughness: .34, metalness: .04, clearcoat: 1, clearcoatRoughness: .18 });   // bande de phare
-  const cuivre = new THREE.MeshPhysicalMaterial({ color: 0xC8A15A, roughness: .28, metalness: .9, clearcoat: .4 });                        // hublot, rivets
-  const drone = new THREE.Group(); scene.add(drone);   // inclinaison de vol
-  const body = new THREE.Group(); drone.add(body);     // lacet (il tourne la tête)
-  body.add(new THREE.Mesh(new THREE.SphereGeometry(1, 64, 48), shell));
-  body.add(new THREE.Mesh(new THREE.SphereGeometry(1.012, 64, 20, 0, Math.PI * 2, 0, .62), dark));
-  const seam = new THREE.Mesh(new THREE.TorusGeometry(1.004, .03, 12, 120), dark); seam.rotation.x = Math.PI / 2; seam.position.y = -.08; body.add(seam);
-  body.add(new THREE.Mesh(new THREE.SphereGeometry(1.006, 64, 10, 0, Math.PI * 2, 1.78, .34), rouge));   // une bande rouge, comme sur la tour du phare
-  for (let k = 0; k < 18; k++) { const a = k / 18 * Math.PI * 2, rv = new THREE.Mesh(new THREE.SphereGeometry(.028, 10, 8), cuivre); rv.position.set(Math.cos(a) * 1.01, -.08, Math.sin(a) * 1.01); body.add(rv); }
-  const vent = new THREE.Mesh(new THREE.TorusGeometry(.42, .03, 10, 60), dark); vent.rotation.x = Math.PI / 2; vent.position.y = -.9; body.add(vent);
-  const ant = new THREE.Mesh(new THREE.CylinderGeometry(.022, .03, .55, 10), dark); ant.position.set(.38, 1.08, -.05); ant.rotation.z = -.42; body.add(ant);
-  const led = new THREE.Mesh(new THREE.SphereGeometry(.075, 20, 14), hotM); led.position.set(.5, 1.33, -.05); body.add(led);
-  { const cage = new THREE.Mesh(new THREE.CylinderGeometry(.1, .1, .16, 16, 1, true), new THREE.MeshStandardMaterial({ color: 0xFFF4DC, roughness: .1, metalness: 0, transparent: true, opacity: .28, side: THREE.DoubleSide, depthWrite: false })); cage.position.copy(led.position); cage.rotation.z = -.42; body.add(cage);
-    const toit = new THREE.Mesh(new THREE.ConeGeometry(.12, .1, 16), rouge); toit.position.set(.535, 1.43, -.05); toit.rotation.z = -.42; body.add(toit); }   // une petite lanterne de phare
-  const lueur = new THREE.PointLight(0xFFB24A, 2.6, 3.2, 2); lueur.position.set(.45, 1.42, .1); body.add(lueur);   // sa lumière chaude tombe sur Root
-  const eye = new THREE.Group(); body.add(eye);
-  const bezel = new THREE.Mesh(new THREE.TorusGeometry(.47, .075, 18, 72), cuivre); bezel.position.z = .87; eye.add(bezel);   // un hublot de cuivre
-  for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2, b = new THREE.Mesh(new THREE.SphereGeometry(.026, 10, 8), cuivre); b.position.set(Math.cos(a) * .47, Math.sin(a) * .47, .95); eye.add(b); }
-  const dome = new THREE.Mesh(new THREE.SphereGeometry(.45, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), glass); dome.rotation.x = Math.PI / 2; dome.position.z = .84; dome.scale.set(1, .55, 1); eye.add(dome);
-  const iris = new THREE.Mesh(new THREE.RingGeometry(.1, .19, 48), glow); iris.position.z = 1.095; eye.add(iris);
-  const pupil = new THREE.Mesh(new THREE.CircleGeometry(.075, 32), new THREE.MeshBasicMaterial({ color: 0xffffff })); pupil.position.z = 1.1; eye.add(pupil);
-  const glint = new THREE.Mesh(new THREE.CircleGeometry(.045, 20), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .85 })); glint.position.set(-.16, .14, 1.07); eye.add(glint);
-  const ringG = new THREE.Group(); drone.add(ringG); ringG.rotation.set(Math.PI / 2 + .3, .16, 0);
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(1.46, .02, 8, 180), ringM); ringG.add(ring);
-  for (let k = 0; k < 8; k++) { const b = new THREE.Mesh(new THREE.TorusGeometry(1.46, .05, 10, 22, Math.PI / 4 - .02), k % 2 ? shell : rouge); b.rotation.z = k * Math.PI / 4; ring.add(b); }   // l'anneau devient une bouée
-  [[0, glow, .075], [Math.PI * .66, hotM, .055], [Math.PI * 1.33, glow, .05]].forEach(([a, m, r]) => { const n = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), m); n.position.set(Math.cos(a) * 1.46, Math.sin(a) * 1.46, 0); ring.add(n); });
-  // lueur de poussée sous le drone : elle s'intensifie quand il accélère
+  // --- modèle : Root, un poulpe corail à lunettes noires (il ne les quitte jamais), coiffé d'algues, avec son collier à cadenas
+  //     qui luit comme la lanterne du phare. Un seul personnage : le manteau au centre (c'est lui qu'on clique), huit bras dessous.
+  const TAU = Math.PI * 2, HOT = new THREE.Color('#FFB24A');
   const gcv = document.createElement('canvas'); gcv.width = gcv.height = 64; const gx = gcv.getContext('2d');
   const gg = gx.createRadialGradient(32, 32, 0, 32, 32, 32); gg.addColorStop(0, '#fff'); gg.addColorStop(1, 'rgba(255,255,255,0)'); gx.fillStyle = gg; gx.fillRect(0, 0, 64, 64);
-  const thrust = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(gcv), color: new THREE.Color('#7FD6FF'), transparent: true, opacity: .3, depthWrite: false }));   // une lueur d'écume
-  thrust.position.set(0, -1.16, 0); thrust.scale.set(1.05, .5, 1); drone.add(thrust);
-
-
-  // --- passager : Root, un petit poulpe corail à lunettes noires (il ne les quitte jamais), couvert d'algues, collier à cadenas,
-  //     assis sur l'épaule gauche du drone, les tentacules dans le vide
-  const furM = new THREE.MeshPhysicalMaterial({ color: 0xBE3326, roughness: .42, metalness: 0, clearcoat: .6, clearcoatRoughness: .3, sheen: .8, sheenColor: new THREE.Color(0xFF9C7E), sheenRoughness: .45 });   // peau humide
-  const furD = new THREE.MeshStandardMaterial({ color: 0x8E2A1C, roughness: .55 });                                                       // taches
-  const creamM = new THREE.MeshStandardMaterial({ color: 0xFFC9B0, roughness: .6 });                                                    // ventouses, dessous des bras
-  const pinkM = new THREE.MeshStandardMaterial({ color: 0xE9826B, roughness: .5 });
+  const glowTex = new THREE.CanvasTexture(gcv);
+  // la peau : une seule texture dessinée ici. Les trois quarts du haut habillent le manteau (dégradé corail, taches, joues) ;
+  // la bande du bas habille les bras (dessus corail, dessous crème).
+  const skinCv = document.createElement('canvas'); skinCv.width = skinCv.height = 512;
+  { const g = skinCv.getContext('2d'), HH = 384;
+    let sd = 11; const rnd = () => (sd = sd * 16807 % 2147483647) / 2147483647;
+    const lg = g.createLinearGradient(0, 0, 0, HH); lg.addColorStop(0, '#AE2C22'); lg.addColorStop(.38, '#D0463A'); lg.addColorStop(.72, '#E25C4E'); lg.addColorStop(1, '#EC7868');
+    g.fillStyle = lg; g.fillRect(0, 0, 512, HH);
+    const tache = (x, y, r, kx) => [-512, 0, 512].forEach(o => {
+      g.fillStyle = 'rgba(110,22,16,.55)'; g.beginPath(); g.ellipse(x + o, y, r * kx, r, 0, 0, TAU); g.fill();
+      g.fillStyle = 'rgba(240,130,104,.45)'; g.beginPath(); g.ellipse(x + o - r * .2 * kx, y - r * .24, r * .42 * kx, r * .42, 0, 0, TAU); g.fill(); });
+    for (let i = 0; i < 64; i++) { const u = rnd(), v = .07 + rnd() * .52, r = 4 + rnd() * 8; if (Math.abs(u - .25) < .2 && v > .25) continue; tache(u * 512, v * HH, r, 1 / Math.max(.3, Math.sin(v * Math.PI))); }
+    [.25 - .088, .25 + .088].forEach(u => { const x = u * 512, y = .655 * HH, rg = g.createRadialGradient(x, y, 0, x, y, 26); rg.addColorStop(0, 'rgba(236,104,96,.6)'); rg.addColorStop(1, 'rgba(236,104,96,0)'); g.fillStyle = rg; g.fillRect(x - 28, y - 28, 56, 56); });
+    const lb = g.createLinearGradient(0, HH, 0, 512); lb.addColorStop(0, '#D4493C'); lb.addColorStop(1, '#E66A5A'); g.fillStyle = lb; g.fillRect(0, HH, 512, 128);
+    for (let i = 0; i < 20; i++) { const u = (rnd() * .34 + .83) % 1, y = HH + 6 + rnd() * 100, r = 2 + rnd() * 3.5; g.fillStyle = 'rgba(110,22,16,.3)'; [-512, 0, 512].forEach(o => { g.beginPath(); g.ellipse(u * 512 + o, y, r * 1.6, r, 0, 0, TAU); g.fill(); }); }
+    const cr = g.createLinearGradient(512 * .31, 0, 512 * .69, 0); cr.addColorStop(0, 'rgba(255,204,180,0)'); cr.addColorStop(.25, 'rgba(255,204,180,1)'); cr.addColorStop(.75, 'rgba(255,204,180,1)'); cr.addColorStop(1, 'rgba(255,204,180,0)');
+    g.fillStyle = cr; g.fillRect(512 * .31, HH, 512 * .38, 128); }
+  const skinTex = new THREE.CanvasTexture(skinCv); skinTex.colorSpace = THREE.SRGBColorSpace; skinTex.wrapS = THREE.RepeatWrapping; skinTex.anisotropy = 4;
+  const skinM = new THREE.MeshPhysicalMaterial({ map: skinTex, roughness: .42, metalness: 0, clearcoat: .6, clearcoatRoughness: .3, sheen: .8, sheenColor: new THREE.Color(0xFF9C7E), sheenRoughness: .45 });   // peau humide
+  const dark = new THREE.MeshPhysicalMaterial({ color: 0x17153D, roughness: .32, metalness: .45, clearcoat: .7, clearcoatRoughness: .2 });
+  const glass = new THREE.MeshPhysicalMaterial({ color: 0x05050F, roughness: .14, metalness: .2, clearcoat: 1, clearcoatRoughness: .08, envMapIntensity: .45 });   // les verres
+  const hotM = new THREE.MeshStandardMaterial({ color: HOT.clone(), emissive: HOT.clone(), emissiveIntensity: 1.6, roughness: .4 });        // le cadenas brille comme le phare
+  const creamM = new THREE.MeshStandardMaterial({ color: 0xFFE2D0, roughness: .55 });                                                      // ventouses
+  const blanc = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .9 });
   const algueM = new THREE.MeshPhysicalMaterial({ color: 0x1F7A4A, roughness: .38, emissive: 0x0B2A18, emissiveIntensity: .5, clearcoat: .8, clearcoatRoughness: .25, sheen: 1, sheenColor: new THREE.Color(0x7FE0A0), side: THREE.DoubleSide });
-  const algueC = new THREE.MeshPhysicalMaterial({ color: 0x7FB23A, roughness: .42, emissive: 0x1E2A08, emissiveIntensity: .5, clearcoat: .6, clearcoatRoughness: .3, sheen: 1, sheenColor: new THREE.Color(0xD8F08A), side: THREE.DoubleSide });
-  const algueR = new THREE.MeshPhysicalMaterial({ color: 0x8E3B2E, roughness: .4, emissive: 0x2A0C08, emissiveIntensity: .4, clearcoat: .6, sheen: 1, sheenColor: new THREE.Color(0xFF9E8A), side: THREE.DoubleSide });   // une algue rouge, pour la variété
-  const sph = (r, m, sx = 1, sy = 1, sz = 1, ws = 22, hs = 16) => { const o = new THREE.Mesh(new THREE.SphereGeometry(r, ws, hs), m); o.scale.set(sx, sy, sz); return o; };
-  const cap = (r, l, m) => new THREE.Mesh(new THREE.CapsuleGeometry(r, l, 6, 14), m);
-  const cone = (r0, r1, l, m) => new THREE.Mesh(new THREE.CylinderGeometry(r1, r0, l, 14, 1), m);   // bras qui s'affine vers le bout
-  const ventouses = (par, n, y0, dy, z, r) => { for (let k = 0; k < n; k++) { const v = sph(r * (1 - k * .12), creamM, 1, 1, .55, 10, 8); v.position.set(0, y0 - k * dy, z); par.add(v); } };
-  const catRoot = new THREE.Group(); drone.add(catRoot);                 // pivote avec la tête du drone (il est assis dessus)
-  const cat = new THREE.Group(); catRoot.add(cat);
-  cat.position.set(-.78, .64, .06); cat.rotation.set(0, -.95, .22);              // au bord de l'épaule : les bras pendent dans le vide
-  const CAT_S = 1.15, CAT_SEAT = cat.position.clone(), CAT_FLY = new THREE.Vector3(-1.1, 2.3, .4);
-  // la base d'où partent les huit bras
-  const torso = sph(.21, furM, 1.15, .82, 1.05); torso.position.set(0, .3, -.03); cat.add(torso);
-  [[.1, .34, .15], [-.12, .28, .14], [.02, .22, .19]].forEach(([x, y, z]) => { const t = sph(.03, furD, 1, .7, .4, 10, 8); t.position.set(x, y, z); cat.add(t); });
-  const belly = sph(.15, furM, 1.1, .7, .7); belly.position.set(0, .25, .1); cat.add(belly);
-  // la tête : le manteau, grand, arrondi, penché en arrière ; les yeux sont devant, sous les lunettes
-  const head = new THREE.Group(); head.position.set(0, .66, .02); cat.add(head);
-  const manteau = sph(.3, furM, 1.14, 1.16, 1.14, 32, 26); manteau.position.set(0, .16, -.1); manteau.rotation.x = -.42; head.add(manteau);   // un manteau bien rond, comme un vrai poulpe
-  [[.13, .3, .02], [-.1, .36, -.1], [.04, .22, .18], [-.17, .16, .08], [.18, .12, -.08], [-.02, .42, -.2]].forEach(([x, y, z], k) => { const t = sph(.034 - (k % 3) * .006, furD, 1, .65, .35, 10, 8); t.position.set(x, y, z); t.position.multiplyScalar(1.12); t.position.y += .03; t.position.z -= .05; t.lookAt(0, .17, -.11); head.add(t); });
-  [-1, 1].forEach(s => { const o = sph(.072, pinkM, 1, .95, .8); o.position.set(.115 * s, .0, .18); head.add(o); });
-  [-1, 1].forEach(s => { const l = sph(.084, glass, 1.22, .8, .38); l.position.set(.105 * s, .015, .245); l.rotation.y = .28 * s; head.add(l); });
-  const bridge = new THREE.Mesh(new THREE.BoxGeometry(.07, .018, .02), dark); bridge.position.set(0, .03, .27); head.add(bridge);
-  const shine = sph(.018, new THREE.MeshBasicMaterial({ color: 0xffffff })); shine.position.set(-.13, .05, .28); head.add(shine);
-  const siphon = cone(.035, .022, .09, furM); siphon.position.set(.2, -.06, .06); siphon.rotation.set(0, 0, -1.1); head.add(siphon);
-  const sourire = new THREE.Mesh(new THREE.TorusGeometry(.04, .009, 6, 16, Math.PI * .8), dark); sourire.position.set(.02, -.085, .235); sourire.rotation.set(-.3, 0, Math.PI + .35); head.add(sourire);
-  // les algues : deux frondes qui ondulent (elles remplacent les oreilles) et des rubans posés sur le manteau
-  const ears = [-1, 1].map(s => {
-    const e = new THREE.Group(); e.position.set(.16 * s, .42, -.18); e.rotation.z = -1.15 * s; head.add(e);   // les algues retombent sur les côtés
-    const a = cap(.034, .19, algueM); a.scale.set(1, 1, .3); a.position.y = .12; e.add(a);
-    const b = new THREE.Group(); b.position.y = .25; b.rotation.z = .55 * s; e.add(b);
-    const c = cap(.028, .17, algueC); c.scale.set(1, 1, .3); c.position.y = .1; b.add(c);
-    const f = sph(.045, algueC, 1, 1.7, .3, 10, 8); f.position.set(.035 * s, .22, 0); b.add(f);
-    return e;
-  });
-  const ruban = (pts, r, m) => { const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(...p))), 24, r, 6, false); const o = new THREE.Mesh(g, m); o.scale.z = 1; head.add(o); return o; };
-  ruban([[.02, .5, -.06], [-.12, .46, .12], [-.24, .32, .2], [-.31, .12, .16], [-.32, -.06, .1], [-.28, -.2, .06]], .026, algueM);   // une algue posée en travers de la tête, qui retombe devant
-  ruban([[.05, .49, -.1], [.17, .42, .08], [.27, .26, .16], [.32, .06, .12], [.3, -.12, .06]], .023, algueC);
-  ruban([[-.06, .5, -.02], [-.02, .5, .14], [.08, .44, .24], [.14, .36, .27]], .02, algueM);   // une mèche qui tombe sur le front
-  [[-.31, .1, .17], [.31, .04, .13], [.12, .38, .26], [-.2, .36, .2]].forEach(([x, y, z], k) => { const f = sph(.045, k % 2 ? algueC : algueM, 1, 1.7, .35, 10, 8); f.position.set(x, y, z); f.rotation.z = .4; head.add(f); });
-  // quatre longues algues en chaînes articulées : chaque articulation est un ressort amorti, poussé par les accélérations du drone
-  const algues = [[-.22, .36, .02, 1.75, .25, algueM], [.24, .34, -.02, -1.8, .2, algueC], [-.04, .44, -.3, -.15, 2.4, algueR], [.1, .44, -.28, .3, 2.2, algueM]].map(([x, y, z, rz, rx, m], j) => {
-    const base = new THREE.Group(); base.position.set(x, y, z); base.rotation.set(rx, 0, rz); head.add(base);
-    const segs = []; let p = base; const n = 5 - (j % 2);
-    for (let k = 0; k < n; k++) {
-      const g = new THREE.Group(); g.position.y = k ? .085 - k * .006 : 0; p.add(g);
-      const w = .036 - k * .005, o = cap(w, .07, k % 2 && j !== 2 ? algueC : m); o.scale.set(1, 1, .26); o.position.y = .045; o.rotation.y = k * .5; g.add(o);
-      if (k % 2 === 1) { const f = sph(.026, m, 1, 1.9, .25, 10, 8); f.position.set((k % 4 ? 1 : -1) * .04, .05, 0); f.rotation.z = (k % 4 ? -.7 : .7); g.add(f); }   // petites feuilles
+  const algueC = new THREE.MeshPhysicalMaterial({ color: 0x7FB23A, roughness: .42, emissive: 0x1E2A08, emissiveIntensity: .5, clearcoat: .8, clearcoatRoughness: .25, sheen: 1, sheenColor: new THREE.Color(0xD8F08A), side: THREE.DoubleSide });
+  const sph = (r, m, sx = 1, sy = 1, sz = 1, ws = 14, hs = 10) => { const o = new THREE.Mesh(new THREE.SphereGeometry(r, ws, hs), m); o.scale.set(sx, sy, sz); return o; };
+  const cap = (r, l, m) => new THREE.Mesh(new THREE.CapsuleGeometry(r, l, 5, 12), m);
+  rim.color.set(0xFFE6D6); rim.intensity = 15;         // le contre-jour devient crème : il détache le corail du bleu nuit
+  const drone = new THREE.Group(); scene.add(drone);   // inclinaison de nage
+  const body = new THREE.Group(); drone.add(body);     // lacet : il tourne la tête, et le corps suit
+  const HY = .2, tete = new THREE.Group(); tete.position.y = HY; body.add(tete);
+  // le manteau : une sphère galbée (large à l'équateur, plus étroite vers les bras, le sommet bombé vers l'arrière)
+  const galbe = v => { const up = Math.max(0, v.y), dn = Math.max(0, -v.y), w = 1.1 - .2 * dn * dn + .03 * up; v.x *= w; v.z = v.z * w - .2 * up * up; v.y *= v.y > 0 ? 1.18 : .92; return v; };
+  const surTete = (az, el, k = 1) => galbe(new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el))).multiplyScalar(k);   // un point de sa surface (az = 0 : face au visiteur)
+  // normales d'une sphère déformée : recalculées, puis rendues identiques des deux côtés de sa couture et autour de ses pôles
+  const lisse = (g, ws, hs) => {
+    g.computeVertexNormals(); const nn = g.attributes.normal, v = new THREE.Vector3(), W1 = ws + 1;
+    for (let iy = 0; iy <= hs; iy++) { const a = iy * W1, b = a + ws; v.set(nn.getX(a) + nn.getX(b), nn.getY(a) + nn.getY(b), nn.getZ(a) + nn.getZ(b)).normalize(); nn.setXYZ(a, v.x, v.y, v.z); nn.setXYZ(b, v.x, v.y, v.z); }
+    [0, hs].forEach(iy => { v.set(0, 0, 0); for (let ix = 0; ix < W1; ix++) { v.x += nn.getX(iy * W1 + ix); v.y += nn.getY(iy * W1 + ix); v.z += nn.getZ(iy * W1 + ix); } v.normalize(); for (let ix = 0; ix < W1; ix++) nn.setXYZ(iy * W1 + ix, v.x, v.y, v.z); });
+    return g; };
+  const manteauG = new THREE.SphereGeometry(1, 48, 32);
+  { const p = manteauG.attributes.position, uv = manteauG.attributes.uv, v = new THREE.Vector3();
+    for (let i = 0; i < p.count; i++) { galbe(v.fromBufferAttribute(p, i)); p.setXYZ(i, v.x, v.y, v.z); uv.setY(i, .25 + .75 * uv.getY(i)); }
+    lisse(manteauG, 48, 32); }
+  const manteau = new THREE.Mesh(manteauG, skinM); tete.add(manteau);
+  // le visage : les lunettes (deux verres noirs, pont, branches) et un sourire en coin. Ce groupe glisse sur la tête quand il regarde quelque chose.
+  const eye = new THREE.Group(); tete.add(eye);
+  const verreG = new THREE.SphereGeometry(1, 24, 16);
+  { const p = verreG.attributes.position, pw = v => Math.sign(v) * Math.pow(Math.abs(v), .62);
+    for (let i = 0; i < p.count; i++) { const sx = pw(p.getX(i)), sy = pw(p.getY(i)); p.setXYZ(i, sx * .335 * (1 + .13 * sy), sy * .215, p.getZ(i) * .075); }
+    lisse(verreG, 24, 16); }
+  const refletG = new THREE.CircleGeometry(.05, 12), UP = new THREE.Vector3(0, 1, 0), EL = .03;
+  const reflets = [-1, 1].map(s => {
+    const az = .37 * s, v = new THREE.Mesh(verreG, glass); v.position.copy(surTete(az, EL, 1.0)); v.rotation.set(-EL * .6, az * .92, -.06 * s, 'YXZ'); eye.add(v);
+    const g1 = new THREE.Mesh(refletG, blanc); g1.scale.set(2.1, .6, 1); g1.rotation.z = .55; g1.position.set(-.13, .09, .074); v.add(g1);
+    const g2 = new THREE.Mesh(refletG, blanc); g2.scale.set(.8, .42, 1); g2.rotation.z = .55; g2.position.set(.02, .0, .079); v.add(g2);
+    const p0 = v.position.clone().add(new THREE.Vector3(.32 * s, .14, -.11)), p1 = surTete(1.3 * s, EL + .1, 1.02), br = new THREE.Mesh(new THREE.CylinderGeometry(.022, .022, p0.distanceTo(p1), 6), dark);
+    br.position.copy(p0).add(p1).multiplyScalar(.5); br.quaternion.setFromUnitVectors(UP, p1.clone().sub(p0).normalize()); eye.add(br);   // la branche
+    return g1; });
+  const pont = new THREE.Mesh(new THREE.BoxGeometry(.17, .055, .05), dark); pont.position.copy(surTete(0, EL + .09, 1.045)); eye.add(pont);
+  const sourire = new THREE.Mesh(new THREE.TorusGeometry(.14, .027, 8, 18, 2.1), dark); sourire.position.copy(surTete(.05, -.47, 1.0)); sourire.rotation.set(.48, .05, -(Math.PI / 2 + 1.05) + .16); eye.add(sourire);
+  // les algues : une couronne tressée posée sur le crâne, avec ses petites feuilles, un plumet de deux frondes qui ondulent,
+  // et deux longues algues à ressort qui flottent derrière lui
+  { const pts = []; for (let a = 0; a < 10; a++) { const az = a / 10 * TAU; pts.push(surTete(az, .93 + .1 * Math.cos(az) + .03 * Math.sin(az * 3), 1.035)); }
+    tete.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 48, .052, 6, true), algueM));
+    [[.55, 1, algueC], [-.2, -1, algueC], [-1.15, 1, algueM], [1.5, -1, algueM], [2.5, 1, algueC], [-2.3, -1, algueC], [3.3, 1, algueM]].forEach(([az, sg, m]) => {
+      const f = sph(.085, m, 1, 2, .32, 12, 8); f.position.copy(surTete(az, .93 + .1 * Math.cos(az) + .09, 1.07)); f.rotation.set(-.5, az, sg * 1.15, 'YXZ'); tete.add(f); }); }
+  const ears = [[.95, algueM, .105, 3], [.25, algueC, .09, 2.7]].map(([z0, m, r, ky], i) => {
+    const e = new THREE.Group(); e.position.copy(surTete(-.62, 1.08, .97)); e.rotation.z = z0; e.userData.z0 = z0; tete.add(e);
+    const a = sph(r, m, 1, ky, .22, 12, 12); a.position.y = r * ky * .9; a.rotation.y = i * .5; e.add(a);   // une fronde longue et plate
+    return e; });
+  const algues = [[-2.2, .78, .9, 1.35, algueM], [2.3, .7, .8, -1.4, algueC]].map(([az, el, rx, rz, m], j) => {
+    const base = new THREE.Group(); base.position.copy(surTete(az, el, .97)); base.rotation.set(rx, 0, rz); tete.add(base);
+    const segs = []; let p = base;
+    for (let k = 0; k < 4; k++) {
+      const g = new THREE.Group(); g.position.y = k ? .2 - k * .014 : 0; p.add(g);
+      const w = .085 - k * .013, o = cap(w, .17, k % 2 ? algueC : m); o.scale.set(1, 1, .26); o.position.y = .11; o.rotation.y = k * .5; g.add(o);
+      if (k % 2 === 1) { const f = sph(.062, m, 1, 1.9, .25); f.position.set((k % 4 === 1 ? 1 : -1) * .1, .12, 0); f.rotation.z = (k % 4 === 1 ? -.7 : .7); g.add(f); }   // petites feuilles
       segs.push({ g, ax: 0, az: 0, vx: 0, vz: 0, rx: .12 + k * .05, rz: (j % 2 ? -1 : 1) * (.1 + k * .04) }); p = g;
     }
-    return segs;
-  });
-  const collar = new THREE.Mesh(new THREE.TorusGeometry(.15, .024, 8, 30), dark); collar.position.set(0, .51, .0); collar.rotation.x = Math.PI / 2 - .12; cat.add(collar);
-  const lockB = new THREE.Mesh(new THREE.BoxGeometry(.06, .05, .025), hotM); lockB.position.set(0, .445, .155); cat.add(lockB);
-  const lockS = new THREE.Mesh(new THREE.TorusGeometry(.021, .008, 6, 14, Math.PI), hotM); lockS.position.set(0, .47, .155); cat.add(lockS);
-  // deux bras avant articulés (ils s'accrochent, saluent, font le « peace ») : ils s'étirent comme des tentacules
-  const arms = [-1, 1].map(s => {
-    const sh = new THREE.Group(); sh.position.set(.11 * s, .4, .1); cat.add(sh);
-    const up = cone(.052, .026, .26, furM); up.position.y = -.12; sh.add(up);
-    ventouses(up, 3, .06, .07, .03, .016);
-    const pw = new THREE.Mesh(new THREE.TorusGeometry(.035, .016, 8, 16, Math.PI * 1.4), furM); pw.position.set(0, -.27, .02); pw.rotation.set(0, Math.PI / 2, .6 * s); sh.add(pw);
-    return { s, sh, up, pw };
-  });
-  // pose d'un bras : rx (avant/arrière), rz (écarté/levé), étirement, épaule écartée
-  const setArm = (A, rx, rz, ext, wide) => { A.sh.rotation.set(rx, 0, A.s * rz); A.sh.position.x = A.s * (.11 + .06 * wide); A.up.scale.y = ext; A.up.position.y = -.12 * ext; A.pw.position.y = -.27 * ext; };
-  const ARM_SEAT = [-.55, .06, 1, 0], ARM_HANG = [-.45, Math.PI - .35, 2.2, 1];   // suspendu : bras tendus au-dessus de la tête
-  // deux bras arrière articulés (ils pendent et se balancent)
-  const legs = [-1, 1].map(s => {
-    const hip = new THREE.Group(); hip.position.set(.125 * s, .07, .12); cat.add(hip);
-    const thigh = cone(.058, .04, .2, furM); thigh.position.y = -.1; hip.add(thigh);
-    ventouses(thigh, 2, .03, .08, .035, .015);
-    const knee = new THREE.Group(); knee.position.y = -.2; hip.add(knee);
-    const shin = cone(.04, .02, .22, furM); shin.position.y = -.1; knee.add(shin);
-    ventouses(shin, 2, .02, .08, .026, .012);
-    const paw = new THREE.Mesh(new THREE.TorusGeometry(.03, .013, 8, 16, Math.PI * 1.5), furM); paw.position.set(0, -.215, .02); paw.rotation.set(0, Math.PI / 2, .9 * s); knee.add(paw);
-    return { hip, knee };
-  });
-  // un long bras qui s'enroule derrière lui (il remplace la queue)
-  const tail = [], TREST = [.9, .5, .45, .42, .38, .34, .3]; let tp = cat;
-  for (let i = 0; i < TREST.length; i++) {
-    const g = new THREE.Group(); g.position.set(0, i ? -.08 : .1, i ? 0 : -.2); tp.add(g);
-    const sg = cap(.046 - i * .0045, .055, furM); sg.position.y = -.04; g.add(sg);
-    if (i % 2) { const v = sph(.011, creamM, 1, 1, .5, 8, 6); v.position.set(0, -.04, .03 - i * .0015); g.add(v); }
-    tail.push(g); tp = g;
-  }
-  // quatre autres bras, plus courts, qui ondulent sous lui
-  const bras = [[.18, -.9, .5], [-.18, .9, .5], [.09, -.45, -.8], [-.1, .5, -.8], [.2, -1.2, 1.6], [-.2, 1.2, 1.6]].map(([x, rz, ry]) => {
-    const chaine = []; let p = cat;
-    const base = new THREE.Group(); base.position.set(x, .17, -.02); base.rotation.set(0, ry, rz); cat.add(base); p = base;
-    for (let k = 0; k < 7; k++) {
-      const g = new THREE.Group(); g.position.y = k ? -.068 : -.02; p.add(g);
-      const sg = cap(.046 - k * .0055, .045, furM); sg.position.y = -.033; g.add(sg);
-      if (k % 2) { const v = sph(.012, creamM, 1, 1, .5, 8, 6); v.position.set(0, -.033, .032 - k * .004); g.add(v); }
-      chaine.push(g); p = g;
+    return segs; });
+  // le collier et son cadenas, sous le menton : il luit, et sa lumière chaude tombe sur les bras de devant
+  const collar = new THREE.Mesh(new THREE.TorusGeometry(.835, .045, 8, 44), dark); collar.position.set(0, -.36, 0); collar.rotation.x = Math.PI / 2; body.add(collar);
+  const lockB = new THREE.Mesh(new THREE.BoxGeometry(.2, .16, .08), hotM); lockB.position.set(0, -.56, .9); lockB.rotation.x = .1; body.add(lockB);
+  const lockS = new THREE.Mesh(new THREE.TorusGeometry(.065, .022, 6, 14, Math.PI), hotM); lockS.position.set(0, -.475, .89); lockS.rotation.x = .1; body.add(lockS);
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: HOT.clone(), transparent: true, opacity: .5, depthWrite: false, blending: THREE.AdditiveBlending })); halo.position.set(0, -.54, 1.0); halo.scale.set(.62, .62, 1); body.add(halo);
+  const lueur = new THREE.PointLight(0xFFB24A, 1.5, 3.4, 2); lueur.position.set(0, -.66, 1.55); body.add(lueur);
+
+  // --- les huit bras : des chaînes d'articulations à ressort amorti (la physique des algues), poussées par la nage,
+  //     puis rendues en un seul tube lisse (une géométrie, mise à jour en place à chaque image)
+  const NA = 8, NJ = 9, SUB = 3, NR = NJ * SUB + 1, NK = 12, NV = NR * (NK + 1), NS = 6;
+  const A0 = -.62, LEN = [.215, .21, .2, .19, .18, .17, .16, .15, .14];
+  const REST = [-.42, -.3, -.16, .02, .26, .46, .62, .74, .8];           // au repos : ils tombent, puis le bout remonte en boucle
+  const ECART = [.55, .35, .2, .05, 0, .05, .1, .1, .1], COTE = [.15, .7, .9, .45, .45, .9, .7, .15];   // les bras de côté s'écartent davantage que ceux de devant
+  const BIAIS = [-.32, 0, 0, .4, -.4, 0, 0, .32], OUVJ = [.4, 1, 1, 1, 1, 1, 1, .4];                 // ceux de devant s'écartent du menton, ceux de derrière se montrent ; en corolle, ceux de devant ne cachent pas le visage
+  const NAGE = [-.5, -.2, -.06, 0, 0, .03, .06, .08, .1];                 // en nage : serrés derrière lui (le courant finit de les aligner)
+  const FREIN = [.45, .2, .1, 0, 0, .05, .1, .15, .2];                    // freinage, surprise : ouverts en étoile, presque à l'horizontale
+  const COUP = [.42, .24, .12, .04, 0, -.04, -.08, -.1, -.1];             // le coup de bras (ouvrir, puis serrer d'un coup)
+  const LEVE = [.6, .2, .5, .5, .35, .1, -.2, -.35, -.4];                 // un bras levé à côté de la tête, bien détaché d'elle
+  const BAS = [-.78, -.2, 0, 0, 0, 0, 0, 0, .12];                         // un bras tendu vers le bas
+  const CA = [], SA = []; for (let k = 0; k <= NK; k++) { CA.push(Math.cos(k / NK * TAU)); SA.push(Math.sin(k / NK * TAU)); }
+  const aP = new Float32Array(NA * NV * 3), aN = new Float32Array(NA * NV * 3), aU = new Float32Array(NA * NV * 2), aI = [];
+  for (let j = 0; j < NA; j++) for (let r = 0; r < NR; r++) for (let k = 0; k <= NK; k++) {
+    const a = j * NV + r * (NK + 1) + k; aU[a * 2] = k / NK; aU[a * 2 + 1] = .242 * (1 - r / (NR - 1)) + .004;
+    if (r < NR - 1 && k < NK) { const b = a + NK + 1; aI.push(a, a + 1, b, a + 1, b + 1, b); } }
+  const armG = new THREE.BufferGeometry(); armG.setIndex(aI);
+  armG.setAttribute('position', new THREE.BufferAttribute(aP, 3).setUsage(THREE.DynamicDrawUsage)); armG.setAttribute('normal', new THREE.BufferAttribute(aN, 3).setUsage(THREE.DynamicDrawUsage)); armG.setAttribute('uv', new THREE.BufferAttribute(aU, 2));
+  const armsM = new THREE.Mesh(armG, skinM); armsM.frustumCulled = false; body.add(armsM);
+  const suckers = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), creamM, NA * NS); suckers.frustumCulled = false; suckers.instanceMatrix.setUsage(THREE.DynamicDrawUsage); body.add(suckers);
+  { const M = suckers.instanceMatrix.array; for (let i = 0; i < NA * NS; i++) M[i * 16 + 15] = 1; }
+  const bras = Array.from({ length: NA }, (_, j) => {
+    const az = (j + .5) * TAU / NA, sx = Math.sin(az), cz = Math.cos(az), c = Math.cos(A0), s = Math.sin(A0);
+    const rest = REST.map((v, i) => v * (1 + .14 * Math.sin(j * 2.4 + i * 1.1)) + .05 * Math.sin(j * 5.1 + i) + COTE[j] * ECART[i]);
+    return { bx: sx * .56, by: -.44, bz: cz * .56, d: [c * sx, s, c * cz], n: [-s * sx, c, -s * cz], b: [-cz, 0, sx], rest, be: Float32Array.from(rest), sw: new Float32Array(NJ), vb: new Float32Array(NJ), vs: new Float32Array(NJ),
+      ext: 1, P: new Float32Array((NJ + 1) * 3), F: new Float32Array(NJ * 9), tip: new THREE.Vector3() }; });
+  // poids des gestes (les facéties les règlent) et état de la nage
+  const Pz0 = { ouvre: 0, serre: 0, leve: 0, salut: 0, leve2: 0, pointe: 0, tournis: 0, gonfle: 0 }, Pz = Object.assign({}, Pz0);
+  const pose = { nage: 0, frein: 0, coup: 0, ph: 0, lx: 0, ly: 0, lz: 0, sx: 0, sy: 0, charge: 0 };
+  const cs = { kt: 0, tilt: 0, tiltT: 0, nextTilt: 3, ear: -1, earT: 0, nextEar: 2, ax: 0, ay: 0, tr: 0, yaw0: 0, vr: 0 };
+  function brasTick(t, kt, h, k) {
+    const serre = Math.min(1, pose.nage + Pz.serre + .6 * pose.charge), ouvre = Math.min(1, pose.frein + Pz.ouvre + Math.min(.6, Math.abs(cs.vr) * .06));
+    const M = suckers.instanceMatrix.array, ly = pose.ly > 0 ? pose.ly * .45 : pose.ly; let vi = 0;   // quand il descend, les bras s'ouvrent en parachute sans remonter devant le visage
+    for (let j = 0; j < NA; j++) {
+      const A = bras[j], P = A.P, F = A.F;
+      let dx = A.d[0], dy = A.d[1], dz = A.d[2], nx = A.n[0], ny = A.n[1], nz_ = A.n[2], bx = A.b[0], by = A.b[1], bz = A.b[2];
+      const lv = j === 1 ? Math.max(Pz.leve, Pz.leve2) : j === 6 ? Pz.leve2 : 0, pt = j === 0 ? Pz.pointe : 0, geste = Math.max(lv, pt);
+      A.ext = 1 + .5 * pt + .3 * lv;
+      let x = A.bx, y = A.by, z = A.bz; P[0] = x; P[1] = y; P[2] = z;
+      for (let i = 0; i < NJ; i++) {
+        const souple = 1 + i * .45, raide = 46 / souple * (1 + 5 * geste), amort = 5.5 * (1 + 1.2 * geste), fl = .55 + i * .1;
+        const ln = pose.lx * nx + ly * ny + pose.lz * nz_, lb = pose.lx * bx + ly * by + pose.lz * bz;   // la traînée de l'eau, vue de cette articulation : le bras s'aligne peu à peu sur le courant
+        let tb = lerp(lerp(A.rest[i], NAGE[i], serre), FREIN[i], ouvre * OUVJ[j]);
+        tb += k * (Math.sin(kt * 1.7 + j * 1.3 - i * .7) * (.05 + i * .024) * (1 - .5 * serre) + (i < 3 ? .05 * Math.sin(t * 2.2 - i * .4) : 0)) + pose.coup * COUP[i] * pose.nage + ln * fl * 1.5;
+        if (pose.charge > 0) tb += .05 * pose.charge * Math.sin(t * 41 + j * 2 + i);                                                    // il tremble
+        let ts = (i ? 0 : BIAIS[j] * (1 - .7 * serre)) + k * Math.sin(kt * 1.2 + j * 2.1 - i * .5) * (.05 + i * .014) + lb * fl * 1.3 + clamp(cs.vr * .035, -.5, .5) * (.3 + i * .14);
+        if (lv > 0) { tb = lerp(tb, LEVE[i] + (j === 1 && i > 2 && i < 7 ? Pz.salut * .42 * Math.sin(t * 10 - i * .5) : 0), lv); ts = lerp(ts, 0, lv); }
+        if (pt > 0) { tb = lerp(tb, BAS[i], pt); ts = lerp(ts, 0, pt); }
+        A.vb[i] += (raide * (tb - A.be[i]) - amort * A.vb[i]) * h; A.be[i] += A.vb[i] * h;
+        A.vs[i] += (raide * (ts - A.sw[i]) - amort * A.vs[i]) * h; A.sw[i] += A.vs[i] * h;
+        let c = Math.cos(A.be[i]), s = Math.sin(A.be[i]), ex = dx * c + nx * s, ey = dy * c + ny * s, ez = dz * c + nz_ * s;
+        nx = nx * c - dx * s; ny = ny * c - dy * s; nz_ = nz_ * c - dz * s; dx = ex; dy = ey; dz = ez;
+        c = Math.cos(A.sw[i]); s = Math.sin(A.sw[i]); ex = dx * c + bx * s; ey = dy * c + by * s; ez = dz * c + bz * s;
+        bx = bx * c - dx * s; by = by * c - dy * s; bz = bz * c - dz * s; dx = ex; dy = ey; dz = ez;
+        const f = i * 9; F[f] = nx; F[f + 1] = ny; F[f + 2] = nz_; F[f + 3] = bx; F[f + 4] = by; F[f + 5] = bz; F[f + 6] = dx; F[f + 7] = dy; F[f + 8] = dz;
+        const L = LEN[i] * A.ext, o = (i + 1) * 3; x += dx * L; y += dy * L; z += dz * L; P[o] = x; P[o + 1] = y; P[o + 2] = z;
+      }
+      A.tip.set(x, y, z);
+      // le tube : trois anneaux par articulation, sur une courbe lissée (Catmull-Rom) ; le repère de chaque anneau est fondu entre les segments voisins
+      for (let r = 0; r < NR; r++) {
+        const i = Math.min(NJ - 1, (r / SUB) | 0), f = r / SUB - i, sN = r / (NR - 1), rad = r === NR - 1 ? .012 : .225 * Math.pow(1 - sN, .8) + .034;
+        const ia = Math.max(0, i - 1) * 3, ib = i * 3, ic = (i + 1) * 3, id = Math.min(NJ, i + 2) * 3, f2 = f * f, f3 = f2 * f;
+        const w0 = -.5 * f + f2 - .5 * f3, w1 = 1 - 2.5 * f2 + 1.5 * f3, w2 = .5 * f + 2 * f2 - 1.5 * f3, w3 = -.5 * f2 + .5 * f3;
+        x = w0 * P[ia] + w1 * P[ib] + w2 * P[ic] + w3 * P[id]; y = w0 * P[ia + 1] + w1 * P[ib + 1] + w2 * P[ic + 1] + w3 * P[id + 1]; z = w0 * P[ia + 2] + w1 * P[ib + 2] + w2 * P[ic + 2] + w3 * P[id + 2];
+        const fd = i * 9, fo = (f < .5 ? Math.max(0, i - 1) : Math.min(NJ - 1, i + 1)) * 9, wo = Math.abs(f - .5), wd = 1 - wo;
+        let n0 = F[fd] * wd + F[fo] * wo, n1 = F[fd + 1] * wd + F[fo + 1] * wo, n2 = F[fd + 2] * wd + F[fo + 2] * wo, b0 = F[fd + 3] * wd + F[fo + 3] * wo, b1 = F[fd + 4] * wd + F[fo + 4] * wo, b2 = F[fd + 5] * wd + F[fo + 5] * wo;
+        let q = 1 / (Math.hypot(n0, n1, n2) || 1); n0 *= q; n1 *= q; n2 *= q; q = 1 / (Math.hypot(b0, b1, b2) || 1); b0 *= q; b1 *= q; b2 *= q;
+        for (let c = 0; c <= NK; c++) { const ux = CA[c] * n0 + SA[c] * b0, uy = CA[c] * n1 + SA[c] * b1, uz = CA[c] * n2 + SA[c] * b2; aP[vi] = x + ux * rad; aP[vi + 1] = y + uy * rad; aP[vi + 2] = z + uz * rad; aN[vi] = ux; aN[vi + 1] = uy; aN[vi + 2] = uz; vi += 3; }
+        if (r % SUB === 0 && i >= 2 && i < 2 + NS) {   // une ventouse sous le bras, à chaque articulation du milieu
+          const m = (j * NS + i - 2) * 16, sc = rad * .46;
+          M[m] = b0 * sc; M[m + 1] = b1 * sc; M[m + 2] = b2 * sc; M[m + 4] = n0 * sc * .5; M[m + 5] = n1 * sc * .5; M[m + 6] = n2 * sc * .5; M[m + 8] = F[fd + 6] * sc; M[m + 9] = F[fd + 7] * sc; M[m + 10] = F[fd + 8] * sc;
+          M[m + 12] = x - n0 * rad * .88; M[m + 13] = y - n1 * rad * .88; M[m + 14] = z - n2 * rad * .88;
+        }
+      }
     }
-    return chaine;
-  });
-  const gouttes = Array.from({ length: 6 }, () => { const g = new THREE.Mesh(new THREE.SphereGeometry(.022, 10, 8), new THREE.MeshPhysicalMaterial({ color: 0xBFE6FF, roughness: .05, metalness: 0, clearcoat: 1, transparent: true, opacity: 0, depthWrite: false })); g.scale.set(1, 1.35, 1); g.visible = false; scene.add(g); return { g, v: 0, vie: 0 }; });
-  const bouts = () => [...legs.map(L => L.knee), ...bras.map(c => c[c.length - 1]), tail[tail.length - 1]];
+    armG.attributes.position.needsUpdate = true; armG.attributes.normal.needsUpdate = true; suckers.instanceMatrix.needsUpdate = true;
+  }
+  // quelques gouttes tombent du bout de ses bras (il sort de l'eau)
+  const goutteM = new THREE.MeshPhysicalMaterial({ color: 0xBFE6FF, roughness: .05, metalness: 0, clearcoat: 1, transparent: true, opacity: .8, depthWrite: false });
+  const gouttes = Array.from({ length: 5 }, () => { const g = new THREE.Mesh(new THREE.SphereGeometry(.045, 8, 6), goutteM); g.visible = false; scene.add(g); return { g, v: 0, vie: 0 }; });
   const vGo = new THREE.Vector3(); let prochaineGoutte = 2;
   function gouttesTick(t, dt) {
-    if (t > prochaineGoutte && !REDUCE) { prochaineGoutte = t + .9 + Math.random() * 2.2; const d = gouttes.find(x => x.vie <= 0); if (d) { const b = bouts(); b[Math.floor(Math.random() * b.length)].getWorldPosition(vGo); d.g.position.copy(vGo); d.v = 0; d.vie = 1.4; d.g.visible = true; } }
-    gouttes.forEach(d => { if (d.vie <= 0) return; d.vie -= dt; d.v -= 9.8 * .55 * dt; d.g.position.y += d.v * dt; d.g.material.opacity = Math.min(.85, d.vie * 1.2); if (d.vie <= 0) d.g.visible = false; });
+    if (t > prochaineGoutte && !REDUCE) { prochaineGoutte = t + .9 + Math.random() * 2.2; const d = gouttes.find(x => x.vie <= 0); if (d && !egg.on) { vGo.copy(bras[(Math.random() * NA) | 0].tip); body.localToWorld(vGo); d.g.position.copy(vGo); d.v = 0; d.vie = 1.4; d.g.visible = true; } }
+    gouttes.forEach(d => { if (d.vie <= 0) return; d.vie -= dt; d.v -= 9.8 * .55 * dt; d.g.position.y += d.v * dt; const q = Math.min(1, Math.max(0, d.vie) * 2.5); d.g.scale.set(q, q * 1.35, q); if (d.vie <= 0) d.g.visible = false; });
   }
-  // pose du poulpe : k = 1 vivant, k = 0 pose de repos (utilisée pour préparer les éclats de la surprise)
-  const cs = { k: 1, kt: 0, tilt: 0, tiltT: 0, nextTilt: 3, ear: -1, earT: 0, nextEar: 2, pvx: 0, pvy: 0, ax: 0, ay: 0, tr: 0 };
-  function catPose(k, t, dt, vx, vy, kt = t) {
-    const sw = 2.3 + Math.sin(kt * .37) * .6;                                          // le rythme des bras varie
-    const inert = clamp(vy / 900 + Math.abs(vx) / 1500, -.45, .6);                    // en vol, les bras partent vers l'arrière
+  // la pose de Root à chaque image : algues, bras, souffle du manteau, petite inclinaison curieuse de la tête
+  function rootPose(k, t, dt, kt) {
     const h = Math.min(Math.max(dt, 1e-3), .05);
-    cs.ax += (clamp((vx - cs.pvx) / h, -6000, 6000) - cs.ax) * Math.min(1, h * 12); cs.ay += (clamp((vy - cs.pvy) / h, -6000, 6000) - cs.ay) * Math.min(1, h * 12); cs.pvx = vx; cs.pvy = vy;
-    cs.tr += (clamp(-vx / 1400, -.5, .5) * k - cs.tr) * Math.min(1, h * 4);          // les bras traînent derrière dans les virages
+    cs.ax += (clamp(st.ax, -6000, 6000) - cs.ax) * Math.min(1, h * 12); cs.ay += (clamp(st.ay, -6000, 6000) - cs.ay) * Math.min(1, h * 12);
+    cs.tr += (clamp(-st.vx / 1400, -.5, .5) * k - cs.tr) * Math.min(1, h * 4);          // les algues traînent derrière dans les virages
+    { let dy = body.rotation.y - cs.yaw0; dy -= TAU * Math.round(dy / TAU); cs.vr += (clamp(dy / h, -14, 14) - cs.vr) * Math.min(1, h * 10); cs.yaw0 = body.rotation.y; }   // (un tour complet qui se referme ne compte pas)
+    const inert = clamp(st.vy / 900 + Math.abs(st.vx) / 1500, -.45, .6);
     algues.forEach((c, j) => c.forEach((sg, i) => {
       const souple = 1 + i * .45, raide = 46 / souple, amort = 5.5;
       const tz = sg.rz + k * (Math.sin(t * 1.6 + j * 1.9 - i * .8) * (.09 + i * .03) - clamp(cs.ax / 9000, -.5, .5) * souple * .5 + cs.tr * .5);
@@ -9430,125 +9452,101 @@ window.__site = { projets: PROJETS.map(p => p.titre), chat: chatCtl, L, tour: to
       sg.vz += (raide * (tz - sg.az) - amort * sg.vz) * h; sg.az += sg.vz * h; sg.vx += (raide * (tx - sg.ax) - amort * sg.vx) * h; sg.ax += sg.vx * h;
       sg.g.rotation.set(sg.ax, 0, sg.az);
     }));
+    brasTick(t, kt, h, k);
     gouttesTick(t, h);
-    legs.forEach((L, i) => {
-      const kick = Math.sin(kt * sw + (i ? Math.PI : 0) + Math.sin(kt * .9) * .4);
-      L.hip.rotation.x = -1.2 + k * (kick * .14 + inert * .25);
-      L.knee.rotation.x = 1.1 + k * (kick * .5 + inert);
-    });
-    tail.forEach((g, i) => { g.rotation.x = TREST[i] + k * Math.sin(kt * 1.5 - i * .6) * .2; g.rotation.z = k * Math.sin(kt * 1.05 - i * .5) * (.2 + i * .035); });
-    bras.forEach((c, j) => c.forEach((g, i) => { g.rotation.x = .3 + i * .2 + k * Math.sin(kt * 1.7 + j * 1.3 - i * .7) * (.16 + i * .05) + k * inert * .3; g.rotation.z = k * Math.sin(kt * 1.2 + j - i * .5) * .12 + cs.tr * (.25 + i * .12); }));
-    lueur.intensity = 2.6 * (1 + .06 * Math.sin(t * 7.3) + .04 * Math.sin(t * 13.1));   // la flamme de la lanterne vacille
-    // la tête regarde vers le visiteur, suit un peu le regard du drone, et se penche parfois par curiosité
-    if (t > cs.nextTilt) { cs.tiltT = (Math.random() - .5) * .7; cs.nextTilt = t + 2.5 + Math.random() * 4; }
+    lueur.intensity = 1.5 * (1 + .06 * Math.sin(t * 7.3) + .04 * Math.sin(t * 13.1)) * (1 + 1.4 * pose.charge);   // la lueur du cadenas vacille
+    if (t > cs.nextTilt) { cs.tiltT = (Math.random() - .5) * .3; cs.nextTilt = t + 2.5 + Math.random() * 4; }
     if (t > cs.nextEar) { cs.ear = Math.random() < .5 ? 0 : 1; cs.earT = t; cs.nextEar = t + 1.8 + Math.random() * 4; }
     cs.tilt += (cs.tiltT - cs.tilt) * Math.min(1, dt * 3);
-    head.rotation.set(-st.ey * .2 * k, .85 + k * (st.ex * .35 - st.yaw * .5), cs.tilt * k);
-    // les algues ondulent toujours un peu ; parfois l'une se redresse d'un coup
-    ears.forEach((e, i) => { const tw = i === cs.ear ? Math.max(0, Math.sin(Math.min(1, (t - cs.earT) / .35) * Math.PI)) : 0; e.rotation.z = (i ? 1.15 : -1.15) + (i ? -1 : 1) * tw * .35 * k + k * .12 * Math.sin(t * 1.9 + i * 1.7); e.rotation.x = k * .1 * Math.sin(t * 1.3 + i); });
-    const souffle = 1 + .035 * k * Math.sin(t * 2.2);                                   // le manteau respire
-    manteau.scale.set(1.14 * souffle, 1.16 * (1 + .025 * k * Math.sin(t * 2.2 + .5)), 1.14 * souffle); siphon.scale.setScalar(1 + .12 * k * Math.max(0, Math.sin(t * 2.2 - 1)));
-    torso.scale.y = .82 * (1 + .025 * k * Math.sin(t * 2.6));
-    arms.forEach(A => setArm(A, ARM_SEAT[0] + .06 * k * Math.sin(kt * 1.3 + A.s), ARM_SEAT[1], 1, 0));
+    tete.rotation.set(0, 0, cs.tilt * k * (1 - pose.nage));
+    // les frondes ondulent toujours un peu ; parfois l'une se redresse d'un coup ; en nage elles se couchent
+    ears.forEach((e, i) => { const tw = i === cs.ear ? Math.max(0, Math.sin(Math.min(1, (t - cs.earT) / .35) * Math.PI)) : 0; e.rotation.z = e.userData.z0 * (1 - tw * .5 * k) + k * .12 * Math.sin(t * 1.9 + i * 1.7) + cs.tr * .8; e.rotation.x = k * .1 * Math.sin(t * 1.3 + i) - .5 * pose.nage; });
+    // le manteau respire ; en nage il se contracte à chaque coup de bras ; avant la surprise il se gonfle
+    const souffle = 1 + .03 * k * Math.sin(t * 2.2), jet = pose.coup * pose.nage, g = Pz.gonfle + 1.3 * pose.charge * pose.charge;
+    tete.scale.set(souffle * (1 + .08 * jet + .12 * g), (1 + .022 * k * Math.sin(t * 2.2 + .5)) * (1 - .07 * jet + .1 * g), souffle * (1 + .08 * jet + .12 * g));
+    stars.visible = Pz.tournis > .04;
+    if (Pz.tournis > 0) { tete.rotation.x = .2 * Math.sin(t * 9) * Pz.tournis; tete.rotation.z += .2 * Math.cos(t * 9) * Pz.tournis; stars.rotation.y = t * 7; stars.scale.setScalar(.4 + .6 * Pz.tournis); }
   }
 
   let DZ = 0, curSize = 0, curFull = false, curW = 0, curH = 0;
-  let CVK = 2.4;   // le canevas fait au moins 2,4 fois la taille du drone (et 320 px) : assez pour les cascades, sans jamais passer en plein écran
+  let CVK = 2.4;   // le canevas fait au moins 2,4 fois la taille de Root (et 320 px) : assez pour les cascades, sans jamais passer en plein écran
   const resize = () => { DZ = parseFloat(getComputedStyle(html).getPropertyValue('--dz')) || 150; CVK = Math.max(2.4, 320 / DZ); curSize = 0; };
   resize(); addEventListener('resize', resize);
 
-  // --- surprise : double clic → le drone gonfle 2 s, éclate sur tout l'écran, puis chaque éclat revient à sa place
-  const TAU = Math.PI * 2, glowTex = thrust.material.map, TAN15 = Math.tan(Math.PI / 12), CAMD = Math.hypot(8.4, .3);
+  // --- surprise : double clic → Root se gonfle 2 s, puis lâche un nuage d'encre : les gouttes filent sur tout l'écran,
+  //     flottent, puis reviennent une à une. Lui reste entier.
+  const TAN15 = Math.tan(Math.PI / 12), CAMD = Math.hypot(8.4, .3);
   const U = { uOut: { value: 0 }, uBack: { value: 0 }, uTime: { value: 0 }, uShift: { value: new THREE.Vector3() }, uSpan: { value: new THREE.Vector3(1, 1, 1) } };
-  // chaque éclat part vers un point de l'écran (uShift/uSpan convertissent l'écran en coordonnées du drone), tourne, flotte, puis revient
-  const debrisMat = src => {
-    const m = src.clone(); m.side = THREE.DoubleSide;
-    m.onBeforeCompile = sh => {
-      Object.assign(sh.uniforms, U);
-      sh.vertexShader = sh.vertexShader
-        .replace('#include <common>', `#include <common>
+  // chaque goutte part vers un point de l'écran (uShift/uSpan convertissent l'écran en coordonnées de Root), flotte, puis revient
+  const inkM = new THREE.MeshPhysicalMaterial({ color: 0x2A1668, roughness: .2, metalness: 0, clearcoat: 1, clearcoatRoughness: .1, sheen: 1, sheenColor: new THREE.Color(0xFF8A7D), sheenRoughness: .4, emissive: 0x3A1F9E, emissiveIntensity: .55 });
+  inkM.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, U);
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', `#include <common>
 uniform float uOut; uniform float uBack; uniform float uTime; uniform vec3 uShift; uniform vec3 uSpan;
-attribute vec3 aC; attribute vec3 aD; attribute vec3 aS; attribute vec4 aR; attribute float aDel;
-vec3 rotA(vec3 v, vec3 k, float a) { float c = cos(a), s = sin(a); return v * c + cross(k, v) * s + k * dot(k, v) * (1. - c); }
+attribute vec3 aC; attribute vec3 aD; attribute vec3 aS; attribute float aW; attribute float aDel;
 float pieceAmt() { float o = 1. - pow(1. - clamp(uOut, 0., 1.), 3.); return o * (1. - smoothstep(aDel, aDel + .38, uBack)); }`)
-        .replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>
-objectNormal = rotA(objectNormal, aR.xyz, aR.w * pieceAmt());`)
-        .replace('#include <begin_vertex>', `float pA = pieceAmt();
+      .replace('#include <begin_vertex>', `float pA = pieceAmt();
 vec3 tgt = mix(aD, vec3(uShift.xy + aS.xy * uSpan.xy, aD.z), aS.z);
-vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA) + tgt * pA
-  + vec3(sin(uTime * 1.3 + aR.w * 7.), cos(uTime * 1.1 + aR.w * 5.), sin(uTime * .9 + aR.w * 3.)) * (.1 + .6 * aS.z) * pA;`);
-    };
+vec3 transformed = aC + (position - aC) * smoothstep(0., .22, pA) * (1. + .1 * sin(uTime * 5. + aW * 9.)) + tgt * pA
+  + vec3(sin(uTime * 1.3 + aW * 7.), cos(uTime * 1.1 + aW * 5.), sin(uTime * .9 + aW * 3.)) * (.1 + .6 * aS.z) * pA;`);
+  };
+  let debris = null;
+  const buildInk = () => {
+    const NI = 120, ico = new THREE.IcosahedronGeometry(1, 1), ip = ico.attributes.position, per = ip.count, n = NI * per;
+    const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), aC = new Float32Array(n * 3), aD = new Float32Array(n * 3), aS = new Float32Array(n * 3), aW = new Float32Array(n), aDel = new Float32Array(n);
+    for (let i = 0; i < NI; i++) {
+      const size = Math.random() < .25 ? .2 + Math.random() * .16 : .08 + Math.random() * .1, long = 1 + Math.random() * .35;
+      const cx = (Math.random() - .5) * .5, cy = -.15 + (Math.random() - .5) * .5, cz = (Math.random() - .5) * .4;   // elles sortent de sous le manteau
+      let dx = Math.random() - .5, dy = Math.random() - .65, dz = Math.random() - .5; const l = Math.hypot(dx, dy, dz) || 1, dist = 1.4 + Math.random() * 2.4;
+      dx = dx / l * dist; dy = dy / l * dist; dz = dz / l * dist * .55;
+      // deux gouttes sur trois partent loin, n'importe où sur l'écran ; les autres restent en nuage autour de lui
+      const sxN = (Math.random() * 2 - 1) * 1.05, syN = (Math.random() * 2 - 1) * 1.05, far = Math.random() < .68 ? 1 : 0, w = Math.random();
+      const del = .62 * clamp(.5 * (dy + 3.8) / 7.6 + .5 * Math.random(), 0, 1);
+      for (let j = 0; j < per; j++) {
+        const q = i * per + j, o = q * 3, x = ip.getX(j), y = ip.getY(j), z = ip.getZ(j);
+        pos[o] = cx + x * size; pos[o + 1] = cy + y * size * long; pos[o + 2] = cz + z * size; nor[o] = x; nor[o + 1] = y; nor[o + 2] = z;
+        aC[o] = cx; aC[o + 1] = cy; aC[o + 2] = cz; aD[o] = dx; aD[o + 1] = dy; aD[o + 2] = dz; aS[o] = sxN; aS[o + 1] = syN; aS[o + 2] = far; aW[q] = w; aDel[q] = del;
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+    g.setAttribute('aC', new THREE.BufferAttribute(aC, 3)); g.setAttribute('aD', new THREE.BufferAttribute(aD, 3)); g.setAttribute('aS', new THREE.BufferAttribute(aS, 3));
+    g.setAttribute('aW', new THREE.BufferAttribute(aW, 1)); g.setAttribute('aDel', new THREE.BufferAttribute(aDel, 1));
+    ico.dispose();
+    const m = new THREE.Mesh(g, inkM); m.frustumCulled = false; m.visible = false; drone.add(m);
     return m;
   };
-  let debris = null; const debrisMats = new Map();
-  const buildDebris = () => {
-    const keep = [body.rotation.y, eye.rotation.x, eye.rotation.y, ring.rotation.z, iris.scale.y, pupil.scale.y, drone.scale.x];
-    body.rotation.set(0, 0, 0); eye.rotation.set(0, 0, 0); ring.rotation.z = 0; iris.scale.y = pupil.scale.y = 1; drone.scale.setScalar(1);
-    drone.updateMatrixWorld(true);
-    const inv = drone.matrixWorld.clone().invert(), root = new THREE.Group(), src = [];
-    [body, ringG].forEach(gr => gr.traverse(o => { if (o.isMesh) src.push(o); }));
-    for (const o of src) {
-      const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
-      g.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld));
-      const pos = g.attributes.position, cnt = pos.count;
-      const aC = new Float32Array(cnt * 3), aD = new Float32Array(cnt * 3), aS = new Float32Array(cnt * 3), aR = new Float32Array(cnt * 4), aDel = new Float32Array(cnt);
-      // les triangles voisins sont regroupés en éclats rigides (de 1 à 6 triangles), pour des morceaux lisibles
-      const per = 3 * clamp(Math.round(cnt / 3 / 700), 1, 6);
-      for (let i = 0; i + 2 < cnt; i += per) {
-        const e = Math.min(cnt, i + per); let cx = 0, cy = 0, cz = 0;
-        for (let j = i; j < e; j++) { cx += pos.getX(j); cy += pos.getY(j); cz += pos.getZ(j); }
-        cx /= e - i; cy /= e - i; cz /= e - i;
-        let dx = cx + (Math.random() - .5) * .9, dy = cy + (Math.random() - .5) * .9 + .2, dz = cz + (Math.random() - .5) * .9;
-        const l = Math.hypot(dx, dy, dz) || 1, dist = 1.2 + Math.random() * 2.3;
-        dx = dx / l * dist; dy = dy / l * dist; dz = dz / l * dist * .55;
-        // trois éclats sur quatre partent loin, n'importe où sur l'écran ; les autres restent en nuage autour du drone
-        const sxN = (Math.random() * 2 - 1) * 1.05, syN = (Math.random() * 2 - 1) * 1.05, far = Math.random() < .75 ? 1 : 0;
-        let ax = Math.random() - .5, ay = Math.random() - .5, az = Math.random() - .5; const al = Math.hypot(ax, ay, az) || 1;
-        const spin = (Math.random() < .5 ? -1 : 1) * (2 + Math.random() * 4.5);
-        const del = .62 * clamp(.5 * (cy + 1.5) / 3 + .5 * Math.random(), 0, 1);   // retour plutôt du bas vers le haut
-        for (let j = i; j < e; j++) { aC.set([cx, cy, cz], j * 3); aD.set([dx, dy, dz], j * 3); aS.set([sxN, syN, far], j * 3); aR.set([ax / al, ay / al, az / al, spin], j * 4); aDel[j] = del; }
-      }
-      g.setAttribute('aC', new THREE.BufferAttribute(aC, 3)); g.setAttribute('aD', new THREE.BufferAttribute(aD, 3)); g.setAttribute('aS', new THREE.BufferAttribute(aS, 3));
-      g.setAttribute('aR', new THREE.BufferAttribute(aR, 4)); g.setAttribute('aDel', new THREE.BufferAttribute(aDel, 1));
-      if (!debrisMats.has(o.material)) debrisMats.set(o.material, debrisMat(o.material));
-      const piece = new THREE.Mesh(g, debrisMats.get(o.material)); piece.frustumCulled = false; root.add(piece);
-    }
-    body.rotation.y = keep[0]; eye.rotation.x = keep[1]; eye.rotation.y = keep[2]; ring.rotation.z = keep[3]; iris.scale.y = keep[4]; pupil.scale.y = keep[5]; drone.scale.setScalar(keep[6]);
-    root.visible = false; drone.add(root);
-    return root;
-  };
-  // étincelles, éclair et onde de choc
-  const NP = 220, spPos = new Float32Array(NP * 3), spVel = new Float32Array(NP * 3), spCol = new Float32Array(NP * 3);
-  const PAL = [new THREE.Color('#FF8A7D'), new THREE.Color('#FFFFFF'), new THREE.Color('#FF968A'), new THREE.Color('#FFB8AE')];
+  // le nuage : des volutes d'encre, une bouffée et une onde
+  const NP = 90, spPos = new Float32Array(NP * 3), spVel = new Float32Array(NP * 3), spCol = new Float32Array(NP * 3);
+  const PAL = [new THREE.Color('#3A279E'), new THREE.Color('#22145E'), new THREE.Color('#5A41D0'), new THREE.Color('#2A1A72')];
   for (let i = 0; i < NP; i++) {
-    const u = Math.random() * 2 - 1, th = Math.random() * TAU, r = Math.sqrt(1 - u * u), sp = 2.5 + Math.random() * 6.5;
-    spVel.set([r * Math.cos(th) * sp, u * sp, r * Math.sin(th) * sp * .5], i * 3);
+    const u = Math.random() * 2 - 1, th = Math.random() * TAU, r = Math.sqrt(1 - u * u), sp = 1 + Math.random() * 3.6;
+    spVel.set([r * Math.cos(th) * sp, u * sp - .4, r * Math.sin(th) * sp * .5], i * 3);
     const c = PAL[i % PAL.length]; spCol.set([c.r, c.g, c.b], i * 3);
   }
   const spGeo = new THREE.BufferGeometry(); spGeo.setAttribute('position', new THREE.BufferAttribute(spPos, 3)); spGeo.setAttribute('color', new THREE.BufferAttribute(spCol, 3));
-  const sparks = new THREE.Points(spGeo, new THREE.PointsMaterial({ size: .2, map: glowTex, vertexColors: true, transparent: true, depthWrite: false }));
+  const sparks = new THREE.Points(spGeo, new THREE.PointsMaterial({ size: 1.5, map: glowTex, vertexColors: true, transparent: true, depthWrite: false }));
   sparks.visible = false; sparks.frustumCulled = false; drone.add(sparks);
-  const flash = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xFF9A7A, transparent: true, depthWrite: false }));
-  flash.visible = false; drone.add(flash);
-  const shock = new THREE.Mesh(new THREE.RingGeometry(.95, 1, 128), new THREE.MeshBasicMaterial({ color: 0xFF7A57, transparent: true, depthWrite: false, side: THREE.DoubleSide }));
-  shock.visible = false; shock.frustumCulled = false; drone.add(shock);
+  const flash = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x2A1A7A, transparent: true, depthWrite: false }));
+  flash.visible = false; flash.position.set(0, -.3, -.4); drone.add(flash);
+  const shock = new THREE.Mesh(new THREE.RingGeometry(.95, 1, 96), new THREE.MeshBasicMaterial({ color: 0x7358EE, transparent: true, depthWrite: false, side: THREE.DoubleSide }));
+  shock.visible = false; shock.frustumCulled = false; shock.position.z = -.6; drone.add(shock);
   const egg = { on: false, t: 0, swapped: false, settle: -1, scale: 1, s0: 1 };
-  // de temps en temps, il glisse un indice (3 s), au plus 4 fois, et plus jamais une fois la surprise découverte
+  // de temps en temps, il glisse un indice (3 s), au plus 2 fois, et plus jamais une fois la surprise découverte
   const hint = { at: performance.now() + 18000, n: 0, found: false };
   try { hint.found = sessionStorage.getItem('drone-egg') === '1'; } catch (e) {}
   const EGG = { charge: 2, out: 1.15, hold: 1.5, back: 2.6, settle: .6 };
-  // les éclats sont préparés à l'avance, quand le navigateur a le temps, pour que l'explosion parte sans à-coup
-  // (compilation des shaders + envoi des éclats à la carte graphique, avec une image identique au drone au repos)
-  // les éclats sont préparés à l'avance ; leurs shaders se compilent en arrière-plan (sans figer la page)
+  // les gouttes sont préparées à l'avance, quand le navigateur a le temps ; leur shader se compile en arrière-plan (sans figer la page)
   const prep = () => {
     if (debris || REDUCE) return;
     try {
-      debris = buildDebris(); debris.visible = true; body.visible = ringG.visible = false;
-      if (renderer.compileAsync) renderer.compileAsync(scene, camera).catch(() => {}); else { renderer.compile(scene, camera); renderer.render(scene, camera); }
+      debris = buildInk(); debris.visible = true;
+      if (renderer.compileAsync) renderer.compileAsync(scene, camera).catch(() => {}); else renderer.compile(scene, camera);
     } catch (e) {}
-    body.visible = ringG.visible = true; if (debris) debris.visible = false;
+    if (debris) debris.visible = false;
   };
-  // en mode calme, pas d’explosion possible : on attend qu’il soit désactivé pour préparer les éclats
+  // en mode calme, pas de surprise possible : on attend qu’il soit désactivé pour préparer les gouttes
   const prepLater = () => { if (html.classList.contains('calm')) { setTimeout(prepLater, 5000); return; } if (window.requestIdleCallback) requestIdleCallback(prep, { timeout: 4000 }); else prep(); };
   setTimeout(prepLater, 2500);
 
@@ -9627,7 +9625,7 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
       case 'loop': { const a = k * TAU * idle.s; o.dx = Math.sin(a) * idle.r * env; o.dy = -(1 - Math.cos(a)) * idle.r * .6 * env; o.roll = -Math.cos(a) * .15 * idle.s * env; break; }
       case 'peek': o.yaw = .6 * idle.s * env; o.dx = 6 * idle.s * env; o.roll = .12 * idle.s * env; break;
       case 'bob': o.dy = -Math.abs(Math.sin(k * TAU)) * 11 * env; break;
-      case 'spin': o.ring = 9 * env; o.dy = -9 * env; break;
+      case 'spin': o.ring = k; o.dy = -9 * env; break;
       case 'tilt': o.roll = .28 * idle.s * env; o.yaw = -.25 * idle.s * env; o.dx = 7 * idle.s * env; break;
       case 'drift': o.dx = idle.s * 16 * env; o.dy = -7 * Math.sin(k * TAU) * env; break;
     }
@@ -9653,276 +9651,131 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
     document.dispatchEvent(new CustomEvent('drone:say', { detail: { text: (S.L || (x => x))('Oh oh…'), ms: 1700 } }));
   });
 
-  // --- cascades de Root : il perd l'équilibre, glisse, reste pendu par les bras à la ceinture du drone,
-  //     puis remonte… ou lâche prise : le drone plonge et le rattrape au vol
-  const STN = { on: false, kind: '', t: 0, next: 0, f: null, caught: false, catchT: 0, said: false, roll: 0, look: null, dx: 0, dy: 0, full: false,
-    spinZ: 0, bodySq: 0, ringAdd: 0, led: 0, land: -1, a0: null, dir: 1, shot: null, lp: new THREE.Vector3(), lq: new THREE.Quaternion() };
-  const KINDS = ['fall', 'bounce', 'loop', 'climb', 'surf', 'orbit', 'selfie'];
+  // --- facéties de Root : de temps en temps il fait le pitre (tonneau, salut d'un bras, pirouette, jet et parachute, selfie),
+  //     et il vient montrer la languette du terminal
+  const STN = { on: false, kind: '', t: 0, next: 0, said: false, flashed: false, roll: 0, look: null, dx: 0, dy: 0, spinZ: 0, spinY: 0, led: 0, arr: null, shot: null };
+  const KINDS = ['roll', 'wave', 'twirl', 'jet', 'selfie'];
   let bag = [], lastKind = '';
-  const T_WOB = .35, T_SLIP = .8, T_HANG = 3.3, T_PULL = 3.7, T_BACK = 4.2, T_ENDC = 5, T_FALL = 3.62, TC = .62, T_POP = .27, POP = 22, GRAV = 850;
-  const HANG_YAW = -1.14, G_LOC = new THREE.Vector3(-.906, -.08, .42), SLIDE_C = new THREE.Vector3(-1.5, .3, .5);
-  const SEAT_E = new THREE.Euler(0, -.95, .34), SEAT_Q = new THREE.Quaternion().setFromEuler(SEAT_E);
-  const qW = new THREE.Quaternion(), qP = new THREE.Quaternion(), qT = new THREE.Quaternion(), eY = new THREE.Euler(0, 0, 0, 'YXZ');
-  const vG = new THREE.Vector3(), vT = new THREE.Vector3(), vS = new THREE.Vector3(), hangPos = new THREE.Vector3(), hangQ = new THREE.Quaternion();
   const sm = u => { u = clamp(u, 0, 1); return u * u * (3 - 2 * u); };
   const sayL = (txt, ms, must) => { if (!must && performance.now() - lastSayAt < 15000) return; document.dispatchEvent(new CustomEvent('drone:say', { detail: { text: (S.L || (x => x))(txt), ms } })); };   // une bulle à la fois, pas plus d’une toutes les 15 s
-  const bez = (out, a, c, b, u) => { const w = 1 - u; return out.set(w * w * a.x + 2 * w * u * c.x + u * u * b.x, w * w * a.y + 2 * w * u * c.y + u * u * b.y, w * w * a.z + 2 * w * u * c.z + u * u * b.z); };
-  // position et orientation (dans le repère du chat) pour que ses pattes tiennent la ceinture, le corps à la verticale
-  function hangPose(swZ, swX, ext, shift) {
-    vG.copy(G_LOC); catRoot.localToWorld(vG);
-    eY.set(swX, HANG_YAW + st.yaw, swZ); qW.setFromEuler(eY);
-    vT.set(shift * (.17 + .0926 * ext), .4 + .2284 * ext, .1 - .1102 * ext).multiplyScalar(cat.scale.x).applyQuaternion(qW);
-    hangPos.copy(vG).sub(vT); catRoot.worldToLocal(hangPos);
-    catRoot.getWorldQuaternion(qP); hangQ.copy(qP.invert()).multiply(qW);
-  }
-  // une cascade toutes les dix secondes environ, jamais deux fois la même à la suite ; certaines demandent de la place
-  function pickKind(H) {
+  const canSay = () => performance.now() > sayUntil;
+  // une facétie toutes les dix secondes environ, jamais deux fois la même à la suite ; le jet demande de la place au-dessus
+  function pickKind() {
     for (let i = 0; i < 16; i++) {
       if (!bag.length) bag = KINDS.slice().sort(() => Math.random() - .5);
       const k = bag.shift();
       if (k === lastKind) continue;
-      if (k === 'fall' && !(st.y > 110 && st.y + 260 + DZ * st.sc * .6 < H)) continue;   // place en dessous pour plonger
-      if (k === 'bounce' && st.y < 120 + DZ * st.sc * 1.1) continue;                      // place au-dessus pour les sauts
+      if (k === 'jet' && (st.y < 150 + DZ * st.sc || clearance(st.x, st.y - 80, obstacles(performance.now())) < DZ * st.sc * .4)) continue;
       return k;
     }
-    return lastKind === 'selfie' ? 'climb' : 'selfie';
+    return lastKind === 'wave' ? 'twirl' : 'wave';
   }
   function stuntStart(now, kind) {
     if (STN.on || egg.on || REDUCE) return;
-    Object.assign(STN, { on: true, kind, t: 0, f: null, flashed: false, caught: false, catchT: 0, said: false, roll: 0, look: null, dx: 0, dy: 0, full: false, spinZ: 0, bodySq: 0, ringAdd: 0, led: 0, land: -1, a0: null, arr: null });
+    Object.assign(STN, { on: true, kind, t: 0, said: false, flashed: false, roll: 0, look: null, dx: 0, dy: 0, spinZ: 0, spinY: 0, led: 0, arr: null });
     lastKind = kind; STN.next = now + (now - born > 60000 ? 21000 + Math.random() * 7000 : 9200 + Math.random() * 1600);   // après une minute, il se fait plus discret
     idle = null; restUntil = now + 1e9;
   }
   function stuntStop(now) {
-    Object.assign(STN, { on: false, f: null, roll: 0, look: null, dx: 0, dy: 0, full: false, spinZ: 0, bodySq: 0, ringAdd: 0, led: 0, next: Math.max(STN.next, now + 2500) });
-    restUntil = 0; cat.position.copy(CAT_SEAT); cat.rotation.copy(SEAT_E);
+    Object.assign(STN, { on: false, roll: 0, look: null, dx: 0, dy: 0, spinZ: 0, spinY: 0, led: 0, next: Math.max(STN.next, now + 2500) });
+    Object.assign(Pz, Pz0); restUntil = 0;
     camFlash.visible = false; stars.visible = false; STN.shot = null; shot.style.opacity = '0';
     if (STN.kind === 'tease') { TZ.prog = 0; TZ.p = 0; tabEl.style.height = ''; tabEl.classList.remove('pulled'); tether.style.opacity = '0'; TZ.glowUntil = now + 2600; nextPlan = 0; }
   }
-  function stuntTick(now, dt, chatOpen, H) {
+  function stuntTick(now, dt, chatOpen) {
     if (!STN.next) STN.next = now + 5500 + Math.random() * 2500;
     if (!TZ.at) TZ.at = now + 20000;                                           // l'invitation au terminal : après 20 s, puis une seconde fois plus tard
     if (STN.on) {
       if (STN.kind === 'tease' && (chatOpen || html.classList.contains('term-on') || (S.chat && S.chat.touring()))) { stuntStop(now); return; }
       if (!S.stuntHold) STN.t += dt;
-      if (chatOpen && STN.kind === 'fall' && STN.t < T_HANG) STN.kind = 'climb';   // conversation ouverte : il remonte sagement
       return;
     }
     if (REDUCE || egg.on || chatOpen || now < STN.next || path || !arrivedAt || now < sayUntil + 800 || Math.hypot(st.vx, st.vy) > 60 || (S.chat && S.chat.touring())) return;
     if (TZ.n < 2 && now > TZ.at && S.term && !S.term.used() && !html.classList.contains('term-on') && Math.abs(scrollV) < 60) {
       TZ.n++; TZ.at = now + 80000; stuntStart(now, 'tease'); STN.next = now + 15000; return;
     }
-    stuntStart(now, pickKind(H));
+    stuntStart(now, pickKind());
   }
-  // pendant la chute : délesté, le drone remonte d'un coup (le chat tombe, l'écart se voit), puis il pique,
-  // passe à côté de lui et glisse son épaule dessous, à la même vitesse que lui
-  function stuntDrive(dt) {
-    const f = STN.f; if (!STN.on || !f || STN.caught) return;
-    const tau = STN.t - T_FALL; let nx, ny, nvx, nvy;
-    if (tau < T_POP) {
-      const u = tau / T_POP;
-      nx = f.x0; ny = f.y0 - POP * (1 - (1 - u) * (1 - u)); nvx = 0; nvy = -POP * 2 * (1 - u) / T_POP;
-    } else {
-      const D = TC - T_POP, u = clamp((tau - T_POP) / D, 0, 1);
-      const h01 = -2 * u * u * u + 3 * u * u, h11 = u * u * u - u * u, d01 = (-6 * u * u + 6 * u) / D, d11 = (3 * u * u - 2 * u) / D;
-      const arc = 18 * Math.sin(Math.PI * u), darc = 18 * Math.PI * Math.cos(Math.PI * u) / D;   // il passe un peu à côté avant de se glisser dessous
-      nx = f.x0 + f.Dx * h01 + f.vxE * D * h11 + arc; nvx = f.Dx * d01 + f.vxE * D * d11 + darc;
-      ny = f.y0 - POP + f.Dy * h01 + f.vyE * D * h11; nvy = f.Dy * d01 + f.vyE * D * d11;
-    }
-    st.ax = damp(st.ax, (nvx - st.vx) / Math.max(dt, .001), 9, dt); st.ay = damp(st.ay, (nvy - st.vy) / Math.max(dt, .001), 9, dt);
-    st.x = nx; st.y = ny; st.vx = nvx; st.vy = nvy;
-  }
-  // ---------- pose partagée des cascades : chaque cascade règle des poids, applyLimbs les applique aux membres
-  const POSE0 = { hk: 0, ext: 2.2, flL: 0, flR: 0, legsF: 0, scramble: 0, earW: 0, shake: -1, squash: 0, outW: 0, upW: 0, gripW: 0, waveR: 0, standW: 0, tuckW: 0, headCam: 0, dizzy: 0, pointR: 0 };
-  const Pz = Object.assign({}, POSE0);
   // le flash du selfie, et les étoiles qui tournent au-dessus de sa tête quand il a le tournis
   const camFlash = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffffff, transparent: true, depthWrite: false }));
-  camFlash.visible = false; camFlash.position.set(.05, .12, 1.4); drone.add(camFlash);
+  camFlash.visible = false; camFlash.position.set(.05, .3, 1.7); drone.add(camFlash);
   const starM = new THREE.MeshStandardMaterial({ color: 0xFFD54A, emissive: 0xFFB800, emissiveIntensity: .9, roughness: .4 });
-  const stars = new THREE.Group(); stars.position.y = .44; stars.visible = false; head.add(stars);
-  for (let i = 0; i < 3; i++) { const m = new THREE.Mesh(new THREE.OctahedronGeometry(.06), starM), a = i * TAU / 3; m.position.set(Math.cos(a) * .22, .03 * i, Math.sin(a) * .22); stars.add(m); }
-  function applyLimbs(t, P) {
-    const kt = t * 9;
-    arms.forEach(A => {
-      const fl = A.s < 0 ? P.flL : P.flR;
-      let rx = lerp(ARM_SEAT[0], ARM_HANG[0], P.hk), rz = lerp(ARM_SEAT[1], ARM_HANG[1], P.hk), ex = lerp(1, P.ext, P.hk), wd = P.hk;
-      const to = (w, x, z, e, d) => { if (w > 0) { rx = lerp(rx, x, w); rz = lerp(rz, z, w); ex = lerp(ex, e, w); wd = lerp(wd, d, w); } };
-      to(P.gripW, -1.05, .45, 1, .35);                                                                       // il s'agrippe à la coque
-      to(P.outW, -.1 + .18 * Math.sin(t * 5 + A.s), 1.5 + .22 * Math.sin(t * 6.5 + A.s * 2), 1.15, .6);     // bras écartés, en équilibre
-      to(P.upW, -.25, 2.5 + .14 * Math.sin(t * 9 + A.s), 1.25, .5);                                          // bras en V
-      if (A.s > 0) to(P.waveR, .5, 2.3 + .18 * Math.sin(t * 11), 1.1, .4);                                  // « peace » près du visage
-      if (A.s > 0) to(P.pointR, -.35, .55, 1.9, .3);                                                          // il montre la languette du terminal
-      to(fl, -.25 + .45 * Math.sin(t * 17 + A.s * 2), 2.1 + .55 * Math.sin(t * 13 + A.s * 1.4), 1.1, .5);   // panique
-      setArm(A, rx, rz, ex, wd);
-    });
-    legs.forEach((L, i) => {
-      let hx = L.hip.rotation.x, kx = L.knee.rotation.x;
-      const w1 = Math.max(P.legsF, P.scramble * .6);
-      if (w1 > 0) { const kick = Math.sin(kt * (P.scramble ? 1.4 : 1) + (i ? Math.PI : 0)); hx = lerp(hx, .1 + kick * .42, w1); kx = lerp(kx, .2 + Math.max(0, -kick) * .95, w1); }
-      if (P.standW > 0) { hx = lerp(hx, -.15 + .05 * Math.sin(t * 3 + i * 2), P.standW); kx = lerp(kx, .3, P.standW); }
-      if (P.tuckW > 0) { hx = lerp(hx, -1.75, P.tuckW); kx = lerp(kx, 2.3, P.tuckW); }
-      L.hip.rotation.x = hx; L.knee.rotation.x = kx;
-    });
-    if (P.hk > 0) tail.forEach((g, i) => { g.rotation.z += P.hk * .35 * Math.sin(t * 6 - i * .7); });
-    // tête : suspendu, il regarde le visiteur puis lève les yeux vers le drone ; au selfie, il fixe l'objectif
-    if (P.hk > 0) { const hx = -.12 + .3 * Math.sin(t * 1.6); head.rotation.set(lerp(head.rotation.x, hx, P.hk), lerp(head.rotation.y, 1 - st.yaw * .6, P.hk), lerp(head.rotation.z, .12 * Math.sin(t * 2.3), P.hk)); }
-    if (P.headCam > 0) {
-      cat.getWorldQuaternion(qT); vT.set(0, 0, 1).applyQuaternion(qT);
-      head.rotation.set(lerp(head.rotation.x, -.06, P.headCam), lerp(head.rotation.y, clamp(-Math.atan2(vT.x, vT.z), -1.3, 1.3), P.headCam), lerp(head.rotation.z, .2, P.headCam));
-    }
-    stars.visible = P.dizzy > .04;
-    if (P.dizzy > 0) { head.rotation.x += .26 * Math.sin(t * 9) * P.dizzy; head.rotation.z += .26 * Math.cos(t * 9) * P.dizzy; stars.rotation.y = t * 7; stars.scale.setScalar(.4 + .6 * P.dizzy); }
-    if (P.earW > 0) earsFlat(P.earW);
-    if (P.shake >= 0) head.rotation.y += .55 * Math.sin(P.shake * 26) * Math.exp(-4 * P.shake);
-    if (P.squash) { const cz = cat.scale.y; cat.scale.set(cz * (1 + P.squash * .5), cz * (1 - P.squash), cz * (1 + P.squash * .5)); }
-  }
-  // tourner le chat autour du milieu de son corps (pas de ses fesses) : vrille, salto
-  const PIV = new THREE.Vector3(0, .45, 0), qX = new THREE.Quaternion(), AX = new THREE.Vector3(1, 0, 0), AY = new THREE.Vector3(0, 1, 0);
-  function spinAbout(baseQ, extraQ, pre) {
-    vS.copy(PIV).multiplyScalar(cat.scale.x).applyQuaternion(baseQ);
-    if (pre) cat.quaternion.copy(extraQ).multiply(baseQ); else cat.quaternion.copy(baseQ).multiply(extraQ);
-    vT.copy(PIV).multiplyScalar(cat.scale.x).applyQuaternion(cat.quaternion);
-    cat.position.add(vS).sub(vT);
-  }
-  const canSay = () => performance.now() > sayUntil;
+  const stars = new THREE.Group(); stars.position.y = 1.5; stars.visible = false; tete.add(stars);
+  for (let i = 0; i < 3; i++) { const m = new THREE.Mesh(new THREE.OctahedronGeometry(.13), starM), a = i * TAU / 3; m.position.set(Math.cos(a) * .55, .07 * i, Math.sin(a) * .55); stars.add(m); }
 
-  // TRAMPOLINE : trois rebonds de plus en plus hauts (le dernier avec un salto arrière), le drone s'écrase à chaque réception
-  const BJ = (() => { const g = 16, out = []; let t0 = .34; [.7, 1.2, 1.8].forEach((h, j) => { const v = Math.sqrt(2 * g * h), T = 2 * v / g; out.push({ t0, T, v, j }); t0 += T + .17; }); return { g, out, end: t0 + .85 }; })();
-  function kBounce(now, t, ppu, Q) {
-    const k = STN.t, J0 = BJ.out[0], LJ = BJ.out[2];
-    let y = 0, spin = 0, flip = 0;
-    STN.full = true;
-    if (k < J0.t0) { const u = sm(k / J0.t0); Q.squash = .18 * u; STN.bodySq = .1 * u; Q.earW = .5 * u; }   // il se ramasse… le drone aussi
-    for (const J of BJ.out) {
-      const tau = k - J.t0;
-      if (tau >= 0 && tau < J.T) {
-        const u = tau / J.T; y = J.v * tau - .5 * BJ.g * tau * tau;
-        if (J.j === 1) spin = TAU * sm(u);                                                              // une vrille
-        if (J.j === 2) { flip = -TAU * sm((u - .06) / .86); Q.tuckW = Math.sin(Math.PI * clamp((u - .04) / .92, 0, 1)); }   // un salto, en boule
-        Q.standW = J.j === 2 ? 1 - Q.tuckW : .85; Q.upW = J.j === 2 ? 0 : .9 * Math.sin(Math.PI * u); Q.earW = .35;
-      } else if (tau >= J.T && tau < J.T + .17) {                                                       // réception : effet trampoline
-        const u = (tau - J.T) / .17;
-        Q.squash = .22 * Math.sin(Math.PI * u); STN.bodySq = .17 * Math.sin(Math.PI * u); Q.standW = 1 - u;
-        if (STN.land !== J.j) { STN.land = J.j; st.vy += 150 + 60 * J.j; st.hop = .7; }
-      }
-    }
-    const tEnd = LJ.t0 + LJ.T + .17;
-    if (k >= tEnd) {                                                                                     // ta-da !
-      const q = k - tEnd; Q.upW = sm(q / .18) * (1 - sm((q - .5) / .3));
-      if (!STN.said) { STN.said = true; if (Math.random() < .55 && canSay()) sayL('Ta-da !', 1400); }
-      if (k > BJ.end) return true;
-    }
-    STN.look = [-.12, -.3 - y * ppu / (DZ * st.sc)];
-    cat.position.copy(CAT_SEAT); cat.position.y += y - STN.bodySq * .6;
-    if (spin) { qX.setFromAxisAngle(AY, spin); spinAbout(SEAT_Q, qX, true); }
-    else if (flip) { qX.setFromAxisAngle(AX, flip); spinAbout(SEAT_Q, qX, false); }
-    else cat.quaternion.copy(SEAT_Q);
-    return false;
-  }
-
-  // LOOPING : le drone fait un tonneau complet, Root s'accroche… puis tout le monde a le tournis
-  function kLoop(now, t, ppu, Q) {
-    const k = STN.t;
-    cat.position.copy(CAT_SEAT); cat.quaternion.copy(SEAT_Q);
-    if (k < .4) { const u = sm(k / .4); Q.gripW = u; Q.earW = u; STN.dy = 12 * u; STN.look = [0, .1]; }
+  // TONNEAU : il se ramasse, fait un tour complet sur lui-même, les bras en corolle… puis il a le tournis
+  function kRoll(k, t, Q) {
+    if (k < .4) { const u = sm(k / .4); Q.serre = u; STN.dy = 12 * u; STN.look = [0, .1]; }
     else if (k < 1.5) {
       const u = (k - .4) / 1.1, e = u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
-      STN.spinZ = -TAU * e; STN.dx = 42 * Math.sin(Math.PI * u); STN.dy = 12 - 42 * Math.sin(Math.PI * u); STN.full = true;
-      Q.gripW = 1; Q.earW = 1; Q.standW = Math.sin(Math.PI * u); STN.look = [0, 0];
+      STN.spinZ = -TAU * e; STN.dx = 42 * Math.sin(Math.PI * u); STN.dy = 12 - 42 * Math.sin(Math.PI * u);
+      Q.serre = 1 - sm(u * 3); Q.ouvre = .8 * Math.sin(Math.PI * u); STN.look = [0, 0];
       if (!STN.said) { STN.said = true; if (Math.random() < .5 && canSay()) sayL('Wiii !', 1300); }
     } else {
       const q = k - 1.5, d = Math.exp(-1.2 * q);
-      Q.dizzy = d * Math.min(1, q * 6); Q.gripW = Math.max(0, 1 - q * 2.5);
-      STN.roll = .18 * Math.sin(q * 6.5) * d; STN.look = [.35 * Math.sin(q * 6) * d, .22 * Math.cos(q * 6) * d];   // l'œil du drone tourne aussi
+      Q.tournis = d * Math.min(1, q * 6);
+      STN.roll = .18 * Math.sin(q * 6.5) * d; STN.look = [.35 * Math.sin(q * 6) * d, .22 * Math.cos(q * 6) * d];
       if (q > 2.2) return true;
     }
     return false;
   }
-
-  // SURF : Root se lève sur le drone, bras écartés, et le drone enchaîne les virages
-  const TOP = new THREE.Vector3(.02, 1.45, .12), C_UP = new THREE.Vector3(-.65, 2.05, .2);
-  function kSurf(now, t, ppu, Q) {
-    const k = STN.t, T_ON = .45, T_RIDE = 3.05, T_END = 3.5;
-    STN.full = true;
-    const lean = clamp(-st.roll * 1.4 + st.vx / 900, -.55, .55);
-    eY.set(0, -.55, lean + .06 * Math.sin(t * 7)); qX.setFromEuler(eY);
-    if (k < T_ON) { const u = sm(k / T_ON); bez(cat.position, CAT_SEAT, C_UP, TOP, u); cat.quaternion.slerpQuaternions(SEAT_Q, qX, u); Q.standW = u; Q.outW = u; }
-    else if (k < T_RIDE) {
-      const v = (k - T_ON) / (T_RIDE - T_ON), env = Math.sin(Math.PI * v);
-      cat.position.copy(TOP); cat.position.y += .04 * Math.sin(t * 9); cat.quaternion.copy(qX);
-      Q.standW = 1; Q.outW = 1; Q.earW = .3;
-      STN.dx = 80 * Math.sin(TAU * v) * env; STN.dy = -18 * env; STN.look = [.4 * Math.sin(TAU * v), -.15];
-      if (!STN.said && v > .12) { STN.said = true; if (Math.random() < .45 && canSay()) sayL('Cowabunga !', 1500); }
-    } else {
-      const u = sm((k - T_RIDE) / (T_END - T_RIDE));
-      bez(cat.position, TOP, C_UP, CAT_SEAT, u); cat.quaternion.slerpQuaternions(qX, SEAT_Q, u); Q.standW = 1 - u; Q.outW = 1 - u;
-      if (k > T_END + .15) return true;
+  // SALUT : il se tourne vers toi et agite un bras
+  function kWave(k, t, Q) {
+    const w = sm(k / .35) * (1 - sm((k - 2.3) / .35));
+    STN.look = [0, 0]; STN.dy = -6 * w; STN.roll = -.1 * w; Q.leve = w; Q.salut = w;
+    if (k > .5 && !STN.said) { STN.said = true; if (Math.random() < .6 && canSay()) sayL('Coucou !', 1400); }
+    return k > 2.8;
+  }
+  // PIROUETTE : deux tours sur lui-même, les bras ouverts par l'élan, puis il lève deux bras : ta-da !
+  function kTwirl(k, t, Q) {
+    STN.look = [0, 0];
+    if (k < .3) { const u = sm(k / .3); Q.serre = u; STN.dy = 8 * u; }
+    else if (k < 1.7) { const u = (k - .3) / 1.4, e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; STN.spinY = 2 * TAU * e; Q.ouvre = .7 * Math.sin(Math.PI * u); STN.dy = 8 - 22 * Math.sin(Math.PI * u); }
+    else {
+      const q = k - 1.7; Q.leve2 = sm(q / .2) * (1 - sm((q - .75) / .3));
+      if (!STN.said) { STN.said = true; if (Math.random() < .55 && canSay()) sayL('Ta-da !', 1400); }
+      if (q > 1.15) return true;
     }
     return false;
   }
-
-  // MANÈGE : Root saute sur l'anneau et en fait le tour, en passant derrière le drone, qui le suit des yeux
-  const vR = new THREE.Vector3(), vR2 = new THREE.Vector3(), rideQ = new THREE.Quaternion(), rideP = new THREE.Vector3();
-  const ringPoint = (a, out) => ringG.localToWorld(out.set(1.46 * Math.cos(a), 1.46 * Math.sin(a), 0));
-  function ridePose(a) {   // assis sur l'anneau, tourné dans le sens de la marche (repère du chat)
-    ringPoint(a, vR); ringPoint(a + .05 * STN.dir, vR2); vR2.sub(vR);
-    eY.set(0, Math.atan2(vR2.x, vR2.z), 0); qW.setFromEuler(eY);
-    catRoot.getWorldQuaternion(qP); rideQ.copy(qP.invert()).multiply(qW);
-    rideP.copy(vR); rideP.y += .05; catRoot.worldToLocal(rideP);
-    return vR;
-  }
-  function kOrbit(now, t, ppu, Q) {
-    const k = STN.t, T_ON = .5, T_RIDE = 3.3, T_END = 3.8;
-    if (STN.a0 === null) {
-      vS.copy(CAT_SEAT); catRoot.localToWorld(vS); let best = 1e9;
-      for (let i = 0; i < 72; i++) { const a = i * TAU / 72; ringPoint(a, vR); const d = vR.distanceToSquared(vS) + (vR.z < 0 ? 1 : 0); if (d < best) { best = d; STN.a0 = a; } }
-      ringPoint(STN.a0 + .1, vR); ringPoint(STN.a0, vR2); STN.dir = vR.z > vR2.z ? 1 : -1;     // il part d'abord vers l'avant
-    }
-    STN.ringAdd = 2.2;
-    if (k < T_ON) { const u = sm(k / T_ON); ridePose(STN.a0); vT.copy(CAT_SEAT).lerp(rideP, .5); vT.y += .7; bez(cat.position, CAT_SEAT, vT, rideP, u); cat.quaternion.slerpQuaternions(SEAT_Q, rideQ, u); Q.upW = u * .6; }
-    else if (k < T_RIDE) {
-      const w = ridePose(STN.a0 + STN.dir * TAU * sm((k - T_ON) / (T_RIDE - T_ON)));
-      cat.position.copy(rideP); cat.quaternion.copy(rideQ); Q.upW = .85; Q.earW = .25;
-      STN.look = [w.x * .23, -w.y * .23 + .05];
-      if (!STN.said) { STN.said = true; if (Math.random() < .45 && canSay()) sayL('Wiii !', 1300); }
-    } else {
-      const u = sm((k - T_RIDE) / (T_END - T_RIDE)); ridePose(STN.a0);
-      vT.copy(CAT_SEAT).lerp(rideP, .5); vT.y += .7; bez(cat.position, rideP, vT, CAT_SEAT, u); cat.quaternion.slerpQuaternions(rideQ, SEAT_Q, u); Q.upW = .85 * (1 - u);
-      if (k > T_END + .1) return true;
+  // JET : il se gonfle, file vers le haut d'un coup de siphon, puis redescend en parachute, les bras en corolle
+  function kJet(k, t, Q) {
+    if (k < .45) { const u = sm(k / .45); Q.gonfle = u; Q.ouvre = .5 * u; STN.dy = 10 * u; STN.look = [0, -.6]; }
+    else if (k < .9) { const u = (k - .45) / .45; Q.serre = 1; Q.gonfle = -.6 * (1 - u); STN.dy = 10 - 100 * (1 - Math.pow(1 - u, 3)); STN.look = [0, -.6]; }
+    else {
+      const u = (k - .9) / 2.2, sw = Math.sin(u * TAU * 1.5) * (1 - u);
+      Q.ouvre = Math.min(1, (k - .9) * 5) * (1 - sm((u - .8) / .2)); STN.dy = -90 * (1 - sm(u)); STN.dx = 10 * sw; STN.roll = .12 * sw; STN.look = [0, .3];
+      if (!STN.said && u > .12) { STN.said = true; if (Math.random() < .45 && canSay()) sayL('Wiii !', 1300); }
+      if (u >= 1) return true;
     }
     return false;
   }
-
-  // SELFIE : le drone se tourne vers toi, compte avec sa lumière… flash ! Root fait le « peace »
-  function kSelfie(now, t, ppu, Q) {
-    const k = STN.t;
-    cat.position.copy(CAT_SEAT); cat.quaternion.copy(SEAT_Q);
+  // SELFIE : il se tourne vers toi, lève un bras, son cadenas compte… flash !
+  function kSelfie(k, t, Q) {
     STN.look = [0, 0]; STN.dy = -8 * sm(k / .5);
-    Q.headCam = sm(k / .45); Q.waveR = k < 2.6 ? sm((k - .25) / .3) : 1 - sm((k - 2.6) / .3);
+    Q.leve = k < 2.6 ? sm((k - .25) / .3) : 1 - sm((k - 2.6) / .3);
     if (k > .5 && !STN.said) { STN.said = true; if (canSay()) sayL('Cheese !', 1300); }
     if (k > .7 && k < 1.6) { const u = (k - .7) / .3; STN.led = Math.pow(Math.max(0, Math.sin(Math.PI * (u % 1))), 2); }   // 3… 2… 1…
     const fk = (k - 1.62) / .45;
     STN.shot = [k < .55 ? 0 : k < 2.5 ? sm((k - .55) / .2) : 1 - sm((k - 2.5) / .3), 1 + .25 * (1 - sm((k - .55) / .25)), fk > 0 && fk < 1 ? Math.pow(1 - fk, 2) : 0];   // viseur : opacité, zoom, flash
-    camFlash.visible = fk > 0 && fk < 1; STN.full = fk > -.05 && fk < 1.05;
+    camFlash.visible = fk > 0 && fk < 1;
     if (camFlash.visible) { camFlash.scale.setScalar(.5 + 5.5 * (1 - Math.pow(1 - fk, 3))); camFlash.material.opacity = 1 - fk; }
-    if (fk > 0 && fk < .12) st.hop = 1;                                                    // le drone cligne sous le flash
+    if (fk > 0 && fk < .12) st.hop = 1;                                                    // il sursaute sous le flash
     if (fk > 0 && !STN.flashed) { STN.flashed = true; document.dispatchEvent(new CustomEvent('drone:stunt', { detail: { e: 'selfie' } })); }
     return k > 3.05;
   }
-  // TERMINAL : il descend jusqu'à la flèche du bas, y accroche un câble, la tire un peu et invite à ouvrir le terminal
+  // TERMINAL : il descend jusqu'à la flèche du bas, y tend un bras, la tire un peu et invite à ouvrir le terminal
   const TZ = { n: 0, at: 0, p: 0, prog: 0, glowUntil: 0, on: false };
   const tabEl = $('#term-tab'), tether = $('#drone-tether');
-  function kTease(now, t, ppu, Q) {
-    const k = STN.t;
-    cat.position.copy(CAT_SEAT); cat.quaternion.copy(SEAT_Q);
+  function kTease(k, t, Q) {
     STN.look = [0, .6];                                                        // il regarde vers le bas
     if (STN.arr == null) {                                                     // en route vers la flèche
       if ((spot && Math.hypot(spot.x - st.x, spot.y - st.y) < 18 && Math.hypot(st.vx, st.vy) < 60) || k > 3.4) STN.arr = k;
       return false;
     }
     const a = k - STN.arr;
-    Q.pointR = sm(a / .35) * (1 - sm((a - 4.5) / .4));
-    TZ.prog = sm(a / .45) * (1 - sm((a - 4.45) / .4));                         // le câble descend, puis remonte
+    Q.pointe = sm(a / .35) * (1 - sm((a - 4.5) / .4));
+    TZ.prog = sm(a / .45) * (1 - sm((a - 4.45) / .4));                         // le bras s'allonge, puis revient
     let p = 0;                                                                 // deux petits coups secs, puis il tient
     if (a > .5) p = a < .8 ? 12 * sm((a - .5) / .3) : a < .95 ? lerp(12, 5, sm((a - .8) / .15)) : a < 1.3 ? lerp(5, 20, sm((a - .95) / .35)) : 18 + 2 * Math.sin((a - 1.3) * 3);
     p *= 1 - sm((a - 4.3) / .25);
@@ -9930,89 +9783,14 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
     if (a > 1.4 && a < 3.6 && !STN.said && canSay()) { STN.said = true; sayL(TZ.n > 1 ? 'Le terminal est toujours là : tape help, ou pose ta question.' : 'Psst… un terminal se cache ici. Ouvre-le et pose-moi tes questions !', 3900, true); }
     return a > 5.1;
   }
-  const KFN = { bounce: kBounce, loop: kLoop, surf: kSurf, orbit: kOrbit, selfie: kSelfie, tease: kTease };
-
-  // la pose du chat pendant la cascade (appelée après sa pose normale, qu'elle remplace)
-  function stuntPose(now, t, px, py) {
-    drone.updateMatrixWorld(true);
-    const k = STN.t, climb = STN.kind === 'climb', ppu = DZ * st.sc / (2 * TAN15 * CAMD);
-    const Q = Object.assign(Pz, POSE0);
-    STN.roll = 0; STN.look = [-.32, .3]; STN.dx = 0; STN.dy = 0; STN.full = false; STN.spinZ = 0; STN.bodySq = 0; STN.ringAdd = 0; STN.led = 0;
-    const hang = (h, e2, rel, calm = 0) => {
-      const sw = ((.3 * Math.exp(-.55 * h) + .05) * Math.sin(4.4 * h + .5) + .04 * Math.sin(1.7 * h)) * (1 - calm) + .62 * rel;
-      Q.ext = e2 + .32 * Math.exp(-7 * h) * Math.sin(16 * h);                              // petit rebond quand il attrape la ceinture
-      hangPose(sw, .06 * Math.sin(3.1 * h + 1), Q.ext, rel);
-      cat.position.copy(hangPos); cat.quaternion.copy(hangQ);
-      Q.hk = 1; Q.legsF = 1; Q.earW = 1;
-      STN.roll = .14 + .05 * Math.sin(4.4 * h) + .08 * rel; STN.dx = -sw * 8; STN.dy = 7;
-      if (!STN.said && h > 1.1) { STN.said = true; if (Math.random() < .45 && performance.now() > sayUntil) sayL('Tiens bon, Root !', 1900); }
-    };
-    if (KFN[STN.kind]) { if (KFN[STN.kind](now, t, ppu, Q)) { stuntStop(now); return; } }   // les autres cascades
-    else if (k < T_WOB) {                                       // il perd l'équilibre
-      const w = k / T_WOB;
-      cat.rotation.set(0, -.95, .34 + .14 * w + .2 * Math.sin(k * 30) * w);
-      Q.flL = Q.flR = .55 * w; Q.earW = w; STN.look = [-.3, -.1];
-    } else if (k < T_SLIP) {                                    // il glisse le long de la coque… et attrape la ceinture
-      const u = (k - T_WOB) / (T_SLIP - T_WOB), e = u * u;
-      hangPose(.32 * u, 0, 2.2, 0);
-      bez(cat.position, CAT_SEAT, SLIDE_C, hangPos, e);
-      cat.quaternion.slerpQuaternions(SEAT_Q, hangQ, e);
-      Q.hk = sm((u - .3) / .7); Q.flL = Q.flR = .8 * (1 - Q.hk); Q.legsF = Q.hk; Q.scramble = 1 - Q.hk; Q.earW = 1; STN.roll = .12 * e;
-    } else if (k < T_HANG) hang(k - T_SLIP, 2.2, 0);           // suspendu par les bras
-    else if (climb) {
-      if (k < T_PULL) { const u = sm((k - T_HANG) / (T_PULL - T_HANG)); hang(k - T_SLIP, lerp(2.2, 1.15, u), 0, u); }   // traction
-      else if (k < T_BACK) {                                    // il se hisse et retourne s'asseoir
-        const u = sm((k - T_PULL) / (T_BACK - T_PULL));
-        hangPose(0, 0, 1.15, 0);
-        bez(cat.position, hangPos, SLIDE_C, CAT_SEAT, u);
-        cat.quaternion.slerpQuaternions(hangQ, SEAT_Q, u);
-        Q.hk = 1 - u; Q.ext = 1.15; Q.legsF = 1 - u; Q.scramble = 1; Q.earW = 1 - u; STN.roll = .1 * (1 - u);
-        if (!STN.caught) { STN.caught = true; STN.catchT = T_BACK; }
-      } else {                                                  // ouf : il se secoue
-        const q = k - T_BACK; Q.shake = q;
-        if (q < .3) Q.squash = .14 * Math.sin(Math.PI * q / .3);
-        if (q < .05 && Math.random() < .3 && performance.now() > sayUntil) sayL('Bien joué, Root !', 1800);
-        if (k > T_ENDC) { stuntStop(now); return; }
-      }
-    } else if (k < T_FALL) {                                    // une patte lâche… puis l'autre
-      const r = sm((k - T_HANG) / (T_FALL - T_HANG));
-      hang(k - T_SLIP, 2.2, r); Q.flL = r;
-    } else if (!STN.caught) {                                   // chute libre : il tombe, le drone plonge sous lui
-      if (!STN.f) {
-        vT.copy(STN.lp); catRoot.localToWorld(vT); catRoot.getWorldQuaternion(qT); qT.multiply(STN.lq);   // là où il pendait à l'image précédente
-        vS.copy(CAT_SEAT); catRoot.localToWorld(vS);
-        const f = STN.f = { xc: px + vT.x * ppu, yc: py - vT.y * ppu, z: vT.z, vx: st.vx * .5 - 30, vy: Math.max(0, st.vy * .5) + 30, q0: qT.clone(), x0: st.x, y0: st.y };
-        const xcT = f.xc + f.vx * TC, ycT = f.yc + f.vy * TC + .5 * GRAV * TC * TC;
-        f.Dx = xcT - vS.x * ppu - (px - st.x) - f.x0; f.Dy = ycT + vS.y * ppu - (py - st.y) - (f.y0 - POP);
-        f.vxE = f.vx; f.vyE = f.vy + GRAV * TC;
-      }
-      const f = STN.f, tau = k - T_FALL;
-      const xc = f.xc + f.vx * tau, yc = f.yc + f.vy * tau + .5 * GRAV * tau * tau;
-      vT.set((xc - px) / ppu, -(yc - py) / ppu, f.z); catRoot.worldToLocal(vT);
-      const b = sm((tau - (TC - .2)) / .2), e = sm(tau / TC);
-      cat.position.lerpVectors(vT, CAT_SEAT, b);
-      catRoot.getWorldQuaternion(qP); qW.copy(qP).multiply(SEAT_Q);                   // la pose assise, vue du monde
-      qT.slerpQuaternions(f.q0, qW, e); eY.set(0, 0, .55 * Math.sin(tau * 12) * (1 - e)); qW.setFromEuler(eY); qT.multiply(qW);
-      cat.quaternion.copy(qP.invert()).multiply(qT);
-      Q.hk = 1 - b; Q.flL = Q.flR = 1 - b; Q.legsF = 1 - b; Q.earW = 1 - b; STN.full = true;
-      STN.look = [(xc - px) / (DZ * st.sc), (yc - py) / (DZ * st.sc)];
-      if (tau >= TC) {                                          // rattrapé ! le drone encaisse le choc, puis repart
-        STN.caught = true; STN.catchT = k; document.dispatchEvent(new CustomEvent('drone:stunt', { detail: { e: 'catch' } }));
-        st.vx = f.vxE * .4; st.vy = f.vyE * .4; st.hop = 1;
-        spot = Object.assign({}, spot || {}, { x: st.x, y: st.y + 22, free: true, sy: scrollY, sc: spot ? spot.sc : 1 }); path = null; arrivedAt = 0; nextPlan = now + 1800;
-        if (Math.random() < .6) sayL('Rattrapé !', 1700);
-      }
-    } else {                                                    // atterrissage : il s'écrase un peu, puis se secoue
-      const q = k - STN.catchT;
-      cat.position.copy(CAT_SEAT); cat.rotation.copy(SEAT_E); Q.shake = q; STN.full = q < .25;
-      if (q < .35) Q.squash = .28 * Math.sin(Math.PI * q / .35);
-      if (q > 1.1) { stuntStop(now); return; }
-    }
-    applyLimbs(t, Q);
-    STN.lp.copy(cat.position); STN.lq.copy(cat.quaternion);
+  const KFN = { roll: kRoll, wave: kWave, twirl: kTwirl, jet: kJet, selfie: kSelfie, tease: kTease };
+  // les poids de la facétie en cours (appelée avant la pose de l'image)
+  function stuntPose(now, t) {
+    const Q = Object.assign(Pz, Pz0);
+    STN.roll = 0; STN.look = null; STN.dx = 0; STN.dy = 0; STN.spinZ = 0; STN.spinY = 0; STN.led = 0;
+    if ((KFN[STN.kind] || kRoll)(STN.t, t, Q)) stuntStop(now);
   }
-  const earsFlat = w => ears.forEach((e, i) => { e.rotation.z = lerp(e.rotation.z, i ? -.95 : .95, w); e.rotation.x = lerp(e.rotation.x, -.35, w); });
-  S.catStunt = kind => { const n = performance.now(); if (STN.on) stuntStop(n); stuntStart(n, KINDS.includes(kind) || kind === 'tease' ? kind : 'fall'); };   // pour les tests
+  S.catStunt = kind => { const n = performance.now(); if (STN.on) stuntStop(n); stuntStart(n, KFN[kind] ? kind : 'roll'); };   // pour les tests
   S.catStuntSeek = tt => { if (STN.on) STN.t = tt; return STN.on; };
   S.stuntInfo = () => ({ on: STN.on, kind: STN.kind, t: +STN.t.toFixed(2), next: Math.round(STN.next - performance.now()) });
 
@@ -10021,7 +9799,7 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
   const ovEl = $('#ov'), menuEl = $('#menu'), accC = new THREE.Color('#FF6B5B'), hotC = new THREE.Color('#FF6B5B'); let colAt = -1e9;
   const hidden = () => (html.classList.contains('anim') && !html.classList.contains('ready')) || !ovEl.hidden || !menuEl.hidden || html.classList.contains('rx-on');
 
-  /* Qualité adaptative : sur un appareil qui peine (images > 24 ms en moyenne), le drone passe en définition 1x,
+  /* Qualité adaptative : sur un appareil qui peine (images > 24 ms en moyenne), Root passe en définition 1x,
      puis, s'il peine encore, il est animé à une image sur deux (le mouvement garde sa vitesse).
      Sur un appareil rapide, rien ne change. */
   const Q = { cap: 9, skip: false, ema: 16.7, since: 0, odd: false };
@@ -10048,7 +9826,7 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
       if (now - dessine < (pose ? 49 : Math.abs(scrollV) >= 4 ? 40 : 32)) return; }
     dessine = now;
     const dt = clamp((now - last) / 1000, 0, .25); last = now;
-    // mode calme : le drone se repose, un petit bouton fixe garde l’accès aux questions
+    // mode calme : Root se repose, un petit bouton fixe garde l’accès aux questions
     const calm = html.classList.contains('calm');
     if (calm !== wasCalm) { wasCalm = calm; hit.classList.toggle('fallback', calm); if (calm && STN.on) stuntStop(now); }
     const off = hidden() || calm, hOff = calm ? hidden() : off;
@@ -10061,7 +9839,7 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
 
     // cible : un espace libre ; il en change de temps en temps, ou dès que du contenu passe sous lui
     const chatOpen = S.chat && S.chat.isOpen();
-    stuntTick(now, dt, chatOpen, H);
+    stuntTick(now, dt, chatOpen);
     const termOn = html.classList.contains('term-on');
     if (termOn !== lastTerm) { lastTerm = termOn; nextPlan = 0; obsAt = -1e9; }   // le terminal s’ouvre : il lui laisse la place
     const tourSp = !chatOpen && !egg.on && S.tour && S.tour.spot();
@@ -10113,7 +9891,6 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
       st.vx += ax * h; st.vy += ay * h; st.x += st.vx * h; st.y += st.vy * h; axs += ax; ays += ay;
     }
     st.ax = damp(st.ax, axs / n, 9, dt); st.ay = damp(st.ay, ays / n, 9, dt);
-    stuntDrive(dt);
     const speed = Math.hypot(st.vx, st.vy), still = 1 - clamp(speed / 220, 0, 1);
     if (spot && !path && !arrivedAt && speed < 45 && Math.hypot(spot.x - st.x, spot.y - st.y) < 14) arrivedAt = now;
 
@@ -10121,11 +9898,11 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
     const hov = REDUCE ? 0 : still, hz = spot ? spot.hz : 1, ha = spot ? spot.ha : 2.4, ph = spot ? spot.ph : 0;
     st.lift = damp(st.lift, -Math.min(22, speed * .022), 3, dt);                       // il prend un peu d'altitude en voyageant
     st.drag = damp(st.drag, REDUCE ? 0 : clamp(-scrollV * .01, -14, 14), 3, dt);       // le défilement le pousse comme un souffle
-    const px = st.x + nz(t * .31 + 7 + ph) * 3 * hov;                                       // chaque endroit a son propre souffle
-    const py = st.y + st.lift + st.drag + (Math.sin(t * (1.6 + hz) + ph) * ha + nz(t * .27 + ph) * 2.4) * hov;
+    const px = st.x + nz(t * .31 + 7 + ph) * 3 * hov + pose.sx;                                       // chaque endroit a son propre souffle
+    const py = st.y + st.lift + st.drag + (Math.sin(t * (1.6 + hz) + ph) * ha + nz(t * .27 + ph) * 2.4) * hov + pose.sy;
 
-    // posture : un quadricoptère s'incline pour accélérer et se redresse en freinant
-    st.roll = damp(st.roll, clamp(-st.ax / 3200, -.42, .42) + nz(t * .4 + 2) * .035 * hov + fx.roll + STN.roll, 8, dt);
+    // posture : un poulpe nage le manteau en avant ; il le penche vers là où il va, et se redresse en freinant
+    st.roll = damp(st.roll, clamp(-st.vx / 300, -1, 1) * .6 * clamp(speed / 170, 0, 1) + clamp(-st.ax / 5200, -.25, .25) + nz(t * .4 + 2) * .045 * hov + fx.roll + STN.roll, 6, dt);
     st.pitch = damp(st.pitch, clamp(st.ay / 5200, -.2, .2) + clamp(st.drag / 300, -.05, .05), 8, dt);
 
     // regard
@@ -10147,8 +9924,8 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
     st.hop = Math.max(0, st.hop - dt * 2.5);
     const squint = Math.max(.06, 1 - Math.sin(Math.PI * st.blink) * .92 - Math.sin(Math.PI * st.hop) * .35);
 
-    // surprise : il gonfle et tremble 2 s, se contracte, éclate sur tout l'écran ; les éclats flottent puis reviennent un à un
-    let charge = 0, jx = 0, jy = 0, jr = 0;
+    // surprise : il se gonfle, rougit et tremble 2 s, se contracte, puis lâche son encre ; les gouttes flottent sur tout l'écran, puis reviennent une à une
+    let charge = 0, jx = 0, jy = 0, jr = 0, peur = 0;
     if (egg.on) {
       const te = egg.t - EGG.charge;
       if (!egg.swapped) {
@@ -10156,78 +9933,69 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
         const kk = 1 - Math.exp(-12 * dt), c2 = charge * charge;
         st.yaw += (0 - st.yaw) * kk; st.ex += (0 - st.ex) * kk; st.ey += (0 - st.ey) * kk;   // il fixe le visiteur
         const pulse = 1 + .05 * c2 * Math.sin(t * (8 + 34 * charge));                         // il palpite de plus en plus vite
-        const pinch = charge > .95 ? 1 - .22 * (charge - .95) / .05 : 1;                     // et se contracte juste avant
-        egg.scale = (1 + .85 * c2) * pulse * pinch;
-        const amp = 6 * c2 * charge; jx = (Math.random() - .5) * 2 * amp; jy = (Math.random() - .5) * 2 * amp; jr = (Math.random() - .5) * .12 * c2;
-        shell.emissive.copy(HOT).multiplyScalar(1.25 * c2);                                  // la coque chauffe et vire au corail
-        if (charge > .9) { const rt = Math.round(st.ring / TAU) * TAU; st.ring += (rt - st.ring) * (1 - Math.exp(-40 * dt)); }
+        const pinch = charge > .95 ? 1 - .2 * (charge - .95) / .05 : 1;                      // et se contracte juste avant
+        egg.scale = (1 + .42 * c2) * pulse * pinch;
+        const amp = 5 * c2 * charge; jx = (Math.random() - .5) * 2 * amp; jy = (Math.random() - .5) * 2 * amp; jr = (Math.random() - .5) * .1 * c2;
+        skinM.emissive.setRGB(.5 * c2, .045 * c2, .02 * c2);                                 // il rougit
         if (te >= 0) {
-          egg.swapped = true; egg.s0 = egg.scale; jx = jy = jr = 0; st.yaw = st.ex = st.ey = 0; st.ring = Math.round(st.ring / TAU) * TAU;
-          body.visible = ringG.visible = thrust.visible = false; debris.visible = true;
-          sparks.visible = flash.visible = shock.visible = true; U.uOut.value = U.uBack.value = 0;
-          const hs = debrisMats.get(shell); if (hs) hs.emissive.copy(shell.emissive);
-          shell.emissive.setRGB(0, 0, 0);
+          egg.swapped = true; egg.s0 = egg.scale; jx = jy = jr = 0;
+          debris.visible = true; sparks.visible = flash.visible = shock.visible = true; U.uOut.value = U.uBack.value = 0;
+          st.vy -= 240; st.hop = 1;                                                         // le jet le fait reculer vers le haut
         }
       }
       if (egg.swapped && egg.settle < 0) {
         const e = Math.max(0, te), eo = k => 1 - Math.pow(1 - clamp(k, 0, 1), 3);
         U.uOut.value = clamp(e / EGG.out, 0, 1); U.uTime.value = e; U.uBack.value = clamp((e - EGG.hold) / EGG.back, 0, 1);
-        st.yaw = st.ex = st.ey = 0; st.blink = 0; st.hop = 0;
-        const hs = debrisMats.get(shell); if (hs) hs.emissive.multiplyScalar(Math.exp(-2.2 * dt));   // les éclats refroidissent
-        // écran → coordonnées du drone : les éclats visent n'importe quel point de la fenêtre
+        skinM.emissive.multiplyScalar(Math.exp(-3 * dt));                                    // il reprend sa couleur
+        egg.scale = lerp(egg.s0, 1, eo(e / .3)) * (1 - .14 * Math.sin(Math.PI * clamp(e / .55, 0, 1)));   // il se dégonfle d'un coup
+        peur = 1 - sm((e - .5) / 1.2);                                                       // bras ouverts, puis il se remet
+        // écran → coordonnées de Root : les gouttes visent n'importe quel point de la fenêtre
         const ppu = DZ * st.sc / (2 * TAN15 * CAMD), f = 1 / (egg.scale * ppu);
         U.uShift.value.set((W / 2 - px) * f, -(H / 2 - py) * f, 0); U.uSpan.value.set(W * .55 * f, -H * .55 * f, 1);
-        const sv = Math.max(1, .3 * Math.min(W, H) * f / 3), sk = (1 - Math.exp(-3 * e)) / 3 * sv;
-        for (let i = 0; i < NP; i++) { spPos[i * 3] = spVel[i * 3] * sk; spPos[i * 3 + 1] = spVel[i * 3 + 1] * sk - .6 * e * e * sv; spPos[i * 3 + 2] = spVel[i * 3 + 2] * sk; }
+        const sv = Math.max(1, .3 * Math.min(W, H) * f / 3), sk = (1 - Math.exp(-2.2 * e)) / 2.2 * sv;
+        for (let i = 0; i < NP; i++) { spPos[i * 3] = spVel[i * 3] * sk; spPos[i * 3 + 1] = spVel[i * 3 + 1] * sk - .3 + .12 * e * sv; spPos[i * 3 + 2] = spVel[i * 3 + 2] * sk - .5; }
         spGeo.attributes.position.needsUpdate = true;
-        sparks.material.opacity = clamp(1 - e / 1.1, 0, 1); sparks.visible = e < 1.1;
-        const fk = e / .4; flash.scale.setScalar(.6 + 6 * eo(fk)); flash.material.opacity = clamp(1 - fk, 0, 1); flash.visible = fk < 1;
-        const sk2 = e / .9, R = Math.max(2, .42 * Math.min(W, H) * f); shock.scale.setScalar(1 + (R - 1) * eo(sk2)); shock.material.opacity = .85 * clamp(1 - sk2, 0, 1); shock.visible = sk2 < 1;
+        sparks.material.opacity = .8 * clamp(1 - e / 1.9, 0, 1); sparks.visible = e < 1.9;
+        const fk = e / .9; flash.scale.setScalar(1 + 6 * eo(fk)); flash.material.opacity = .85 * clamp(1 - fk, 0, 1); flash.visible = fk < 1;
+        const sk2 = e / 1.1, R = Math.max(2, .34 * Math.min(W, H) * f); shock.scale.setScalar(1 + (R - 1) * eo(sk2)); shock.material.opacity = .6 * clamp(1 - sk2, 0, 1); shock.visible = sk2 < 1;
         if (e >= EGG.hold + EGG.back + .05) {
-          egg.settle = egg.t; debris.visible = false; body.visible = ringG.visible = thrust.visible = true;
+          egg.settle = egg.t; debris.visible = false;
           sparks.visible = flash.visible = shock.visible = false; U.uOut.value = U.uBack.value = 0; st.hop = 1;
-          document.dispatchEvent(new CustomEvent('drone:say', { detail: { text: (S.L || (x => x))('Ouf ! Toujours en un seul morceau.'), ms: 2600 } }));
+          document.dispatchEvent(new CustomEvent('drone:say', { detail: { text: (S.L || (x => x))('Oups… un peu d’encre. Simple réflexe !'), ms: 2600 } }));
         }
       }
-      if (egg.settle >= 0) {   // il dégonfle jusqu'à sa taille normale, avec un léger rebond
-        const k = clamp((egg.t - egg.settle) / EGG.settle, 0, 1), c1 = 1.70158, ob = 1 + (c1 + 1) * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2);
-        egg.scale = lerp(egg.s0, 1, ob);
-        if (k >= 1) { egg.on = false; egg.scale = 1; st.vy -= 120; }
+      if (egg.settle >= 0) {   // la dernière goutte rentrée, il se secoue
+        const k = clamp((egg.t - egg.settle) / EGG.settle, 0, 1);
+        egg.scale = 1 + .09 * Math.sin(Math.PI * k) * (1 - k);
+        if (k >= 1) { egg.on = false; egg.scale = 1; skinM.emissive.setRGB(0, 0, 0); st.vy -= 120; }
       }
     }
+    // la nage : plus il va vite, plus il serre les bras et avance par à-coups ; quand il freine, il les ouvre
+    { const vN = Math.max(speed, 1), dec = clamp((-(st.ax * st.vx + st.ay * st.vy) / vN - 150) / 600, 0, 1) * clamp(speed / 70, 0, 1);
+      pose.nage = damp(pose.nage, egg.on ? 0 : clamp((speed - 40) / 200, 0, 1) * (1 - dec), 6, dt);
+      pose.frein = damp(pose.frein, Math.max(dec, .6 * st.hop, peur), 9, dt);
+      pose.charge = charge;
+      pose.ph = (pose.ph + dt * (1.1 + speed / 500)) % 1;
+      const ouv = pose.ph < .3 ? 1 - sm(pose.ph / .3) : sm((pose.ph - .3) / .7), elan = REDUCE ? 0 : 4.5 * pose.nage * Math.sin(Math.PI * clamp(pose.ph / .55, 0, 1));
+      pose.coup = ouv - .5; pose.sx = st.vx / vN * elan; pose.sy = st.vy / vN * elan;
+      // la traînée de l'eau, ramenée dans le repère de son corps : ses bras partent à l'opposé du mouvement
+      const rz = egg.on ? 0 : st.roll + STN.spinZ, cr = Math.cos(rz), sr = Math.sin(rz);
+      const Lx = clamp(-st.vx / 520 - st.ax / 5200, -1.3, 1.3), Ly = clamp(st.vy / 520 + st.ay / 5200, -1.3, 1.3), l1 = Lx * cr + Ly * sr;
+      const ry = st.yaw * 1.1; pose.lx = l1 * Math.cos(ry); pose.lz = l1 * Math.sin(ry); pose.ly = -Lx * sr + Ly * cr; }
+    if (STN.on) stuntPose(now, t); else Object.assign(Pz, Pz0);
+    // la tête (et ses lunettes) se tourne vers ce qu'il regarde ; tout le corps suit
     drone.scale.setScalar(egg.on ? egg.scale : 1);
     drone.rotation.set(egg.on ? jr : st.pitch, 0, egg.on ? jr * .7 : st.roll + STN.spinZ);
-    body.rotation.set(0, st.yaw, 0);
-    body.scale.set(1 + STN.bodySq * .45, 1 - STN.bodySq, 1 + STN.bodySq * .45);   // trampoline
-    eye.rotation.set(-st.ey * .5, st.ex * .55 - st.yaw * .4, 0);
-    // le chat : assis sur l'épaule ; pendant la surprise il est projeté en l'air, pédale dans le vide, puis retombe sur ses pattes
-    catRoot.rotation.y = st.yaw;
-    let air = 0, squash = 0;
-    if (egg.on && egg.swapped) {
-      const e = egg.t - EGG.charge, o = clamp(e / .55, 0, 1), bk = egg.settle >= 0 ? 1 : clamp((U.uBack.value - .72) / .28, 0, 1);
-      air = (1 - Math.pow(1 - o, 3)) * (1 - bk * bk);                            // monte d'un coup, flotte, puis tombe en accélérant
-      if (egg.settle >= 0) { const k = (egg.t - egg.settle) / .4; if (k < 1) squash = .2 * Math.sin(Math.PI * k); }   // il s'écrase un peu en atterrissant
-    }
-    cs.kt += dt * (1 + 2.5 * charge + 2.2 * air);                                 // il pédale plus vite quand il a peur ou qu'il vole
-    cat.position.lerpVectors(CAT_SEAT, CAT_FLY, air); cat.position.y += air * .08 * Math.sin(t * 5);
-    cat.rotation.z = .34 + air * .3 * Math.sin(t * 3.2);
-    const cz = CAT_S / drone.scale.x; cat.scale.set((1 + squash * .5) * cz, (1 - squash) * cz, (1 + squash * .5) * cz);   // même taille quand le drone gonfle
-    catPose(1, t, dt, air ? 0 : st.vx, air ? -700 * air : st.vy, cs.kt);
-    if (STN.on) stuntPose(now, t, px, py);
-    iris.scale.y = pupil.scale.y = squint;
-    if (!egg.on) st.ring += dt * (.4 + speed / 700 + fx.ring + STN.ringAdd);
-    else if (!egg.swapped && charge <= .9) st.ring += dt * (.4 + 14 * charge * charge);   // l'anneau s'emballe
-    ring.rotation.z = st.ring;
-    const thrustK = clamp(Math.hypot(st.ax, st.ay) / 3800, 0, 1);
-    thrust.material.opacity = .2 + thrustK * .4 + .5 * charge;
-    thrust.scale.set(1.05 + thrustK * .3, .5 + thrustK * .35, 1);
-    hotM.emissiveIntensity = 1.3 + Math.sin(t * 1.1) * .25 + STN.led * 6;
-    glow.emissiveIntensity = 1.5 + 5 * charge * charge;
-    if (now - colAt > 1000) { colAt = now; accC.copy(col('--accent')); hotC.copy(col('--hot')); }
-    [glow.color, glow.emissive, ringM.color, ringM.emissive, thrust.material.color, rim.color].forEach(c => c.lerp(accC, .06));
-    hotM.color.lerp(hotC, .06); hotM.emissive.lerp(hotC, .06);
+    body.rotation.set(st.ey * .14, st.yaw * 1.1 + (fx.ring ? TAU * sm(fx.ring) : 0) + STN.spinY, 0);
+    eye.rotation.set(st.ey * .2, st.ex * .3 - st.yaw * .12, 0);
+    cs.kt += dt * (1 + 2.5 * charge + 1.2 * pose.nage);                           // ses bras s'agitent plus vite quand il nage ou qu'il a peur
+    rootPose(REDUCE ? .4 : 1, t, dt, cs.kt);
+    hotM.emissiveIntensity = 1.3 + Math.sin(t * 1.1) * .25 + STN.led * 6 + 2.5 * charge;
+    halo.material.opacity = Math.min(1, .3 + .06 * Math.sin(t * 1.1) + STN.led * .5 + .4 * charge);
+    if (now - colAt > 1000) { colAt = now; hotC.copy(col('--hot')); }
+    hotM.color.lerp(hotC, .06); hotM.emissive.lerp(hotC, .06); halo.material.color.copy(hotM.emissive);
 
-    // pendant la surprise, le canevas couvre toute la fenêtre ; la caméra est décalée pour que le drone garde sa place et sa taille
+    // pendant la surprise, le canevas couvre toute la fenêtre ; la caméra est décalée pour que Root garde sa place et sa taille
     const full = egg.on, vx0 = px + jx, vy0 = py + jy, CS2 = DZ * CVK;
     if (full !== curFull || (full && (W !== curW || H !== curH)) || (!full && DZ !== curSize)) {
       curFull = full; curW = W; curH = H; curSize = DZ;
@@ -10245,7 +10013,7 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
     hit.style.transform = `translate3d(${(px - DZ * .25).toFixed(1)}px,${(py - DZ * .25).toFixed(1)}px,0) scale(${st.sc.toFixed(3)})`;
     const teasing = STN.on && STN.kind === 'tease' && TZ.prog > .01;
     if (teasing) {
-      const r = tabEl.getBoundingClientRect(), x1 = r.left + r.width / 2, y1 = r.top + 4, x0 = px, y0 = py + DZ * st.sc * .215;   // le câble sort sous la coque
+      const r = tabEl.getBoundingClientRect(), x1 = r.left + r.width / 2, y1 = r.top + 4, tip = vGo.copy(bras[0].tip).applyMatrix4(body.matrixWorld).project(camera), x0 = px + tip.x * CS2 / 2 * st.sc, y0 = py - tip.y * CS2 / 2 * st.sc;   // il part du bout du bras tendu
       const len = Math.max(0, Math.hypot(x1 - x0, y1 - y0)) * TZ.prog;
       tether.style.opacity = '1'; tether.style.height = len.toFixed(1) + 'px';
       tether.style.transform = `translate3d(${x0.toFixed(1)}px,${y0.toFixed(1)}px,0) rotate(${(-Math.atan2(x1 - x0, y1 - y0)).toFixed(4)}rad)`;
@@ -10256,7 +10024,7 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
     if (STN.on && STN.shot) {
       const S2 = DZ * st.sc * 1.3, [o, z, f] = STN.shot;
       shot.style.setProperty('--s', S2.toFixed(0) + 'px'); shot.style.setProperty('--f', f.toFixed(3)); shot.style.opacity = o.toFixed(3);
-      shot.style.transform = `translate3d(${(px - S2 / 2).toFixed(1)}px,${(py - S2 * .58).toFixed(1)}px,0) scale(${z.toFixed(3)})`;
+      shot.style.transform = `translate3d(${(px - S2 / 2).toFixed(1)}px,${(py - S2 * .5).toFixed(1)}px,0) scale(${z.toFixed(3)})`;
     }
     if (now - ghostAt > 200) { ghostAt = now; const ghost = !egg.on && !chatOpen && !(STN.on && STN.kind === 'tease') && clearance(px, py, obstacles(now)) < DZ * st.sc * .28; wrap.style.opacity = ghost ? '.42' : ''; }
 
@@ -10287,13 +10055,13 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
       const [x, y] = fit(C[sayPick]); say.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
     }
   }
-  // les shaders du drone se compilent en arrière-plan avant la première image (sinon la première image fige la page)
+  // les shaders de Root se compilent en arrière-plan avant la première image (sinon la première image fige la page)
   await breathe();
   if (renderer.compileAsync) { try { await renderer.compileAsync(scene, camera); } catch (e) {} }
   html.classList.add('drone-ready'); hit.classList.remove('fallback');
   requestAnimationFrame(frame);
   };
-  // le drone se prépare une fois l’écran d’ouverture terminé, pour ne pas le ralentir
+  // Root se prépare une fois l’écran d’ouverture terminé, pour ne pas le ralentir
   const H = document.documentElement;
   let booted = false;
   const go = () => { if (booted) return; booted = true; GESTES.forEach(t => removeEventListener(t, onGeste, true)); clearTimeout(gT); (window.requestIdleCallback ? requestIdleCallback(() => boot(), { timeout: 1200 }) : boot()); };
@@ -10301,7 +10069,7 @@ vec3 transformed = aC + rotA(position - aC, aR.xyz, aR.w * pA) * mix(1., .85, pA
   const onGeste = () => setTimeout(go, 120);
   let gT = 0;
   const later = () => { GESTES.forEach(t => addEventListener(t, onGeste, { capture: true, passive: true })); gT = setTimeout(go, 6000); };
-  // en mode calme, le drone n’est pas chargé du tout (le petit bouton fixe garde l’accès aux questions) ; il se prépare si on quitte ce mode
+  // en mode calme, Root n’est pas chargé du tout (le petit bouton fixe garde l’accès aux questions) ; il se prépare si on quitte ce mode
   const start = () => {
     if (!H.classList.contains('calm')) { later(); return; }
     const b = document.getElementById('drone-hit'); if (b) { b.hidden = false; b.classList.add('fallback'); }
