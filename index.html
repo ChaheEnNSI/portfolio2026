@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-HgcS6WqJY9yVCiTLsGxgXMBlipw6VgPeeNu3BtDGT7M=' 'sha256-2+ohXyHlcWDb/gUzExInoUfAtH5J6a/4pe2hgcffd/g=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-4EwKAMFGh0KR/K+LD5Jpktk1NW5Ohp3kLccAXAbQNpA=' 'sha256-2+ohXyHlcWDb/gUzExInoUfAtH5J6a/4pe2hgcffd/g=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -2438,6 +2438,8 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 .allum-t{position:absolute;left:max(var(--gut), env(safe-area-inset-left, 0px));bottom:clamp(40px,9vh,96px);margin:0;font-family:var(--display);font-stretch:112%;font-weight:560;font-size:clamp(40px,8vw,120px);line-height:.9;letter-spacing:-.04em;color:#F4EDE0;font-variant-numeric:tabular-nums}
 .allum-t small{display:block;margin-top:14px;font-family:var(--body);font-size:clamp(15px,1.3vw,19px);font-weight:500;letter-spacing:0;color:#D2CABB}
 .allum-s{position:absolute;right:max(var(--gut), env(safe-area-inset-right, 0px));bottom:clamp(40px,9vh,96px);font-size:14px;color:#B3AC9D}
+.allum-f{position:fixed;inset:0;z-index:121;opacity:0;pointer-events:none;mix-blend-mode:screen}
+.allum-l.phare{position:fixed;z-index:122;width:6px;height:6px;margin:-3px 0 0 -3px;background:#FFF6E6;box-shadow:0 0 4px 2px rgba(255,246,228,.95),0 0 22px 8px rgba(255,214,160,.45),0 0 70px 28px rgba(255,186,120,.16)}
 @media (prefers-reduced-motion: reduce){.nuit .hd-heure i{animation:none}}
 @media print{#nuit,.nuit-voile,.veille{display:none !important}}
 </style>
@@ -8598,7 +8600,7 @@ float pluie(float t){
     const ecart = x => Math.atan2(Math.sin(x), Math.cos(x));
     function faisceau(e, c, dt, now, cx, cw, ux, uy, r, sc) {
       const ph = e.phare;
-      if (!ph) { F.I = 0; etat.faisO.i = 0; gl.uniform4f(PV.u('uF'), 0, 0, 0, 0); return; }
+      if (!ph || etat.ouv) { F.I = 0; if (etat.ouv) F.frais = 1; else etat.faisO.i = 0; gl.uniform4f(PV.u('uF'), 0, 0, 0, 0); return; }   // (pendant l'ouverture, il attend : il repartira de l'angle du film)
       const im = imgs[k], cle = k + suf;
       if (txK !== cle && im && im.complete && im.naturalWidth) txK = charge(0, txImg, im) ? cle : 'x';
       const ox = ph.o[0] * AR, oy = ph.o[1], ANG_FILM = Math.atan2(ph.film[1], ph.film[0]);
@@ -8650,7 +8652,7 @@ float pluie(float t){
       etat.tableau = plein && montre === 2 && c > 0 ? k : -1;   // pour la sortie : le film repart de l'image d'arrêt, celle que montre le tableau
       etat.aTab = etat.tableau >= 0 ? a : 0;                    // ... et il attend que le tableau se soit calmé
       { const dv = plein ? 'tableau' : sonde ? 'sonde' : pleinOk ? 'voile' : 'retire'; if (cv.dataset.vivant !== dv) cv.dataset.vivant = dv; }
-      if (a <= 0 && c <= 0) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); if (etat.faisO.i) { etat.faisO.i = 0; if (etat.surFaisceau) etat.surFaisceau(now); } if (sonde) raf = requestAnimationFrame(tour); return; }
+      if (a <= 0 && c <= 0) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); if (etat.faisO.i && !etat.ouv) { etat.faisO.i = 0; if (etat.surFaisceau) etat.surFaisceau(now); } if (sonde) raf = requestAnimationFrame(tour); return; }
       if (!e) { if (sonde) raf = requestAnimationFrame(tour); return; }
       // le tableau tient-il la cadence ? sinon sa définition baisse d'un cran, puis il laisse la place à la boucle seule
       if (plein && montre === 2 && c > 0 && now - tMontre > 800 && now - dR > tVis) {
@@ -8844,6 +8846,10 @@ float pluie(float t){
     boucleT() { return etat.boucle >= 0 && !boucleV.paused ? { k: etat.boucle, t: boucleV.currentTime, d: boucleV.duration || 0 } : null; },
     attenuer(k) { etat.dimK = k; }, calme(b) { etat.calme = b; }, figer(b) { etat.fige = b; },
     lanterneEcran(o) { o.x = etat.faisO.x / innerWidth; o.y = etat.faisO.y / innerHeight; o.devant = etat.faisO.i > .05; o.i = etat.faisO.i; return o; },
+    // l'ouverture : la lanterne à l'écran (pixels) et l'angle du faisceau du film ; puis, à chaque image de l'ouverture, où est son faisceau (le nom s'allume à son passage)
+    phareEcran() { const ph = EAU[0].phare, r = imgs[0].getBoundingClientRect(); if (!ph || !r.width || !r.height) return null; const port = suf === '-p', W0 = port ? 810 : 1920, H0 = 1080, sc = Math.max(r.width / W0, r.height / H0), u = port ? (ph.o[0] - EAU[0].crop) / .421875 : ph.o[0];
+      return { x: r.left + (r.width - W0 * sc) / 2 + u * W0 * sc, y: r.top + (r.height - H0 * sc) / 2 + ph.o[1] * H0 * sc, ang: Math.atan2(ph.film[1], ph.film[0]) }; },
+    ouverture(b, x, y, bx, by, i) { etat.ouv = !!b; if (b) { etat.faisO.x = x; etat.faisO.y = y; etat.faisO.i = i; etat.faisB.x = bx; etat.faisB.y = by; } else etat.faisO.i = 0; if (etat.surFaisceau) etat.surFaisceau(performance.now()); },
     faisceauEcran(o) { o.x = etat.faisB.x / innerWidth; o.y = etat.faisB.y / innerHeight; o.devant = etat.faisO.i > .05; o.i = etat.faisO.i; return o; },
     entree() { if (!etat.fige && !etat.calme && !etat.leger) etat.intro = 1; },
     ciel() {}, figure() {}, flux() {}, sonar() { return false; }, quandPris() {}, quandEclair(f) { onEclair = f; }, qualite() {}, choc() {}, nuee() {}, tour() {}, fin() {}
@@ -9036,7 +9042,7 @@ function setupNuit() {
   const demander = () => { if (N && !raf) raf = requestAnimationFrame(boucle); };
 
   window.nuitAube = () => N && N.U ? N.U.uDawn.value / .94 : 0;   // Root (autre script) suit la lumière du film
-  let pretOk; nuitCtl = { pret: new Promise(r => { pretOk = r; }), lanterne() { return N ? N.lanterneEcran({ x: 0, y: 0, devant: false }) : null; }, get film() { return !!(N && N.film); }, entree() { if (N && !REDUCE && !html.classList.contains('calm') && scrollY < 40) { N.entree(); N.image(performance.now()); } } };
+  let pretOk; nuitCtl = { pret: new Promise(r => { pretOk = r; }), lanterne() { return N ? N.lanterneEcran({ x: 0, y: 0, devant: false }) : null; }, get film() { return !!(N && N.film); }, phare() { return N && N.phareEcran ? N.phareEcran() : null; }, ouverture(...x) { if (N && N.ouverture) N.ouverture(...x); }, entree() { if (N && !REDUCE && !html.classList.contains('calm') && scrollY < 40) { N.entree(); N.image(performance.now()); } } };
   const demarrer = async () => {
     if (FILM_PLANS >= 6 && $('#film')) { N = creerFilm($('#film'), { plans: FILM_PLANS, petit: innerWidth < 760, leger: html.classList.contains('leger') || REDUCE, boucles: FILM_BOUCLES, reveil: () => demander() }); html.classList.add('film'); }
     else { let THREE; try { THREE = await import('three'); } catch (e) { abandon(); pretOk(false); return; }
@@ -9084,7 +9090,7 @@ function setupNuit() {
 function runAllumage(onReveal) {
   const ld = $('#loader'), dot = $('.allum-l'), txt = $('.allum-t'), sk = $('.allum-s');
   html.classList.add('ld-on'); if (lenis) lenis.stop();
-  let fini = false, tl = null, parti = false;
+  let fini = false, tl = null, parti = false, fx = null, entree = null, lancer = null;
   const masque = s => { const m = `conic-gradient(from 200deg at var(--ax,72%) var(--ay,40%), transparent 0deg, transparent ${s.toFixed(1)}deg, #000 ${(s + 26).toFixed(1)}deg, #000 360deg)`; ld.style.webkitMaskImage = ld.style.maskImage = s <= 0 ? '' : m; };
   const finir = () => {
     if (fini) return; fini = true; if (tl) tl.kill();
@@ -9092,14 +9098,52 @@ function runAllumage(onReveal) {
     ld.classList.add('done'); ld.style.webkitMaskImage = ld.style.maskImage = '';
     html.classList.remove('ld-on', 'ld-pre'); if (lenis) lenis.start();
     removeEventListener('keydown', passer);
+    if (fx) { fx.remove(); fx = null; dot.remove(); if (nuitCtl.ouverture) nuitCtl.ouverture(false); }
+    if (lancer) lancer();
     if (!parti && onReveal) { parti = true; onReveal(); }
   };
   const reveler = () => { if (!parti && onReveal) { parti = true; onReveal(); } };
   const balayer = () => {
     if (fini) return;
     nuitCtl.entree();
-    if (nuitCtl.film) {   // générique : le noir se lève sur le film, les bandes s'ouvrent
-      tl = G.timeline({ onComplete: finir }).to([txt, sk, dot], { autoAlpha: 0, duration: .45, ease: 'power2.in' }, 0).to(ld, { opacity: 0, duration: 1.6, ease: 'power2.inOut' }, .2).add(reveler, .75);
+    if (nuitCtl.film) {
+      const ph = !html.classList.contains('calm') && nuitCtl.phare ? nuitCtl.phare() : null;
+      if (!ph) {   // (mode calme, ou image d'accueil pas encore en place : le noir se lève simplement sur le film, sans faisceau qui tourne)
+        tl = G.timeline({ onComplete: finir }).to([txt, sk, dot], { autoAlpha: 0, duration: .45, ease: 'power2.in' }, 0).to(ld, { opacity: 0, duration: 1.6, ease: 'power2.inOut' }, .2).add(reveler, .75);
+        return;
+      }
+      // LE PHARE OUVRE LE SITE : sa lampe s'allume dans le noir, son faisceau fait un tour complet (il part de l'axe du faisceau du film et y revient),
+      // et le noir se retire derrière lui. Le faisceau du décor, éteint pendant ce tour, prend le relais dans le même axe.
+      const A0 = ph.ang * 180 / Math.PI + 90, px = ph.x.toFixed(1) + 'px', py = ph.y.toFixed(1) + 'px', loin = Math.hypot(Math.max(ph.x, innerWidth - ph.x), Math.max(ph.y, innerHeight - ph.y));
+      fx = document.createElement('i'); fx.className = 'allum-f'; fx.setAttribute('aria-hidden', 'true'); ld.after(fx);
+      fx.style.webkitMaskImage = fx.style.maskImage = `radial-gradient(farthest-corner at ${px} ${py}, #000 0, rgba(0,0,0,.84) 20%, rgba(0,0,0,.42) 56%, rgba(0,0,0,.17) 100%)`;   // plus pâle avec la distance
+      fx.after(dot); dot.classList.add('phare'); dot.style.left = px; dot.style.top = py;
+      // le texte d'accueil se met en place, caché, AVANT que le noir ne se retire (sinon on le verrait posé, puis disparaître, puis entrer) ;
+      // son entrée part quand le faisceau arrive sur le nom (20° avant), où qu'il soit à l'écran ; le paragraphe suit le nom, il ne le précède pas
+      if (!parti && onReveal) { parti = true; entree = onReveal(); if (entree && entree.pause) { entree.pause(0); G.set('.hero-sum', { autoAlpha: 0 }); } }
+      let tNom = 300; { const hn = $('.hero-name'), r = hn && hn.getBoundingClientRect(); if (r && r.width) { const th = Math.atan2(r.top + r.height / 2 - ph.y, r.left + r.width / 2 - ph.x) * 180 / Math.PI; tNom = Math.max(120, Math.min(330, (((th + 90 - A0) % 360) + 360) % 360 - 20)); } }
+      lancer = () => { if (entree && entree.paused && entree.paused()) { entree.play(); G.to('.hero-sum', { autoAlpha: 1, duration: .7, delay: .3, ease: 'power2.out' }); } };
+      const S = { s: 0, i: 0 }; let relais = false;
+      const dessiner = () => { const t = S.s, an = (A0 + t - 90) * Math.PI / 180, k = Math.max(0, Math.min(1, (352 - t) / 52)), d1 = Math.min(12, t);
+        // le noir : il s'ouvre en douceur à l'axe de départ, reste ouvert jusqu'à 8° derrière le faisceau, et se referme 18° devant lui
+        ld.style.webkitMaskImage = ld.style.maskImage = t <= 0 ? '' : `conic-gradient(from ${A0.toFixed(1)}deg at ${px} ${py}, rgba(0,0,0,${k.toFixed(3)}) 0deg, transparent ${d1.toFixed(1)}deg, transparent ${Math.max(d1, t - 8).toFixed(1)}deg, #000 ${(t + 18).toFixed(1)}deg, #000 360deg)`;
+        // le faisceau : un pinceau étroit et symétrique (cœur de 3°, halo de 20°), centré sur l'angle du tour
+        fx.style.background = `conic-gradient(from ${(A0 + t - 30).toFixed(1)}deg at ${px} ${py}, rgba(255,232,190,0) 0deg, rgba(255,236,200,.1) 20deg, rgba(255,244,222,.85) 28.5deg, rgba(255,250,236,1) 30deg, rgba(255,244,222,.85) 31.5deg, rgba(255,236,200,.1) 40deg, rgba(255,232,190,0) 48deg, rgba(255,232,190,0) 360deg)`;
+        fx.style.opacity = S.i.toFixed(3);
+        if (!relais) nuitCtl.ouverture(true, ph.x, ph.y, ph.x + Math.cos(an) * loin, ph.y + Math.sin(an) * loin, S.i);   // le nom s'allume à son passage, comme sous le faisceau du décor
+        if (t >= tNom) lancer(); };
+      dessiner();
+      tl = G.timeline({ onComplete: finir })
+        .to(dot, { opacity: 1, duration: .35, ease: 'power2.out' }, 0)
+        .fromTo(dot, { scale: .4 }, { scale: 1.25, duration: .5, ease: 'back.out(1.6)' }, 0)
+        .to(S, { i: 1, duration: .4, ease: 'power2.out', onUpdate: dessiner }, .2)
+        .to([txt, sk], { autoAlpha: 0, duration: .35, ease: 'power2.in' }, .4)
+        .to(S, { s: 360, duration: 1.9, ease: 'power1.inOut', onUpdate: dessiner }, .6)
+        .to(ld, { opacity: 0, duration: .34, ease: 'power1.in' }, 2.2)
+        .add(() => { relais = true; nuitCtl.ouverture(false); }, 2.22)
+        .to(S, { i: 0, duration: .35, ease: 'power1.out', onUpdate: dessiner }, 2.22)
+        .to(dot, { opacity: 0, duration: .33, ease: 'power1.out' }, 2.25)
+        .add(lancer, 2.3);
       return;
     }
     const viser = () => { const p = nuitCtl.lanterne(); if (p && p.devant) { ld.style.setProperty('--ax', (p.x * 100).toFixed(1) + '%'); ld.style.setProperty('--ay', (p.y * 100).toFixed(1) + '%'); } };

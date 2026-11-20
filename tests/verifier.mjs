@@ -54,6 +54,8 @@ const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=sw
 
 // la visite guidée et l’écran de chargement ne gênent pas les tests
 const QUIET = "try{sessionStorage.setItem('ld-skip','1');localStorage.setItem('tour-offer','no')}catch(e){}";
+// pour contrôler l'ouverture : la page la joue (pas de « ld-skip »), et un témoin note ce qui s'est montré (faisceau, éclat, place de la lampe, durée)
+const AVEC_OUVERTURE = "try{localStorage.setItem('tour-offer','no')}catch(e){};window.__ouv={vu:false,iMax:0,lampe:null,t0:0,t1:0};new MutationObserver(()=>{const o=window.__ouv,f=document.querySelector('.allum-f'),d=document.querySelector('.allum-l.phare');if(f){if(!o.vu){o.vu=true;o.t0=performance.now()}o.iMax=Math.max(o.iMax,+f.style.opacity||0)}if(d&&!o.lampe){const b=d.getBoundingClientRect();o.lampe={x:Math.round(b.left+b.width/2),y:Math.round(b.top+b.height/2)}}if(o.vu&&!f&&!o.t1)o.t1=performance.now()}).observe(document,{childList:true,subtree:true,attributes:true,attributeFilter:['style']})";
 const CSP_SPY = "window.__csp=[];document.addEventListener('securitypolicyviolation',e=>window.__csp.push(e.violatedDirective+' '+e.blockedURI))";
 
 // hors ligne : CDN_LOCAL=<dossier> sert les bibliothèques npm exactes depuis le disque (mêmes octets, mêmes empreintes)
@@ -64,7 +66,8 @@ async function open(opts, query = '', br = browser) {
     const rel = new URL(route.request().url()).pathname.replace('/npm/', '');
     try { await route.fulfill({ body: await readFile(path.join(CDN_LOCAL, rel)), contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' } }); } catch { await route.abort(); }
   });
-  await ctx.addInitScript(QUIET); await ctx.addInitScript(CSP_SPY);
+  await ctx.addInitScript(opts.intro ? AVEC_OUVERTURE : QUIET); await ctx.addInitScript(CSP_SPY);
+  if (opts.calme) await ctx.addInitScript("try{localStorage.setItem('calm','1')}catch(e){}");
   await ctx.addInitScript(`try{Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>${opts.modeste ? 2 : 8}});Object.defineProperty(navigator,'deviceMemory',{get:()=>${opts.modeste ? 2 : 8}})}catch(e){}`);
   const page = await ctx.newPage(); const errors = [];
   page.on('pageerror', e => errors.push(String(e).slice(0, 200)));
@@ -273,6 +276,28 @@ for (const scheme of ['light', 'dark']) {
 }
 // 3 ter. vitesse plafonnée de la molette (Chromium ; Firefox et WebKit plus bas)
 await molette('Chromium');
+// 3 quater. L'OUVERTURE : le phare ouvre le site. À l'entrée, sa lampe s'allume sur la lanterne de l'image d'accueil, son faisceau fait le tour de l'écran et le noir se retire
+// derrière lui ; à la fin rien ne reste par-dessus la page, et le texte d'accueil est en place. (Tout en CSS : contrôlé sur les trois moteurs et sur téléphone.)
+async function ouverture(nom, br = browser, tel = false) {
+  const { ctx, page, errors } = await open(tel ? { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2, locale: 'fr-FR', intro: true } : { viewport: { width: 1440, height: 900 }, locale: 'fr-FR', intro: true }, '', br);
+  const fini = await page.waitForFunction(() => document.getElementById('loader').classList.contains('done'), null, { timeout: 30000 }).then(() => true, () => false);
+  await page.waitForTimeout(1800);
+  const r = await page.evaluate(() => { const o = window.__ouv || {}, h = document.documentElement, sum = document.querySelector('.hero-sum'), n = document.querySelector('.hero-name');
+    return { film: h.classList.contains('film'), vu: !!o.vu, iMax: +(o.iMax || 0).toFixed(2), lampe: o.lampe, duree: o.t1 && o.t0 ? Math.round(o.t1 - o.t0) : -1, reste: !!document.querySelector('.allum-f, .allum-l.phare'), ldOn: h.classList.contains('ld-on') || h.classList.contains('ld-pre'),
+      sum: sum ? +(+getComputedStyle(sum).opacity).toFixed(2) : -1, nom: !!n && n.getBoundingClientRect().height > 20, w: innerWidth, hh: innerHeight }; });
+  if (!r.film) { console.log(`--    ${nom} : pas de film ici, ouverture au phare non contrôlée`); await ctx.close(); return; }
+  check(fini && r.vu && r.iMax > .9 && !!r.lampe && r.lampe.x > 0 && r.lampe.x < r.w && r.lampe.y > 0 && r.lampe.y < r.hh * .6, `${nom} : à l'entrée, la lampe du phare s'allume et son faisceau fait le tour de l'écran (lampe en ${r.lampe ? r.lampe.x + ', ' + r.lampe.y : '?'}, éclat ${r.iMax}, ${r.duree} ms)`);
+  check(fini && !r.reste && !r.ldOn && r.sum > .9 && r.nom && !errors.length, `${nom} : après l'ouverture, rien ne reste par-dessus la page et le texte d'accueil est en place (${JSON.stringify({ reste: r.reste, ecranEntree: r.ldOn, paragraphe: r.sum, nom: r.nom, erreurs: errors.slice(0, 2) })})`);
+  await ctx.close();
+}
+await ouverture('Chromium'); await ouverture('téléphone', browser, true);
+// en mode calme (réglage gardé d'une visite à l'autre), pas de faisceau qui tourne à l'entrée : le noir se lève simplement
+{ const { ctx, page, errors } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR', intro: true, calme: true });
+  const fini = await page.waitForFunction(() => document.getElementById('loader').classList.contains('done'), null, { timeout: 30000 }).then(() => true, () => false);
+  await page.waitForTimeout(800);
+  const r = await page.evaluate(() => ({ calme: document.documentElement.classList.contains('calm'), vu: !!(window.__ouv && window.__ouv.vu), reste: !!document.querySelector('.allum-f, .allum-l.phare'), ldOn: document.documentElement.classList.contains('ld-on') }));
+  check(fini && r.calme && !r.vu && !r.reste && !r.ldOn && !errors.length, `mode calme : à l'entrée, pas de faisceau qui tourne, le noir se lève simplement (${JSON.stringify(r)}${errors.length ? ', ' + errors[0] : ''})`);
+  await ctx.close(); }
 // 3 bis. mentions légales : à la toute fin de la page, avec l’éditeur, l’hébergeur et l’adresse de contact
 {
   const { ctx, page } = await open({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce', locale: 'fr-FR' });
@@ -466,6 +491,7 @@ for (const [nom, type] of [['Firefox', firefox], ['WebKit (Safari)', webkit]]) {
     await ctx.close();
   }
   await molette(nom, br);
+  await ouverture(nom, br);
   if (type === firefox) await decorVivant(nom, br);
   await br.close();
 }
