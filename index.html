@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-CLe8y03OI1kafHA4azJpfwUP3r4oY9+K5y9RfVxSr24=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-xm3yNY+gTYDpgJyTjoux6VgYcK2v58t/jmK3/OHpdVk=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8722,14 +8722,14 @@ float pluie(float t){
     if (etat.G !== null) {
       const sg = Math.sign(etat.G - Tsc);
       if (etat.leger || etat.fige || etat.calme || (!tenu && (Math.abs(etat.G - Tsc) < .01 || (etat.sgAv && sg && sg !== etat.sgAv)))) etat.G = null;
-      else if (defile && sensP && sensP !== sg && !retenu && !tenu) { const ec = Tsc - etat.G; etat.G += Math.sign(ec) * Math.min(Math.abs(ec), Math.max(Math.abs(ec) * (1 - Math.exp(-dtv * 2.5)), GLISSE * dtv)); }   // (jamais plus lent que le film lui-même : la fin du rattrapage ne rampe pas)
+      else if (defile && sensP && sensP !== sg && !retenu && !tenu && !(glAv && sensP === glAv)) etat.G += (Tsc - etat.G) * (1 - Math.exp(-dtv * 2.5));   // (s'il avance déjà seul dans le sens de la page, il ne lui court pas après en plus)
       etat.sgAv = etat.G === null ? 0 : Math.sign(etat.G - Tsc);
     }
     if (!tenu && retenir()) { tenu = true; etat.sgAv = Math.sign(etat.G - Tsc); }   // le film arrive sur un arrêt (ou s'y trouve) et la page s'arrête à moins d'1 s : il y reste
     etat.tenu = tenu;
     etat.glisse = 0;
     { const cur = etat.G === null ? Tsc : etat.G, surArret = H.some(h => Math.abs(Math.min(h, FIN) - cur) < .03);
-      const lent = defile && Math.abs(Tcs - Tsc) * 3.6 < GLISSE && (etat.G === null || Math.sign(etat.G - Tsc) === sensP);   // la page ne tire plus le film qu'à moins de sa vitesse réelle : il peut enchaîner seul, sans s'arrêter d'abord
+      const lent = defile && Math.abs(Tcs - Tsc) * 3.6 < GLISSE;   // la page ne tire plus le film qu'à moins de sa vitesse réelle : il peut enchaîner seul, sans s'arrêter d'abord
       const partir = surArret && (Tcs - cur) * etat.dir >= 1;   // posé sur un arrêt alors que la page est déjà à plus d'1 s de film au-delà (dans le sens du défilement) : il ne s'y attarde pas
       // le film avance déjà seul et la page défile dans le même sens, sans l'avoir rattrapé : il continue (avant, il se figeait une à deux secondes en l'attendant)
       // (tant que la page va dans ce sens, puis le temps qu'elle se pose ; défiler dans l'autre sens l'interrompt comme avant)
