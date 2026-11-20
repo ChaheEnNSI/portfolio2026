@@ -269,6 +269,8 @@ for (const scheme of ['light', 'dark']) {
   check(/Legal notice/.test(mlEn) && /Host:/.test(mlEn) && /GitHub/.test(mlEn) && !/Hébergeur/.test(mlEn), 'les mentions légales sont traduites en anglais');
   await ctx.close();
 }
+// 3 ter. vitesse plafonnée de la molette (Chromium ; Firefox et WebKit plus bas)
+await molette('Chromium');
 // 3 bis. mentions légales : à la toute fin de la page, avec l’éditeur, l’hébergeur et l’adresse de contact
 {
   const { ctx, page } = await open({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce', locale: 'fr-FR' });
@@ -332,6 +334,21 @@ for (const scheme of ['light', 'dark']) {
 // et le décor repart après un refus de lecture (iPhone en économie d'énergie) ou une coupure réseau
 const allerA = (page, sel, decale = 0) => page.evaluate(([sel, decale]) => { const y = document.querySelector(sel).getBoundingClientRect().top + scrollY + decale * innerHeight; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); }, [sel, decale]);
 const boucleJoue = (page, k, ms) => page.waitForFunction(k => { const v = document.querySelector('.film-b.on'); return !!v && !v.paused && new RegExp(`boucle-${k}(-p)?\\.(webm|mp4)$`).test(v.currentSrc) && v.currentTime > .05; }, k, { timeout: ms }).then(() => true, () => false);
+// Vitesse plafonnée : en insistant sur la molette pendant 2 s (80 crans de 120 px, soit 9 600 px demandés), la page avance sans dépasser une allure de lecture
+// (un écran par seconde, entre 650 et 1100 px/s) ; un cran isolé, lui, défile comme avant. Les crans sont émis dans la page, à cadence exacte.
+async function molette(nom, br = browser) {
+  const { ctx, page } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR', modeste: true }, '', br);
+  await page.waitForTimeout(1500);
+  if (!(await page.evaluate(() => !!window.Lenis && document.documentElement.classList.contains('lenis')))) { console.log(`--    ${nom} : pas de défilement fluide ici, vitesse plafonnée non contrôlée`); await ctx.close(); return; }
+  const geste = (crans, dy, pas, attente) => page.evaluate(([crans, dy, pas, attente]) => new Promise(res => { const y0 = scrollY, t0 = performance.now(); let i = 0; const cible = document.elementFromPoint(700, 450) || document.body;
+    const un = () => { cible.dispatchEvent(new WheelEvent('wheel', { deltaY: dy, deltaMode: 0, bubbles: true, cancelable: true, clientX: 700, clientY: 450 })); if (++i < crans) setTimeout(un, pas); else { const d = performance.now() - t0; setTimeout(() => res({ dist: Math.round(scrollY - y0), geste: Math.round(d) }), attente); } }; un(); }), [crans, dy, pas, attente]);
+  const cran = await geste(1, 100, 25, 2200);
+  check(cran.dist >= 55 && cran.dist <= 110, `${nom} : un cran de molette isolé défile comme avant (${cran.dist} px)`);
+  await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(1200);
+  const fort = await geste(80, 120, 25, 1500), plafond = Math.max(650, Math.min(1100, 900)), maxi = Math.round(plafond * (fort.geste / 1000 + .7) * 1.1);
+  check(fort.dist >= 350 && fort.dist <= maxi, `${nom} : en insistant ${(fort.geste / 1000).toFixed(1)} s sur la molette, la page avance sans s'emballer (${fort.dist} px, plafond ${maxi} px ; sans plafond : environ 9 000 px)`);
+  await ctx.close();
+}
 async function decorVivant(nom, br = browser) {
   const { ctx, page } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' }, '', br);
   if (!(await page.evaluate(() => document.documentElement.classList.contains('film') && !document.getElementById('film').classList.contains('leger')))) { console.log(`--    ${nom} : décor en images fixes ici, contrôles du film sautés`); await ctx.close(); return; }
@@ -434,6 +451,7 @@ for (const [nom, type] of [['Firefox', firefox], ['WebKit (Safari)', webkit]]) {
     }
     await ctx.close();
   }
+  await molette(nom, br);
   if (type === firefox) await decorVivant(nom, br);
   await br.close();
 }

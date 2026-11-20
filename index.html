@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-1tBTije/ciQMYFWo/GjaIoey28S5lmG4cfxJS7kXbGU=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-LV8r/2h60H6CHKg8FUnPIUEKOoYDRWrPTuFZ0F531/U=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -3375,7 +3375,14 @@ if (MOTION) {
   if (window.CustomEase) window.CustomEase.create('elegant', '0.76,0,0.24,1');
   ST.config({ ignoreMobileResize: true });
   if (window.Lenis) {
-    lenis = new window.Lenis({ lerp: 0.085, smoothWheel: true, wheelMultiplier: 0.95 });
+    // vitesse plafonnée : même en insistant sur la molette, la page ne dépasse pas une allure de lecture (un écran par seconde, entre 650 et 1100 px/s).
+    // La cible du défilement ne peut pas prendre plus d'avance sur la page que ce que cette allure permet (vitesse = avance x 60 x lerp) ; l'excédent est ignoré.
+    // (Une valeur nulle rendrait la main au défilement du navigateur : on laisse donc un reste infime.)
+    const LERP = .085, plafond = d => { const ev = d.event; if (!lenis || !ev || !/wheel/.test(ev.type) || ev.ctrlKey || !d.deltaY) return true;
+      const g = Math.max(650, Math.min(1100, innerHeight)) / (60 * LERP), ec = lenis.targetScroll - lenis.animatedScroll;
+      let n = Math.max(-g, Math.min(g, ec + d.deltaY)) - ec; if (n * d.deltaY <= 0) n = Math.sign(d.deltaY) * .01;
+      d.deltaY = n; return true; };
+    lenis = new window.Lenis({ lerp: LERP, smoothWheel: true, wheelMultiplier: 0.95, virtualScroll: plafond });
     lenis.on('scroll', ST.update);
     G.ticker.add(t => lenis.raf(t * 1000));
     G.ticker.lagSmoothing(0);
