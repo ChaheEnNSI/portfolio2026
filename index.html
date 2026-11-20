@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-32qaTQV9aB9Jx1HZekjm2BAmxI8C7m32I11pcKuiD6Q=' 'sha256-2+ohXyHlcWDb/gUzExInoUfAtH5J6a/4pe2hgcffd/g=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-HgcS6WqJY9yVCiTLsGxgXMBlipw6VgPeeNu3BtDGT7M=' 'sha256-2+ohXyHlcWDb/gUzExInoUfAtH5J6a/4pe2hgcffd/g=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8761,7 +8761,18 @@ float pluie(float t){
         // dans le sens du dernier défilement (plus de rebond) ; mais à moins d'1 s de film de l'arrêt qu'on vient de quitter, le film s'y repose (pas de long retour en arrière)
         let d = etat.dir, n = d > 0 ? nA : nR; const o = d > 0 ? nR : nA; if (o !== undefined && Math.abs(Math.min(o, FIN) - cur) < 1 && Math.abs(Math.min(o, FIN) - Tcs) < 1) { n = o; d = -d; }
         if (!defile) { const hp = H.find(h => Math.abs(Math.min(h, FIN) - Tsc) < .03); if (hp !== undefined && Math.abs(Math.min(hp, FIN) - cur) >= .03) { n = hp; d = Math.min(hp, FIN) > cur ? 1 : -1; } }   // la page est sur un arrêt : le film la rejoint
-        if (n !== undefined && (!defile || d === sensP)) { const hn = Math.min(n, FIN), pc = Math.min(NPL - 1, Math.floor(cur / 10)), pv = vids[pc]; etat.glisse = d;   // (enchaîner sans attendre : seulement dans le sens où la page l'emmenait)
+        // LE FILM RESTE ATTACHÉ À LA PAGE : il ne va seul jusqu'à l'arrêt que pour finir une arrivée (page posée tout près). Sinon sa destination est la page elle-même :
+        // s'il a du retard (il quitte un arrêt qui le retenait), il la rejoint à sa vitesse réelle et s'y arrête ; s'il y est déjà, il n'en bouge pas. Plus de film parti
+        // en avant pendant qu'on lit, donc plus de défilement sans effet à la reprise.
+        // « près » : la page est sur l'arrêt ; ou le film et la page sont tous deux à moins d'1 s de lui (il y retourne, comme avant) ; ou, un quart d'écran plus loin, la page y serait.
+        const hr = n === undefined ? cur : Math.min(n, FIN), q = d > 0 ? etat.cibBas : etat.cibHaut;
+        const pres = n !== undefined && (Math.abs(hr - Tcs) < .03 || (Math.abs(hr - cur) < 1 && Math.abs(hr - Tcs) < 1) || (q === undefined ? Math.abs(hr - Tcs) <= 1.5 : d > 0 ? Tcs <= hr && Tde(q) >= hr - .03 : Tcs >= hr && Tde(q) <= hr + .03));
+        const hn = pres ? hr : d > 0 ? Math.min(hr, Math.max(cur, Tcs)) : Math.max(hr, Math.min(cur, Tcs));
+        // (arrivé sur la page : il s'y rattache. S'il est en avance sur elle, il l'attend là où il est : on ne revient jamais en arrière sur ce qui a été montré.)
+        if (n !== undefined && Math.abs(hn - cur) < .03) { if (!pres && !surArret && etat.G !== null && Math.abs(cur - Tcs) < .03) { etat.G = null; etat.sgAv = 0; } }
+        // (vers un arrêt : vraie lecture de la vidéo, la plus fluide. Vers la page : image par image, à la même vitesse, pour s'arrêter pile sur elle ;
+        //  une vidéo en lecture dépasse sa cible dès que la page saccade, et il fallait alors revenir en arrière.)
+        else if (n !== undefined && (!defile || d === sensP)) { const pc = Math.min(NPL - 1, Math.floor(cur / 10)), pv = pres ? vids[pc] : null; etat.glisse = pres ? d : 0;   // (enchaîner sans attendre : seulement dans le sens où la page l'emmenait)
           if (d > 0 && pv && pv._jeu && (pv.ended || (pv.paused && pv.currentTime >= (pv.duration || 10) - .1))) etat.G = hn;   // le plan s'est terminé pendant que la page était figée
           else if (d > 0 && pv && pv._jeu && !pv.paused) etat.G = pv.currentTime >= (pv.duration || 10) - .1 ? hn : Math.min(hn, Math.max(cur, pc * 10 + pv.currentTime));   // en avant : le film suit ce que la vidéo LUE montre
           else etat.G = cur + Math.sign(hn - cur) * Math.min(GLISSE * dtv, Math.abs(hn - cur));
@@ -8825,7 +8836,7 @@ float pluie(float t){
     film: true, image, etat, U, NB: 0,
     // l'écran passe de la largeur à la hauteur (ou l'inverse) : on change de fichiers
     taille() { const s = enHauteur() ? '-p' : ''; if (s === suf) return; suf = s; for (let j = 0; j < NPL; j++) fermer(j); etat.plan = -1; imgs.forEach(im => im.removeAttribute('src')); etat.img = -1; etat.boucle = -1; etat.sortie = null; BV.forEach(x => { x._k = -1; vider(x); x.classList.remove('on'); }); },
-    aller(p) { if (Math.abs(p - etat.cible) > .001) etat.bouge = true; etat.cible = p; }, direct(p) { etat.cible = etat.prog = p; },
+    aller(p, pBas, pHaut) { if (Math.abs(p - etat.cible) > .001) etat.bouge = true; etat.cible = p; etat.cibBas = pBas; etat.cibHaut = pHaut; }, direct(p) { etat.cible = etat.prog = p; },
     main(x, y) { etat.tMain = performance.now(); etat.mx = x; etat.my = y; etat.actif = 1; etat.tx = (x + 1) / 2 * innerWidth; etat.ty = (1 - y) / 2 * innerHeight; if (!etat.dedans) { etat.dedans = true; if (REDUIT) { etat.lx = etat.tx; etat.ly = etat.ty; } } lampe.classList.add('on'); },
     relacher() { etat.dedans = false; etat.actif = 0; lampe.classList.remove('on'); },
     // y a-t-il encore quelque chose à animer ? Sinon, le pilote s'arrête jusqu'au prochain défilement ou mouvement de souris
@@ -9008,7 +9019,7 @@ function setupNuit() {
     son.pause(false);
     if (!calme && N.U.uDim.value > .28 && N.etat.actif <= 0 && N.U.uOrage.value < .05 && Math.abs(N.etat.cible - N.etat.prog) < .004) { saut = !saut; if (saut) { raf = requestAnimationFrame(boucle); return; } }
     N.calme(calme); N.figer(calme);
-    const p = progDe(scrollY); if (calme) N.direct(p); else N.aller(p);
+    const p = progDe(scrollY); if (calme) N.direct(p); else N.aller(p, progDe(scrollY + innerHeight * .28), progDe(scrollY - innerHeight * .28));
     N.ciel(lisse(4.5, 5, N.etat.prog) * (1 - lisse(5.5, 5.95, N.etat.prog)));
     { const k = lecture(scrollY); kV = calme ? k : kV + (k - kV) * .14; ecartV = Math.abs(k - kV); N.attenuer(kV); }
     { const ch = Math.floor(N.etat.prog + .14); if (ch !== chAv) { if (chAv >= 0 && ch >= 2 && !calme) N.choc(); chAv = ch; } }   // nouveau chapitre : une onde de lumière part du phare

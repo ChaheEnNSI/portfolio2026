@@ -334,7 +334,7 @@ await molette('Chromium');
   await ctx.close();
 }
 
-// 5 bis. décor vivant : le film ne se fige pas (il continue seul jusqu'à l'arrêt suivant), les boucles se relaient sans recharger,
+// 5 bis. décor vivant : le film reste attaché à la page (il ne finit seul qu'une arrivée toute proche), les boucles se relaient sans recharger,
 // et le décor repart après un refus de lecture (iPhone en économie d'énergie) ou une coupure réseau
 const allerA = (page, sel, decale = 0) => page.evaluate(([sel, decale]) => { const y = document.querySelector(sel).getBoundingClientRect().top + scrollY + decale * innerHeight; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); }, [sel, decale]);
 const boucleJoue = (page, k, ms) => page.waitForFunction(k => { const v = document.querySelector('.film-b.on'); return !!v && !v.paused && new RegExp(`boucle-${k}(-p)?\\.(webm|mp4)$`).test(v.currentSrc) && v.currentTime > .05; }, k, { timeout: ms }).then(() => true, () => false);
@@ -357,14 +357,24 @@ async function decorVivant(nom, br = browser) {
   const { ctx, page } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' }, '', br);
   if (!(await page.evaluate(() => document.documentElement.classList.contains('film') && !document.getElementById('film').classList.contains('leger')))) { console.log(`--    ${nom} : décor en images fixes ici, contrôles du film sautés`); await ctx.close(); return; }
   if (BOUCLES.includes(2)) {
-    // arrêté entre l'accueil et le Profil : le film continue seul, sans jamais reculer, jusqu'à l'arrêt du Profil, dont la boucle part
-    // au milieu du chapitre entre l'accueil et le Profil (le film y est à mi-chemin entre deux arrêts, quel que soit le navigateur)
+    // LE FILM RESTE ATTACHÉ À LA PAGE. Arrêté au milieu du chapitre entre l'accueil et le Profil, il reste sur l'image que la page demande. (Avant, il partait seul jusqu'au
+    // décor suivant ; à la reprise, le défilement ne changeait plus rien au décor tant que la page ne l'avait pas rattrapé : jusqu'à deux écrans « dans le vide ».)
+    // Ensuite, en avançant par petits pas, chaque pas fait avancer le décor ; et quand la page se pose près du Profil, le film finit seul l'arrivée, sans jamais reculer.
     await page.evaluate(() => { const p = document.getElementById('profil').getBoundingClientRect().top + scrollY, y = (innerHeight * .82 + p - innerHeight * .62) / 2; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); });
-    const suivi = await page.evaluate(async () => { const filmT = () => { const c = document.getElementById('film'); const v = c && [...c.querySelectorAll('.film-v')].find(x => x.classList.contains('on')); const m = v && /film-(\d)/.exec(v.currentSrc || ''); return m ? +m[1] * 10 + v.currentTime : null; }; let av = null, recul = 0; const t0 = performance.now();
-      while (performance.now() - t0 < 30000) { await new Promise(r => setTimeout(r, 150)); const t = filmT(); if (t !== null && av !== null && t < av - .3) recul++; if (t !== null) av = t;   // (un recalcul des repères des chapitres peut déplacer le film de 0,2 s : ce n'est pas un recul)
-        const b = document.querySelector('.film-b.on'); if (b && !b.paused && /boucle-2(-p)?\./.test(b.currentSrc) && b.currentTime > .05) return { ok: true, recul, t: av }; }
-      return { ok: false, recul, t: av }; });
-    check(suivi.ok && suivi.recul === 0, `${nom} : arrêté entre deux chapitres, le film continue seul jusqu'au Profil puis sa boucle part, sans reculer (${JSON.stringify(suivi)})`);
+    const suivi = await page.evaluate(async () => { const filmT = () => { const c = document.getElementById('film'); const v = c && [...c.querySelectorAll('.film-v')].find(x => x.classList.contains('on')); const m = v && /film-(\d)/.exec(v.currentSrc || ''); return m ? +m[1] * 10 + v.currentTime : null; };
+      const att = ms => new Promise(r => setTimeout(r, ms)), boucle = () => { const b = document.querySelector('.film-b.on'); return !!b && !b.paused && /boucle-2(-p)?\./.test(b.currentSrc) && b.currentTime > .05; };
+      // (on laisse d'abord le film rejoindre la page : stable pendant 1,2 s, au plus 15 s d'attente)
+      { let a = filmT(), n = 0; const d0 = performance.now(); while (n < 8 && performance.now() - d0 < 15000) { await att(150); const t = filmT(); n = t !== null && a !== null && Math.abs(t - a) < .02 ? n + 1 : 0; a = t; } }
+      const t1 = filmT(); await att(4500); const t2 = filmT(), reste = t1 !== null && t2 !== null && Math.abs(t2 - t1) < .3 && !document.querySelector('.film-b.on');
+      const p = document.getElementById('profil').getBoundingClientRect().top + scrollY, y0 = scrollY; let av = t2, recul = 0, morts = 0, pas = 0, ok = false, avant = false;
+      for (let i = 1; i <= 16 && !ok; i++) { scrollTo(0, y0 + i * 60); pas = i; const d0 = performance.now(), ta = av; let bouge = false;
+        while (performance.now() - d0 < 1700 && !ok) { await att(150); const t = filmT(); if (t !== null && av !== null && t < av - .3) recul++; if (t !== null && ta !== null && t > ta + .08) bouge = true; if (t !== null) av = t; if (boucle()) { ok = true; avant = p - scrollY > innerHeight * .46; } }
+        if (!bouge && !ok) morts++; }
+      const d1 = performance.now(); while (!ok && performance.now() - d1 < 20000) { await att(150); const t = filmT(); if (t !== null && av !== null && t < av - .3) recul++; if (t !== null) av = t; if (boucle()) ok = true; }
+      return { reste, t1: t1 && +t1.toFixed(2), t2: t2 && +t2.toFixed(2), pas, morts, recul, ok, avant }; });
+    check(suivi.reste, `${nom} : arrêté au milieu d'un chapitre, le film reste sur l'image de la page, il ne part plus seul en avant (${suivi.t1} s puis ${suivi.t2} s)`);
+    check(suivi.morts === 0, `${nom} : à la reprise, chaque petit pas de 60 px fait avancer le décor, aucun défilement sans effet (${suivi.morts} pas sans effet sur ${suivi.pas})`);
+    check(suivi.ok && suivi.recul === 0, `${nom} : posé près du Profil, le film finit seul l'arrivée puis sa boucle part, sans reculer (${JSON.stringify({ ok: suivi.ok, recul: suivi.recul, avantLePalier: suivi.avant })})`);
     // le tableau vivant (WebGL, sur la boucle) : à l'arrêt, l'image s'anime d'elle-même. Sur une machine trop lente (rendu logiciel), il se retire et laisse la boucle : c'est prévu.
     const tv = await page.evaluate(async () => { if (!document.createElement('canvas').getContext('webgl')) return { etat: 'sans WebGL' }; const c = document.querySelector('.film-eau'); if (!c) return { etat: 'pas de calque' };
       let vu = false, n0 = 0; const t0 = performance.now();
