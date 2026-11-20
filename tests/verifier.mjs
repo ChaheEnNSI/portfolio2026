@@ -365,11 +365,11 @@ async function decorVivant(nom, br = browser) {
     const tv = await page.evaluate(async () => { if (!document.createElement('canvas').getContext('webgl')) return { etat: 'sans WebGL' }; const c = document.querySelector('.film-eau'); if (!c) return { etat: 'pas de calque' };
       let vu = false, n0 = 0; const t0 = performance.now();
       while (performance.now() - t0 < 25000) { await new Promise(r => setTimeout(r, 150));
-        if (c.classList.contains('plein') && c.classList.contains('on')) { if (!vu) { vu = true; n0 = c._n | 0; } else if ((c._n | 0) >= n0 + 2) return { etat: 'montré', vu, taille: c.width + 'x' + c.height, err: c.getContext('webgl').getError() }; }
+        if (c.classList.contains('plein') && c.classList.contains('on')) { if (!vu) { vu = true; n0 = c._n | 0; } else if ((c._n | 0) >= n0 + 2) return { etat: 'montré', vu, taille: c.width + 'x' + c.height, fondu: c.classList.contains('net') ? 'fondu court' : 'fondu long', err: c.getContext('webgl').getError() }; }
         if (c.dataset.vivant === 'retire') return { etat: vu ? 'montré, puis retiré (machine trop lente pour lui)' : 'retiré', vu, err: 0 }; }
       return { etat: 'jamais montré', vu, vivant: c.dataset.vivant, classes: c.className }; });
     if (tv.etat === 'sans WebGL') console.log(`--    ${nom} : pas de WebGL ici, tableau vivant non contrôlé`);
-    else check(tv.vu && !tv.err, `${nom} : au Profil, le tableau vivant s'affiche et s'anime (${tv.etat}${tv.taille ? ', ' + tv.taille : ''})`);
+    else check(tv.vu && !tv.err, `${nom} : au Profil, le tableau vivant s'affiche et s'anime (${tv.etat}${tv.taille ? ', ' + tv.taille : ''}${tv.fondu ? ', ' + tv.fondu : ''})`);
     if (tv.vu) { const b = await page.evaluate(() => { const v = document.querySelector('.film-b.on'); return !!v && !v.paused; }); check(b, `${nom} : sous le tableau vivant, la boucle continue (elle reprend la main s'il se retire)`); }
     // un arrêt retient le film : en avançant la page par petits pas depuis le Profil, le décor reste d'abord sur l'arrêt, puis le quitte pour de bon.
     // (Avant, dès le premier pas hors du palier, le film avançait d'un souffle, s'arrêtait, puis revenait se reposer sur l'arrêt : le décor disparaissait et revenait.)
