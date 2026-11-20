@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-LV8r/2h60H6CHKg8FUnPIUEKOoYDRWrPTuFZ0F531/U=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-niYyhST97OY2H9iRvmoNEvbcJ/mikzCALfJGPf5ya0s=' 'sha256-9StmsHGXHw0+9RZ9CFFHD1A7wN5mJnXpuZdxBylmJxE=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8765,7 +8765,7 @@ float pluie(float t){
           if (d > 0 && pv && pv._jeu && (pv.ended || (pv.paused && pv.currentTime >= (pv.duration || 10) - .1))) etat.G = hn;   // le plan s'est terminé pendant que la page était figée
           else if (d > 0 && pv && pv._jeu && !pv.paused) etat.G = pv.currentTime >= (pv.duration || 10) - .1 ? hn : Math.min(hn, Math.max(cur, pc * 10 + pv.currentTime));   // en avant : le film suit ce que la vidéo LUE montre
           else etat.G = cur + Math.sign(hn - cur) * Math.min(GLISSE * dtv, Math.abs(hn - cur));
-          if (Math.abs(etat.G - hn) < .03) { etat.G = hn; etat.glisse = 0; }   // arrivé : on ne lance pas la lecture du plan suivant
+          if (Math.abs(etat.G - hn) < (d > 0 && pv && pv._jeu && !pv.paused ? .07 : .03)) { etat.G = hn; etat.glisse = 0; }   // arrivé : on ne lance pas la lecture du plan suivant
           etat.sgAv = Math.sign(etat.G - Tsc); } } }
     const T = etat.G === null ? Tsc : etat.G, Tc = etat.G === null ? Tcs : tenu ? etat.G : (etat.G >= Tsc ? Math.max(Tcs, etat.G) : Math.min(Tcs, etat.G));
     // l'éclair (son et lueur) part quand le film passe sur un éclair de la tempête (une seule fois par image, même en défilement rapide)
