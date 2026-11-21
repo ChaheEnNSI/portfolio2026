@@ -56,7 +56,7 @@ const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=sw
 // (window.__glLogiciel : ces contrôles tournent sans vraie carte graphique ; sans ce repère, la page ne créerait pas la toile du décor et on ne vérifierait plus rien d'elle)
 const QUIET = "window.__glLogiciel=true;try{sessionStorage.setItem('ld-skip','1');localStorage.setItem('tour-offer','no')}catch(e){}";
 // pour contrôler l'ouverture : la page la joue (pas de « ld-skip »), et un témoin note ce qui s'est montré (faisceau, éclat, place de la lampe, durée)
-const AVEC_OUVERTURE = "window.__glLogiciel=true;try{localStorage.setItem('tour-offer','no')}catch(e){};window.__ouv={vu:false,iMax:0,lampe:null,t0:0,t1:0};new MutationObserver(()=>{const o=window.__ouv,f=document.querySelector('.allum-f'),d=document.querySelector('.allum-l.phare');if(f){if(!o.vu){o.vu=true;o.t0=performance.now()}o.iMax=Math.max(o.iMax,+f.style.opacity||0)}if(d&&!o.lampe){const b=d.getBoundingClientRect();o.lampe={x:Math.round(b.left+b.width/2),y:Math.round(b.top+b.height/2)}}if(o.vu&&!f&&!o.t1)o.t1=performance.now()}).observe(document,{childList:true,subtree:true,attributes:true,attributeFilter:['style']})";
+const AVEC_OUVERTURE = "window.__glLogiciel=true;try{localStorage.setItem('tour-offer','no')}catch(e){};window.__ouv={vu:false,iMax:0,lampe:null,t0:0,t1:0,n:0,u0:9,u1:-9,v0:9,v1:-9,w0:1e9,w1:0,h1:0};new MutationObserver(()=>{const o=window.__ouv,f=document.querySelector('.allum-f'),d=document.querySelector('.allum-l.phare');if(f){if(!o.vu){o.vu=true;o.t0=performance.now()}o.iMax=Math.max(o.iMax,+f.style.opacity||0)}if(d&&!o.lampe){const b=d.getBoundingClientRect();o.lampe={x:Math.round(b.left+b.width/2),y:Math.round(b.top+b.height/2)}}if(d&&f){const im=document.querySelector('.film-i.on')||document.querySelector('.film-i'),r=im&&im.getBoundingClientRect();if(r&&r.width>50){const b=d.getBoundingClientRect(),u=(b.left+b.width/2-r.left)/r.width,v=(b.top+b.height/2-r.top)/r.height;o.n++;o.u0=Math.min(o.u0,u);o.u1=Math.max(o.u1,u);o.v0=Math.min(o.v0,v);o.v1=Math.max(o.v1,v);o.w0=Math.min(o.w0,r.width);o.w1=Math.max(o.w1,r.width);o.h1=Math.max(o.h1,r.height)}}if(o.vu&&!f&&!o.t1)o.t1=performance.now()}).observe(document,{childList:true,subtree:true,attributes:true,attributeFilter:['style']})";
 const CSP_SPY = "window.__csp=[];document.addEventListener('securitypolicyviolation',e=>window.__csp.push(e.violatedDirective+' '+e.blockedURI))";
 
 // hors ligne : CDN_LOCAL=<dossier> sert les bibliothèques npm exactes depuis le disque (mêmes octets, mêmes empreintes)
@@ -288,14 +288,33 @@ async function ouverture(nom, br = browser, tel = false) {
   const fini = await page.waitForFunction(() => document.getElementById('loader').classList.contains('done'), null, { timeout: 30000 }).then(() => true, () => false);
   await page.waitForTimeout(1800);
   const r = await page.evaluate(() => { const o = window.__ouv || {}, h = document.documentElement, sum = document.querySelector('.hero-sum'), n = document.querySelector('.hero-name');
-    return { film: h.classList.contains('film'), vu: !!o.vu, iMax: +(o.iMax || 0).toFixed(2), lampe: o.lampe, duree: o.t1 && o.t0 ? Math.round(o.t1 - o.t0) : -1, reste: !!document.querySelector('.allum-f, .allum-l.phare'), ldOn: h.classList.contains('ld-on') || h.classList.contains('ld-pre'),
+    return { film: h.classList.contains('film'), vu: !!o.vu, iMax: +(o.iMax || 0).toFixed(2), lampe: o.lampe, suivi: { n: o.n | 0, dx: +((o.u1 - o.u0) * o.w1).toFixed(1), dy: +((o.v1 - o.v0) * o.h1).toFixed(1), zoom: o.w0 > 0 && o.w0 < 1e8 ? +((o.w1 / o.w0 - 1) * 100).toFixed(1) : 0 }, duree: o.t1 && o.t0 ? Math.round(o.t1 - o.t0) : -1, reste: !!document.querySelector('.allum-f, .allum-l.phare'), ldOn: h.classList.contains('ld-on') || h.classList.contains('ld-pre'),
       sum: sum ? +(+getComputedStyle(sum).opacity).toFixed(2) : -1, nom: !!n && n.getBoundingClientRect().height > 20, w: innerWidth, hh: innerHeight }; });
   if (!r.film) { console.log(`--    ${nom} : pas de film ici, ouverture au phare non contrôlée`); await ctx.close(); return; }
   check(fini && r.vu && r.iMax > .9 && !!r.lampe && r.lampe.x > 0 && r.lampe.x < r.w && r.lampe.y > 0 && r.lampe.y < r.hh * .6, `${nom} : à l'entrée, la lampe du phare s'allume et son faisceau fait le tour de l'écran (lampe en ${r.lampe ? r.lampe.x + ', ' + r.lampe.y : '?'}, éclat ${r.iMax}, ${r.duree} ms)`);
+  // la lampe reste sur la lanterne : le décor fait un zoom arrière pendant l'ouverture, et la lampe doit garder exactement la même place DANS l'image d'accueil
+  // (avant, elle était posée une fois pour toutes : elle finissait à 18 px de la lanterne sur un écran d'ordinateur, 31 px sur un écran très large)
+  check(r.suivi.n >= 5 && r.suivi.dx <= 2.5 && r.suivi.dy <= 2.5, `${nom} : pendant l'ouverture, la lampe reste posée sur la lanterne pendant que le décor recule (écart au pire ${r.suivi.dx} px en largeur, ${r.suivi.dy} px en hauteur, sur ${r.suivi.n} relevés ; le décor a reculé de ${r.suivi.zoom} %)`);
   check(fini && !r.reste && !r.ldOn && r.sum > .9 && r.nom && !errors.length, `${nom} : après l'ouverture, rien ne reste par-dessus la page et le texte d'accueil est en place (${JSON.stringify({ reste: r.reste, ecranEntree: r.ldOn, paragraphe: r.sum, nom: r.nom, erreurs: errors.slice(0, 2) })})`);
   await ctx.close();
 }
 await ouverture('Chromium'); await ouverture('téléphone', browser, true);
+// « Cliquer pour passer » : on passe l'ouverture d'un clic en plein tour, puis d'une touche juste avant le relais. Elle s'accélère, ne part qu'une fois, ne laisse rien
+// par-dessus la page ; le nom et le texte sont en place et la page défile.
+for (const [quand, geste, attente] of [['en plein tour', 'clic', 900], ['juste avant le relais', 'touche', 2300]]) {
+  const { ctx, page, errors } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR', intro: true });
+  const vu = await page.waitForFunction(() => window.__ouv && window.__ouv.vu, null, { timeout: 30000, polling: 'raf' }).then(() => true, () => false);
+  if (!vu) { console.log(`--    ouverture passée ${quand} : pas de faisceau d'ouverture ici, non contrôlé`); await ctx.close(); continue; }
+  await page.waitForTimeout(attente); if (geste === 'clic') await page.mouse.click(700, 500); else await page.keyboard.press('Space');
+  const fini = await page.waitForFunction(() => document.getElementById('loader').classList.contains('done'), null, { timeout: 30000 }).then(() => true, () => false);
+  await page.waitForTimeout(2200);
+  const r = await page.evaluate(async () => { const h = document.documentElement, sum = document.querySelector('.hero-sum'), ch = [...document.querySelectorAll('.hero-name .ch')];
+    const nom = ch.length > 0 && ch.every(c => { const b = c.getBoundingClientRect(), p = c.parentElement.getBoundingClientRect(); return b.height > 8 && b.top < p.bottom - 2; });
+    scrollTo(0, 300); await new Promise(r => setTimeout(r, 500)); const dy = Math.round(scrollY); scrollTo(0, 0);
+    return { reste: document.querySelectorAll('.allum-f, .allum-l.phare').length, ecranEntree: h.classList.contains('ld-on') || h.classList.contains('ld-pre'), nom, paragraphe: sum ? +(+getComputedStyle(sum).opacity).toFixed(2) : -1, defile: dy }; });
+  check(fini && r.reste === 0 && !r.ecranEntree && r.nom && r.paragraphe > .9 && r.defile > 200 && !errors.length, `ouverture passée d'${geste === 'clic' ? 'un clic' : 'une touche'} ${quand} : rien ne reste par-dessus la page, le nom et le texte sont en place, la page défile (${JSON.stringify({ ...r, erreurs: errors.slice(0, 2) })})`);
+  await ctx.close();
+}
 // en mode calme (réglage gardé d'une visite à l'autre), pas de faisceau qui tourne à l'entrée : le noir se lève simplement
 { const { ctx, page, errors } = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR', intro: true, calme: true });
   const fini = await page.waitForFunction(() => document.getElementById('loader').classList.contains('done'), null, { timeout: 30000 }).then(() => true, () => false);
