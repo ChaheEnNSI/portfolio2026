@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-HsyjjUSzZM4ZwozikAUic77WEIfV4PQoMvg8nWpmprg=' 'sha256-3A24f7kzNVwQZe02LtjMgj6PUWzlDkrH/nqsogpAAn8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-Poqu1r2IwqYESghVtkxTSWbXB9d42V/bUM8oaTDaoWo=' 'sha256-3A24f7kzNVwQZe02LtjMgj6PUWzlDkrH/nqsogpAAn8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -8651,17 +8651,18 @@ float pluie(float t){
       const ox = ph.o[0] * AR, oy = ph.o[1], ANG_FILM = Math.atan2(ph.film[1], ph.film[0]);
       const curX = (cx + ux * cw) * AR, curY = uy, dist = Math.hypot(curX - ox, curY - oy);
       const tenu = etat.dedans && (TACT || now - etat.tMain < 7000);
-      if (F.frais && c > 0) { F.frais = 0; F.ang = ANG_FILM; F.len = 3; F.fl = .4; F.I = 0; F.auto = tenu ? 0 : 1; F.t0 = now; if (!tenu) F.fi = Math.asin(Math.max(-1, Math.min(1, Math.cos(F.ang)))); }   // il part de l'angle du faisceau du film (et de la phase qui lui correspond)
+      if (F.frais && c > 0) { F.frais = 0; F.ang = ANG_FILM; F.len = 3; F.fl = .4; F.I = 0; F.auto = tenu ? 0 : 1; F.t0 = now; F.att = tenu ? 0 : 1; if (!tenu) F.fi = Math.asin(Math.max(-1, Math.min(1, Math.cos(F.ang)))); }   // il part de l'angle du faisceau du film (et de la phase qui lui correspond)
       let angT, lenT, flT, IT = 1, fqT = 0, kA = 9;
       if (c <= 0) { angT = ANG_FILM; lenT = 3; flT = .4; }   // on quitte l'accueil : il revient à l'angle du film en s'éteignant
       else if (tenu) {
-        if (F.auto > .5) F.auto = 0;
+        if (F.auto > .5) F.auto = 0; F.att = 0;
         angT = dist > .03 ? Math.atan2(curY - oy, curX - ox) : F.ang;
         const mer = curY > e.hor + .01; lenT = mer ? dist : 3; flT = .75; fqT = mer ? 1 : 0;
       } else {   // il tourne seul : long vers les côtés, court et éclatant face à nous, plus pâle quand il part derrière la tour
         if (F.auto < .5) { F.auto = 1; F.fi = Math.asin(Math.max(-1, Math.min(1, Math.cos(F.ang)))); }
         F.fi += dt * Math.PI * 2 / 14; const sx = Math.sin(F.fi), cz = Math.cos(F.fi);
         angT = Math.atan2(.035 * cz, sx); lenT = .03 + 1.25 * Math.abs(sx); flT = .3 + 1.4 * Math.pow(Math.max(0, cz), 6); IT = cz < 0 ? .45 + .55 * (1 + cz) : 1; kA = 14;
+        if (F.att) { if (ecart(angT - ANG_FILM) > 0) angT = ANG_FILM; else F.att = 0; }   // (il attend sur l'axe du film que sa rotation l'y rejoigne)
       }
       if (c > 0 && now - (F.t0 || 0) < 420) { angT = ANG_FILM; lenT = 3; flT = .4; }   // (il tient l'axe du film le temps du relais)
       const dep = Math.min(1, Math.max(0, (now - (F.t0 || 0) - 420) / 1000)), ka = 1 - Math.exp(-dt * kA * (.12 + .88 * dep * dep)), kl = 1 - Math.exp(-dt * 5), kf = 1 - Math.exp(-dt * 6);   // (puis départ en douceur)
@@ -8865,7 +8866,7 @@ float pluie(float t){
     // cadrage : sur grand écran, le phare du premier plan est décalé vers la droite pour laisser le nom lisible ; à l'ouverture, léger zoom arrière et bandes qui s'ouvrent
     const e = etat.intro * etat.intro * (3 - 2 * etat.intro), kc = innerWidth > innerHeight ? Math.round((1 - lisse(1.02, 1.9, pvu)) * 100) : 0, cz = Math.round(e * 100);
     if (kc * 1000 + cz !== etat.cadre) { etat.cadre = kc * 1000 + cz; calque.style.setProperty('--fx', (kc * .09).toFixed(2) + '%'); calque.style.setProperty('--fs', ((1 + kc * .0019) * (1 + cz * .0009)).toFixed(4)); if (etat.surCadre) etat.surCadre(); }
-    const b = Math.round(Math.max((1 - etat.dimK) * (pvu > 1.05 ? 1 : 0), e * 2.6) * 50);
+    const b = Math.round(Math.max((1 - etat.dimK) * (pvu > 1.05 ? 1 : 0), e * (etat.sansB ? 0 : 2.6)) * 50);
     if (b !== etat.bande) { etat.bande = b; bandes.forEach(x => { x.style.transform = `scaleY(${b / 50})`; }); }
   }
   return {
@@ -8888,7 +8889,7 @@ float pluie(float t){
       return { x: r.left + (r.width - W0 * sc) / 2 + u * W0 * sc, y: r.top + (r.height - H0 * sc) / 2 + ph.o[1] * H0 * sc, ang: Math.atan2(ph.film[1], ph.film[0]) }; },
     // b = 1 : l'ouverture éclaire et le faisceau du décor attend ; b = 2 : le relais (le faisceau du décor s'allume ; celui de l'ouverture, qui s'efface, éclaire encore le nom :
     // c'est un plancher, sans lui la lumière du nom tombait d'un coup) ; b = 0 : fini
-    ouverture(b, x, y, bx, by, i) { const av = etat.ouv; etat.ouv = b === 1 || b === true;
+    ouverture(b, x, y, bx, by, i, e) { const av = etat.ouv; etat.ouv = b === 1 || b === true; etat.eclat = b ? +e || 0 : 0; if (etat.ouv) etat.sansB = 1;   // (eclat : l'éblouissement, qui allume tout le nom ; sansB : pas de bandes de cinéma sous le faisceau)
       if (etat.ouv) { etat.faisO.x = x; etat.faisO.y = y; etat.faisO.i = i; etat.faisB.x = bx; etat.faisB.y = by; etat.faisPl = 0; }
       else { if (av) { etat.faisO.i = 0; etat.ouvFin = performance.now(); } etat.faisPl = b === 2 ? Math.max(0, +i || 0) : 0; if (!b) etat.ouvFin = -1e9; }   // (fini : le nom reprend tout de suite son éclat ordinaire, même si plus rien ne le redessine ensuite)
       if (etat.surFaisceau) etat.surFaisceau(performance.now()); },
@@ -9206,45 +9207,57 @@ function runAllumage(onReveal) {
       }
       // LE PHARE OUVRE LE SITE : sa lampe s'allume dans le noir, son faisceau fait un tour complet (il part de l'axe du faisceau du film et y revient),
       // et le noir se retire derrière lui. Le faisceau du décor, éteint pendant ce tour, prend le relais au même endroit, dans le même axe.
+      // IL TOURNE DANS LE SENS DU PHARE DU DÉCOR (sens inverse des aiguilles d'une montre) : il descend d'abord sur le nom, puis balaie la mer, le ciel, et revient.
       const A0 = ph.ang * 180 / Math.PI + 90, etroit = innerWidth < 700; let px = ph.x, py = ph.y, loin = 1, mAv = '';
       fx = document.createElement('i'); fx.className = 'allum-f'; fx.setAttribute('aria-hidden', 'true'); ld.after(fx);
       fx.after(dot); dot.classList.add('phare'); dot.style.left = px.toFixed(1) + 'px'; dot.style.top = py.toFixed(1) + 'px';
       // le texte d'accueil se met en place, caché, AVANT que le noir ne se retire (sinon on le verrait posé, puis disparaître, puis entrer) ;
       // son entrée part quand le faisceau arrive sur le nom (20° avant), où qu'il soit à l'écran ; le paragraphe suit le nom, il ne le précède pas
       if (!parti && onReveal) { parti = true; entree = onReveal(); if (entree && entree.pause) { entree.pause(0); G.set('.hero-sum', { autoAlpha: 0 }); } }
-      let aNom = 320; { const hn = $('.hero-name'), r = hn && hn.getBoundingClientRect(); if (r && r.width) { const th = Math.atan2(r.top + r.height / 2 - ph.y, r.left + r.width / 2 - ph.x) * 180 / Math.PI; aNom = Math.max(40, Math.min(350, (((th + 90 - A0) % 360) + 360) % 360)); } }   // l'angle du tour où le faisceau passe sur le nom
+      // OÙ EST LE NOM DANS LE TOUR (ses deux mots, vus de la lanterne) : aDeb, l'angle où le faisceau touche son premier bord (0 si l'axe de départ le traverse) ;
+      // aFin, celui où il a fini de le découvrir. aEcl, l'angle de l'éblouissement : le nom est entièrement découvert, ou — s'il passe sous la lanterne, sur un écran
+      // étroit — le faisceau pointe droit vers le bas, vers nous.
+      let aFin = 80, aDeb = 0; { const ms = $$('.hn-word').map(w => w.getBoundingClientRect()).filter(r => r.width); if (!ms.length) { const hn = $('.hero-name'), r = hn && hn.getBoundingClientRect(); if (r && r.width) ms.push(r); }
+        if (ms.length) { const ec = (x, y) => ((((Math.atan2(y - ph.y, x - ph.x) * 180 / Math.PI + 90 - A0) % 360) + 540) % 360) - 180,   // écart à l'axe de départ (négatif : du côté où part le faisceau)
+          c = ms.flatMap(r => [ec(r.left, r.top), ec(r.right, r.top), ec(r.left, r.bottom), ec(r.right, r.bottom)]), lo = Math.min(...c), hi = Math.max(...c); aDeb = hi >= 0 ? 0 : -hi; aFin = lo < 0 ? -lo : 0; } }
+      const aBas = (((A0 - 180) % 360) + 360) % 360, aEcl = Math.max(20, Math.min(aFin || aBas, aBas));
       lancer = () => { if (entree && entree.paused && entree.paused()) { entree.play(); G.to('.hero-sum', { autoAlpha: 1, duration: .7, delay: .5, ease: 'power2.out' }); } };
       // L'ALLURE DU TOUR SUIT L'ÉCRAN. Pour chaque degré, la longueur du rayon jusqu'au bord de l'écran : le faisceau passe vite là où il n'a presque rien à balayer
       // (le ciel au-dessus de la lanterne) et prend son temps là où il a de la place. (Plancher à 30 % du plus long rayon : jamais de saut.)
       const CUM = (() => { const W = innerWidth, H = innerHeight, x0 = Math.max(0, Math.min(W, px)), y0 = Math.max(0, Math.min(H, py)), r = []; let m = 1;
-        for (let k = 0; k <= 360; k++) { const a = (A0 + k - 90) * Math.PI / 180, c = Math.cos(a), sn = Math.sin(a), d = Math.min(c > 1e-6 ? (W - x0) / c : c < -1e-6 ? -x0 / c : 1e9, sn > 1e-6 ? (H - y0) / sn : sn < -1e-6 ? -y0 / sn : 1e9); r.push(d > 1e8 ? 0 : d); if (r[k] > m) m = r[k]; }
+        for (let k = 0; k <= 360; k++) { const a = (A0 - k - 90) * Math.PI / 180, c = Math.cos(a), sn = Math.sin(a), d = Math.min(c > 1e-6 ? (W - x0) / c : c < -1e-6 ? -x0 / c : 1e9, sn > 1e-6 ? (H - y0) / sn : sn < -1e-6 ? -y0 / sn : 1e9); r.push(d > 1e8 ? 0 : d); if (r[k] > m) m = r[k]; }
         const cu = [0]; for (let k = 1; k <= 360; k++) cu.push(cu[k - 1] + Math.max(.3 * m, (r[k] + r[k - 1]) / 2)); return cu; })();
       const angleDe = v => { v *= CUM[360]; let k = Math.max(0, Math.min(359, Math.floor(v / CUM[360] * 360))); while (k > 0 && CUM[k] > v) k--; while (k < 359 && CUM[k + 1] < v) k++; return k + (v - CUM[k]) / ((CUM[k + 1] - CUM[k]) || 1); };
       // (départ franc sur 8 % du temps, vitesse régulière, long ralenti sur les 30 derniers pour cent : il se pose sur l'axe du film, où le faisceau du décor l'attend)
       const allure = u => { const a = .08, b = .3, v = 1 / (1 - a / 2 - b / 2); return u <= 0 ? 0 : u >= 1 ? 1 : u < a ? v * u * u / (2 * a) : u > 1 - b ? 1 - v * (1 - u) * (1 - u) / (2 * b) : v * (u - a / 2); };
       const PIC = etroit ? .56 : .7, al = x => (x * PIC).toFixed(3), C1 = '255,206,150', C2 = '255,216,166', C3 = '255,230,188';   // (lumière chaude de lampe, comme la lanterne du film)
       const FAIS = `rgba(${C1},0) 6deg, rgba(${C1},${al(.14)}) 15deg, rgba(${C2},${al(.32)}) 23.5deg, rgba(${C3},${al(.8)}) 27.8deg, rgba(${C3},${al(1)}) 30deg, rgba(${C3},${al(.8)}) 32.2deg, rgba(${C2},${al(.32)}) 36.5deg, rgba(${C1},${al(.14)}) 45deg, rgba(${C1},0) 54deg, rgba(${C1},0) 360deg`;
-      const S = { u: 0, i: 0 }; let relais = false, lampe = null;
-      // l'entrée du nom part 0,45 s AVANT le passage du faisceau, compté en temps (compté en degrés, l'avance fondait à 0,1 s quand le faisceau allait vite) :
-      // les lettres sont en place quand le bord du noir les découvre, et la lumière passe dessus
-      let uNom = 1; for (let q = 0; q <= 200; q++) if (angleDe(allure(q / 200)) >= aNom) { uNom = q / 200; break; } uNom = Math.max(0, uNom - .45 / 2);
+      const S = { u: 0, i: 0, e: 0, n: 0 }; let relais = false, lampe = null;
+      // DEUX REPÈRES, comptés en temps. tDeb : l'instant où le faisceau touche le premier bord du nom ; son entrée part 0,6 s avant, dans le noir : chaque lettre est en place
+      // quand le bord du noir la découvre, et la lumière passe dessus. tEcl : le départ de l'éblouissement, 0,09 s avant l'angle aEcl (son sommet tombe dessus).
+      const uDe = a => { for (let q = 0; q <= 400; q++) if (angleDe(allure(q / 400)) >= a) return q / 400; return 1; }, tDeb = .58 + 2 * uDe(aDeb), tEcl = Math.min(1.99, Math.max(.93, .58 + 2 * uDe(aEcl) - .09));
       // la lanterne bouge pendant l'ouverture (le décor fait un zoom arrière et dérive) : la lampe, le faisceau et les masques la suivent à chaque image
       const lacher = () => { if (lampe) { lampe.kill(); lampe = null; } lampeFond = false; if (fx) { G.killTweensOf(S); fx.remove(); fx = null; } dot.remove(); G.ticker.remove(suivre); if (nuitCtl.cadre) nuitCtl.cadre(null); nuitCtl.ouverture(0); };
-      const suivre = () => { const p = nuitCtl.phare ? nuitCtl.phare() : null; if (p) { px = p.x; py = p.y; } dot.style.left = px.toFixed(1) + 'px'; dot.style.top = py.toFixed(1) + 'px'; if (lampeFond && !fx) nuitCtl.ouverture(2, px, py, px, py, 0); if (fini && lampeFond && scrollY > 2) lacher(); };   // (on défile : la lanterne part avec le film, la lampe s'efface)
-      const dessiner = () => { suivre(); if (!fx) return; const X = px.toFixed(1) + 'px', Y = py.toFixed(1) + 'px', t = S.u <= 0 ? 0 : S.u >= 1 ? 360 : angleDe(allure(S.u)), an = (A0 + t - 90) * Math.PI / 180;
+      const suivre = () => { const p = nuitCtl.phare ? nuitCtl.phare() : null; if (p) { px = p.x; py = p.y; } dot.style.left = px.toFixed(1) + 'px'; dot.style.top = py.toFixed(1) + 'px'; if (lampeFond && !fx) nuitCtl.ouverture(2, px, py, px, py, 0, S.n * .62); if (fini && lampeFond && scrollY > 2) lacher(); };   // (on défile : la lanterne part avec le film, la lampe s'efface)
+      const dessiner = () => { suivre(); if (!fx) return; const X = px.toFixed(1) + 'px', Y = py.toFixed(1) + 'px', t = S.u <= 0 ? 0 : S.u >= 1 ? 360 : angleDe(allure(S.u)), an = (A0 - t - 90) * Math.PI / 180;
         loin = Math.hypot(Math.max(px, innerWidth - px), Math.max(py, innerHeight - py));
-        // le noir : son bord est posé sur le cœur du faisceau, net (on ne voit rien avant que la lumière n'y soit) ; derrière lui le décor reste un peu sombre sur 40°,
-        // une traîne ; à l'axe de départ il s'ouvre en douceur sur 30°, et le dernier coin fond à partir de 270° (du noir au pied du faisceau jusqu'à rien sur l'axe :
-        // le seul bord net de tout le tour est celui que porte la lumière)
-        const k = Math.max(0, Math.min(1, (352 - t) / 82)), d1 = Math.min(30, t);
-        ld.style.webkitMaskImage = ld.style.maskImage = t <= 0 ? '' : `conic-gradient(from ${A0.toFixed(1)}deg at ${X} ${Y}, rgba(0,0,0,${k.toFixed(3)}) 0deg, transparent ${d1.toFixed(1)}deg, transparent ${Math.max(d1, t - 42).toFixed(1)}deg, rgba(0,0,0,.34) ${Math.max(d1, t - 1.6).toFixed(1)}deg, #000 ${Math.min(360, t + .4).toFixed(1)}deg, rgba(0,0,0,${k.toFixed(3)}) 360deg)`;
-        // le faisceau : un volume de lumière (cœur de 4°, halo de 30°, queue jusqu'à 24° de part et d'autre), centré sur l'angle du tour ; il pâlit avec la distance
-        fx.style.background = `conic-gradient(from ${(A0 + t - 30).toFixed(1)}deg at ${X} ${Y}, ${FAIS})`;
+        // le noir : son bord est posé sur le cœur du faisceau, fondu sur 6,5° (de 4° derrière à 2,5° devant : là où la lumière est déjà forte ; net, il découpait les lettres
+        // du nom en éclats) ; derrière lui le décor reste un peu sombre sur 40°,
+        // une traîne. À l'axe de départ, la couture est du côté du ciel, là où le tour finira : le noir y fond sur 24° (ce que le halo du faisceau éclairait au départ),
+        // et le côté du nom s'ouvre net, porté par la lumière. Sur la fin du tour cette couture s'élargit : le dernier coin de noir fond au lieu de se refermer d'un trait.
+        // (Le dégradé se lit dans le sens des aiguilles depuis l'axe : c = 360 − angle du tour.)
+        const b = Math.min(3 * t, 24 + 66 * Math.max(0, Math.min(1, (t - 250) / 80))), cF = 360 - Math.min(360, t + 2.5), cB = Math.min(b, cF);
+        ld.style.webkitMaskImage = ld.style.maskImage = t <= 0 ? '' : `conic-gradient(from ${A0.toFixed(1)}deg at ${X} ${Y}, transparent 0deg, #000 ${cB.toFixed(1)}deg, #000 ${cF.toFixed(1)}deg, rgba(0,0,0,.34) ${(360 - Math.max(0, t - 4)).toFixed(1)}deg, transparent ${(360 - Math.max(0, t - 42)).toFixed(1)}deg, transparent 360deg)`;
+        // le faisceau : un volume de lumière (cœur de 4°, halo de 30°, queue jusqu'à 24° de part et d'autre), centré sur l'angle du tour ; il pâlit avec la distance.
+        // L'ÉBLOUISSEMENT : un voile chaud, bref, part de la lanterne (même calque, même masque : il pâlit avec la distance et s'en va avec lui) ; le nom s'allume avec lui.
+        // (ambré et serré autour de la lanterne : large et pâle, il faisait sur le noir encore fermé une nappe grise, comme de la fumée)
+        const ev = S.e > .004 ? S.e * (etroit ? .2 : .22) : 0;
+        fx.style.background = (ev ? `radial-gradient(circle ${(loin * .6).toFixed(0)}px at ${X} ${Y}, rgba(255,202,136,${ev.toFixed(3)}) 0, rgba(255,190,118,${(ev * .5).toFixed(3)}) 38%, rgba(255,184,110,0) 100%), ` : '') + `conic-gradient(from ${(A0 - t - 30).toFixed(1)}deg at ${X} ${Y}, ${FAIS})`;
         { const m = `radial-gradient(circle ${(loin * (etroit ? .8 : 1)).toFixed(0)}px at ${X} ${Y}, #000 0, rgba(0,0,0,.74) 12%, rgba(0,0,0,.34) 40%, rgba(0,0,0,.1) 75%, transparent 100%)`; if (m !== mAv) { mAv = m; fx.style.webkitMaskImage = fx.style.maskImage = m; } }
         // sur les 60 derniers degrés il baisse, pour arriver à la force du faisceau du décor : le relais se fait sans creux ni sursaut
         const f = S.i * (t > 300 ? 1 - .4 * (t - 300) / 60 : 1); fx.style.opacity = f.toFixed(3);
-        nuitCtl.ouverture(relais ? 2 : 1, px, py, px + Math.cos(an) * loin, py + Math.sin(an) * loin, f);   // le nom s'allume à son passage, comme sous le faisceau du décor
-        if (S.u >= uNom) lancer(); };
+        nuitCtl.ouverture(relais ? 2 : 1, px, py, px + Math.cos(an) * loin, py + Math.sin(an) * loin, f, S.n * .62);   // le nom s'allume à son passage, comme sous le faisceau du décor (et tout entier dans l'éblouissement)
+      };
       dessiner(); G.ticker.add(suivre); suivi = suivre; if (nuitCtl.cadre) nuitCtl.cadre(() => { if (fx) dessiner(); else suivre(); });   // (replacés dans l'image même où le décor bouge)
       tl = G.timeline({ onComplete: finir })
         .to([txt, sk], { autoAlpha: 0, duration: .26, ease: 'power2.in' }, .08)                                              // le « 22:00 » s'efface d'abord : le noir, puis l'étincelle
@@ -9252,13 +9265,20 @@ function runAllumage(onReveal) {
         .to(dot, { '--h': 1, duration: .5, ease: 'power2.out' }, .38)                                                        // son halo s'ouvre
         .to(S, { i: 1, duration: .3, ease: 'power2.out', onUpdate: dessiner }, .48)
         .to(S, { u: 1, duration: 2, ease: 'none', onUpdate: dessiner }, .58)
+        // l'éblouissement : le voile monte en 0,09 s et retombe en 0,45 s ; le halo de la lampe gonfle avec lui (jamais avant que son ouverture ne soit finie) ;
+        // le nom s'allume tout entier, puis garde une part de cette lumière (S.n) jusqu'au relais : il ne retombe pas au gris pour se rallumer ensuite
+        .to(S, { keyframes: [{ e: 1, duration: .09, ease: 'power2.out' }, { e: 0, duration: .45, ease: 'power2.out' }], onUpdate: dessiner }, tEcl)
+        .to(S, { keyframes: [{ n: 1, duration: .09, ease: 'power2.out' }, { n: .4, duration: .45, ease: 'power2.out' }] }, tEcl)
+        .to(dot, { keyframes: [{ '--h': 1.9, duration: .09, ease: 'power2.out' }, { '--h': 1, duration: .45, ease: 'power2.out' }] }, tEcl)
         .to(ld, { opacity: 0, duration: .5, ease: 'power1.in' }, 2.14)                                                       // le dernier coin de noir fond pendant que le faisceau se pose
         // LE RELAIS : le faisceau du décor s'allume au même endroit, dans le même axe ; celui de l'ouverture s'efface sur lui, et la lampe se fond dans la lueur de la lanterne.
         // (Ces deux fondus vivent hors de la chronologie : la page est rendue à la main dès que le noir est levé, sans les attendre.)
         .add(() => { relais = true; lampeFond = true; dessiner();
           G.to(S, { i: 0, duration: .36, ease: 'power1.out', onUpdate: dessiner, onComplete: () => { if (fx) { fx.remove(); fx = null; } } });
+          G.to(S, { n: 0, duration: .9, ease: 'power1.inOut' });   // (le nom rend sa lumière pendant que le faisceau du décor s'installe)
           lampe = G.to(dot, { opacity: 0, '--h': .4, duration: 1.1, ease: 'power1.inOut', onComplete: lacher }); }, 2.56)
         .add(lancer, 2.6);
+      if (tDeb - .6 > .02) tl.add(lancer, tDeb - .6); else lancer();   // (le faisceau part sur le nom : son entrée commence tout de suite, sous le noir)
       return;
     }
     const viser = () => { const p = nuitCtl.lanterne(); if (p && p.devant) { ld.style.setProperty('--ax', (p.x * 100).toFixed(1) + '%'); ld.style.setProperty('--ay', (p.y * 100).toFixed(1) + '%'); } };
