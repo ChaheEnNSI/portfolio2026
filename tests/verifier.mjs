@@ -118,7 +118,11 @@ async function open(opts, query = '', br = browser) {
     check(tenu, film ? 'film : la lampe suit le curseur' : 'nuit de veille : la souris prend le faisceau en main');
     // (à l'accueil, curseur posé sur le ciel à gauche : le faisceau du phare traverse le nom en biais)
     const lit = await page.waitForFunction(f => { const c = [...document.querySelectorAll('.hero-name .ch')].map(e => parseFloat(e.style.getPropertyValue('--l'))); return f ? Math.max(...c) - Math.min(...c) > .2 : c.some(v => v > .6) && c.some(v => v < .4); }, film, { timeout: 12000 }).then(() => true, () => false);
-    check(lit, 'nuit de veille : le faisceau éclaire les lettres du nom, pas tout le nom d’un coup');
+    // (sur une machine trop lente pour elle, le régulateur de cadence éteint la toile du décor, donc son faisceau : il n'y a alors rien à contrôler ici.
+    //  On ne l'admet qu'après avoir attendu le faisceau douze secondes, et seulement si la toile est bien au repos.)
+    const toileEteinte = !lit && film && await page.evaluate(() => { const t = document.querySelector('.film-eau'); return !!t && t.classList.contains('repos'); });
+    if (toileEteinte) console.log('--    nuit de veille : machine trop lente ici, toile du décor éteinte par le régulateur ; faisceau sur le nom non contrôlé');
+    else check(lit, 'nuit de veille : le faisceau éclaire les lettres du nom, pas tout le nom d’un coup');
     if (film) {
       const v0 = await page.evaluate(() => [...document.querySelectorAll('.film-v')].map(v => ((v.querySelector('source') || {}).src || '').split('/').pop()));
       check(v0.length <= 1 && v0.every(x => /^film-0\.(webm|mp4)$/.test(x)), `film : à l’accueil, seul le premier plan se charge (${v0.join(', ') || 'aucun'})`);
