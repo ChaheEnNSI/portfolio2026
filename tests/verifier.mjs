@@ -507,16 +507,19 @@ async function ecransVides(nom, br = browser, tel = false) {
     async venir(y) { for (let k = 0; k < 3; k++) { this.aller(y - 260); await this.att(450); this.aller(y); await this.att(400); if (Math.abs(scrollY - y) <= 20) break; await this.att(1500); } return Math.round(scrollY); } };`;   // (si une molette précédente s'achève encore, on attend qu'elle soit finie et on recommence)
   await page.evaluate(OUTILS);
   if (!(await page.waitForFunction(() => window.__ev.boucle() !== '', null, { timeout: 15000 }).then(() => true, () => false))) { console.log(`--    ${nom} : les vidéos ne se lisent pas ici, écrans vides non contrôlés`); await ctx.close(); return; }
-  // l'écran vide entre le Parcours et les Projets : on le cherche, et on s'arrête en son milieu
-  const zone = await page.evaluate(async () => { const E = window.__ev, top = s => document.querySelector(s).getBoundingClientRect().top + scrollY, y1 = top('#projets'); let a = -1, b = -1;
-    for (let y = top('#parcours') + innerHeight * .5; y <= y1; y += 40) { scrollTo(0, y); await E.att(50); if (E.vide()) { if (a < 0) a = y; b = y; } else if (a >= 0 && b - a > 120) break; else a = b = -1; } return { a: Math.round(a), b: Math.round(b) }; });
-  if (zone.a < 0 || zone.b - zone.a < 120) { check(false, `${nom} : écran vide entre le Parcours et les Projets introuvable (${JSON.stringify(zone)})`); await ctx.close(); return; }
-  const ym = Math.round((zone.a + zone.b) / 2);
-  const r = await page.evaluate(async ym => { const E = window.__ev, y0 = await E.venir(ym); await E.att(1100); const t1 = E.filmT(); await E.att(2500); const t2 = E.filmT(), b2 = E.boucle();
+  // l'écran vide entre le Parcours et les Projets. Il finit quand le premier contenu des Projets entre dans la bande centrale de l'écran (à 80 % de sa hauteur) : on le
+  // calcule sur la mise en page, sans faire défiler, et on s'arrête 200 px avant (l'écran vide fait au moins 500 px). Avant, on le cherchait en balayant la page : une
+  // machine lente prenait pour « vide » un passage du Parcours dont les cartes n'avaient pas fini d'apparaître, et le contrôle s'arrêtait au mauvais endroit.
+  // (Le début de l'écran vide, lui, ne se calcule pas ainsi : la frise du Parcours change de place en défilant.) On vérifie ensuite, sur place, que l'écran est bien vide.
+  const zone = await page.evaluate(() => { let h = 1e9; for (const el of document.querySelectorAll('#projets :is(h1, h2, h3, h4, p, li, a, button, img, svg, canvas, video, .pc-card, .fc, .stat, .chips, .mail)')) { const r = el.getBoundingClientRect(); if (r.width > 2 && r.height > 2 && getComputedStyle(el).visibility !== 'hidden') h = Math.min(h, r.top + scrollY); }
+    return { b: Math.round(h - innerHeight * .8) }; });
+  if (!(zone.b > 1500 && zone.b < 1e8)) { check(false, `${nom} : écran vide entre le Parcours et les Projets introuvable (${JSON.stringify(zone)})`); await ctx.close(); return; }
+  const ym = zone.b - 200;
+  const r = await page.evaluate(async ym => { const E = window.__ev, y0 = await E.venir(ym), videIci = E.vide(); await E.att(1100); const t1 = E.filmT(); await E.att(2500); const t2 = E.filmT(), b2 = E.boucle();
     const vivant = !!b2 || (t1 !== null && t2 !== null && Math.abs(t2 - t1) > .5); let arrive = false, y = scrollY; const d0 = performance.now();
     while (performance.now() - d0 < 30000) { await E.att(200); const yn = scrollY; if (E.boucle() && !E.vide() && Math.abs(yn - y) < 1) { arrive = true; break; } y = yn; }
-    return { ym, y0, y1: Math.round(scrollY), vivant, t1: t1 && +t1.toFixed(2), t2: t2 && +t2.toFixed(2), arrive, boucle: E.boucle(), vide: E.vide() }; }, ym);
-  check(Math.abs(r.y0 - ym) < 40 && r.vivant && r.y1 - r.y0 > 60 && r.arrive && r.boucle === '4', `${nom} : arrêté dans un écran vide, le décor continue de vivre et la page l'accompagne jusqu'aux Projets (${JSON.stringify(r)})`);
+    return { ym, y0, videIci, y1: Math.round(scrollY), vivant, t1: t1 && +t1.toFixed(2), t2: t2 && +t2.toFixed(2), arrive, boucle: E.boucle(), vide: E.vide() }; }, ym);
+  check(Math.abs(r.y0 - ym) < 40 && r.videIci && r.vivant && r.y1 - r.y0 > 60 && r.arrive && r.boucle === '4', `${nom} : arrêté dans un écran vide, le décor continue de vivre et la page l'accompagne jusqu'aux Projets (${JSON.stringify(r)})`);
   // un geste rend la main : on revient dans l'écran vide, on attend que la page se remette à suivre, puis on remonte d'un geste ; la page ne repart pas vers le bas
   const g = await page.evaluate(async ([ym, tel]) => { const E = window.__ev, y0 = await E.venir(ym); let parti = false; const d0 = performance.now();
     while (performance.now() - d0 < 20000) { await E.att(100); if (scrollY - y0 > 30) { parti = true; break; } }
