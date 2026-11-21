@@ -71,6 +71,8 @@ async function open(opts, query = '', br = browser) {
   if (opts.calme) await ctx.addInitScript("try{localStorage.setItem('calm','1')}catch(e){}");
   await ctx.addInitScript(`try{Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>${opts.modeste ? 2 : 8}});Object.defineProperty(navigator,'deviceMemory',{get:()=>${opts.modeste ? 2 : 8}})}catch(e){}`);
   const page = await ctx.newPage(); const errors = [];
+  // LENT=n : processeur ralenti n fois (Chromium seulement), pour rejouer ici une machine d'essai très lente avant de publier
+  if (process.env.LENT && br === browser) { try { const cdp = await ctx.newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', { rate: +process.env.LENT }); } catch {} }
   page.on('pageerror', e => errors.push(String(e).slice(0, 200)));
   page.on('console', m => { if (m.type() === 'error' && !/GL|WebGL|GPU|Failed to load resource/i.test(m.text())) errors.push(m.text().slice(0, 200)); });
   // fichiers introuvables (sauf la lecture anticipée de Chrome qui prend parfois un modèle JS « ${PHOTO} » pour une image)
@@ -495,6 +497,7 @@ async function ecransVides(nom, br = browser, tel = false) {
   if (!(await page.evaluate(() => { const h = document.documentElement; return h.classList.contains('film') && !h.classList.contains('leger') && !!document.querySelector('#film video'); }))) { console.log(`--    ${nom} : pas de film ici, écrans vides non contrôlés`); await ctx.close(); return; }
   // (les gestes du doigt : de vrais événements tactiles quand le moteur sait en fabriquer, sinon des événements qui en ont la forme)
   const OUTILS = `window.__ev = { att: ms => new Promise(r => setTimeout(r, ms)),
+    images(n, ms) { const t0 = performance.now(); return new Promise(r => { let k = 0; const f = () => { if (++k >= n && performance.now() - t0 >= ms) r(); else requestAnimationFrame(f); }; requestAnimationFrame(f); }); },   // au moins n images de la page ET ms millisecondes
     doigt(type) { const el = document.body, fin = type === 'touchend'; let ev;
       try { const pt = new Touch({ identifier: 1, target: el, clientX: 190, clientY: 420 }); ev = new TouchEvent(type, { bubbles: true, cancelable: true, touches: fin ? [] : [pt], targetTouches: fin ? [] : [pt], changedTouches: [pt] }); }
       catch (e) { const pt = { identifier: 1, target: el, clientX: 190, clientY: 420, pageX: 190, pageY: 420 + scrollY }; ev = new Event(type, { bubbles: true, cancelable: true }); for (const [k, v] of [['touches', fin ? [] : [pt]], ['targetTouches', fin ? [] : [pt]], ['changedTouches', [pt]]]) Object.defineProperty(ev, k, { value: v }); }
@@ -504,7 +507,8 @@ async function ecransVides(nom, br = browser, tel = false) {
     vide() { const h = innerHeight, a = h * .2, b = h * .8; for (const el of document.querySelectorAll('main h1, main h2, main h3, main h4, main p, main li, main a, main button, main img, main svg, main canvas, main video, main .pc-card, main .fc, main .stat, main .chips, main .mail, footer p, footer a')) { const r = el.getBoundingClientRect(); if (r.width > 2 && r.height > 2 && r.bottom > a && r.top < b) { const c = getComputedStyle(el); if (c.visibility !== 'hidden' && +c.opacity > .05) return false; } } return true; },
     // on arrive à y en descendant, comme quelqu'un qui fait défiler puis s'arrête (le film continue dans le sens où l'on allait)
     aller(y) { try { if (typeof lenis !== 'undefined' && lenis && lenis.scrollTo) { lenis.scrollTo(y, { immediate: true, force: true }); return; } } catch (e) {} scrollTo(0, y); },   // (un saut direct pendant que le défilement doux anime encore une molette serait annulé)
-    async venir(y) { for (let k = 0; k < 3; k++) { this.aller(y - 260); await this.att(450); this.aller(y); await this.att(400); if (Math.abs(scrollY - y) <= 20) break; await this.att(1500); } return Math.round(scrollY); } };`;   // (si une molette précédente s'achève encore, on attend qu'elle soit finie et on recommence)
+    // (la position est relue juste après le saut : sur une machine lente, le temps de laisser passer quelques images, la page a déjà commencé à accompagner le film)
+    async venir(y, d = -260) { let ici = -1; for (let k = 0; k < 3; k++) { this.aller(y + d); await this.images(6, 450); this.aller(y); await this.images(1, 60); ici = Math.round(scrollY); if (Math.abs(ici - y) <= 20) break; await this.att(1500); } await this.images(4, 340); return ici; } };`;   // (si une molette précédente s'achève encore, on attend qu'elle soit finie et on recommence)
   await page.evaluate(OUTILS);
   if (!(await page.waitForFunction(() => window.__ev.boucle() !== '', null, { timeout: 15000 }).then(() => true, () => false))) { console.log(`--    ${nom} : les vidéos ne se lisent pas ici, écrans vides non contrôlés`); await ctx.close(); return; }
   // l'écran vide entre le Parcours et les Projets. Il finit quand le premier contenu des Projets entre dans la bande centrale de l'écran (à 80 % de sa hauteur) : on le
@@ -515,11 +519,12 @@ async function ecransVides(nom, br = browser, tel = false) {
     return { b: Math.round(h - innerHeight * .8) }; });
   if (!(zone.b > 1500 && zone.b < 1e8)) { check(false, `${nom} : écran vide entre le Parcours et les Projets introuvable (${JSON.stringify(zone)})`); await ctx.close(); return; }
   const ym = zone.b - 200;
-  const r = await page.evaluate(async ym => { const E = window.__ev, y0 = await E.venir(ym), videIci = E.vide(); await E.att(1100); const t1 = E.filmT(); await E.att(2500); const t2 = E.filmT(), b2 = E.boucle();
-    const vivant = !!b2 || (t1 !== null && t2 !== null && Math.abs(t2 - t1) > .5); let arrive = false, y = scrollY; const d0 = performance.now();
-    while (performance.now() - d0 < 30000) { await E.att(200); const yn = scrollY; if (E.boucle() && !E.vide() && Math.abs(yn - y) < 1) { arrive = true; break; } y = yn; }
+  const r = await page.evaluate(async ym => { const E = window.__ev, y0 = await E.venir(ym), videIci = E.vide() || scrollY > ym + 30; await E.att(1100); const t1 = E.filmT(); await E.att(2500); const t2 = E.filmT(), b2 = E.boucle();
+    let vivant = !!b2 || (t1 !== null && t2 !== null && Math.abs(t2 - t1) > .5), arrive = false, y = scrollY, calme = 0; const d0 = performance.now();
+    // (arrivée : la boucle des Projets tourne, il y a du contenu à l'écran, et la page n'a plus bougé pendant trois relevés de suite)
+    while (performance.now() - d0 < 45000) { await E.images(2, 250); const yn = scrollY, tn = E.filmT(); if (E.boucle() || (t1 !== null && tn !== null && Math.abs(tn - t1) > .5)) vivant = true; calme = Math.abs(yn - y) < 1 ? calme + 1 : 0; if (E.boucle() && !E.vide() && calme >= 3) { arrive = true; break; } y = yn; }
     return { ym, y0, videIci, y1: Math.round(scrollY), vivant, t1: t1 && +t1.toFixed(2), t2: t2 && +t2.toFixed(2), arrive, boucle: E.boucle(), vide: E.vide() }; }, ym);
-  check(Math.abs(r.y0 - ym) < 40 && r.videIci && r.vivant && r.y1 - r.y0 > 60 && r.arrive && r.boucle === '4', `${nom} : arrêté dans un écran vide, le décor continue de vivre et la page l'accompagne jusqu'aux Projets (${JSON.stringify(r)})`);
+  check(Math.abs(r.y0 - ym) < 40 && r.videIci && r.vivant && r.y1 - ym > 60 && r.arrive && r.boucle === '4', `${nom} : arrêté dans un écran vide, le décor continue de vivre et la page l'accompagne jusqu'aux Projets (${JSON.stringify(r)})`);
   // un geste rend la main : on revient dans l'écran vide, on attend que la page se remette à suivre, puis on remonte d'un geste ; la page ne repart pas vers le bas
   const g = await page.evaluate(async ([ym, tel]) => { const E = window.__ev, y0 = await E.venir(ym); let parti = false; const d0 = performance.now();
     while (performance.now() - d0 < 20000) { await E.att(100); if (scrollY - y0 > 30) { parti = true; break; } }
@@ -529,15 +534,17 @@ async function ecransVides(nom, br = browser, tel = false) {
     return { parti, ya: Math.round(ya), yb: Math.round(yb) }; }, [ym, tel]);
   check(g.parti && g.yb <= g.ya + 3, `${nom} : pendant que la page accompagne le film, un geste rend la main tout de suite (${JSON.stringify(g)})`);
   // une fenêtre ouverte (la fiche d'un projet) : arrêté dans l'écran vide, la page ne glisse pas derrière elle, et le décor continue de vivre
-  const f = await page.evaluate(async ym => { const E = window.__ev, y0 = await E.venir(ym); document.querySelector('.pill-btn[data-open="1"]').click(); await E.att(600); const ouverte = !document.getElementById('ov').hidden, ya = scrollY; await E.att(6000); const dy = Math.round(scrollY - ya);
+  const f = await page.evaluate(async ym => { const E = window.__ev, y0 = await E.venir(ym); document.querySelector('.pill-btn[data-open="1"]').click(); await E.images(4, 600); const ouverte = !document.getElementById('ov').hidden, ya = scrollY; await E.images(16, 6000); const dy = Math.round(scrollY - ya);
     document.getElementById('ov-close').click(); await E.att(1800); return { y0, ouverte, dy, fermee: document.getElementById('ov').hidden }; }, ym);
   check(Math.abs(f.y0 - ym) < 40 && f.ouverte && Math.abs(f.dy) <= 2 && f.fermee, `${nom} : une fiche ouverte dans un écran vide, la page ne glisse pas derrière elle (${JSON.stringify(f)})`);
   // en remontant : arrêté dans l'écran vide, la page ne recule jamais toute seule (le film, lui, finit seul vers le décor d'avant)
-  const h = await page.evaluate(async ym => { const E = window.__ev; E.aller(ym + 260); await E.att(450); E.aller(ym); await E.att(400); const y0 = scrollY; await E.att(7000); return { y0: Math.round(y0), dy: Math.round(scrollY - y0) }; }, ym);
+  const h = await page.evaluate(async ym => { const E = window.__ev, y0 = await E.venir(ym, 260); await E.images(20, 7000); return { y0, dy: Math.round(scrollY - y0) }; }, ym);
   check(Math.abs(h.y0 - ym) < 40 && Math.abs(h.dy) <= 2, `${nom} : arrêté dans un écran vide en remontant, la page ne recule pas toute seule (${JSON.stringify(h)})`);
   // avec du texte à l'écran (au milieu du Profil), la page ne bouge pas seule, et le décor reste celui du Profil, animé (le film ne part plus vers le Parcours pendant qu'on lit)
   const t = await page.evaluate(async () => { const E = window.__ev, cible = Math.round(document.querySelector('#profil').getBoundingClientRect().top + scrollY + innerHeight * .45), ya = await E.venir(cible);
-    await E.att(1500); const y0 = scrollY, vide = E.vide(); await E.att(6000); return { cible, ya, vide, dy: Math.round(scrollY - y0), boucle: E.boucle() }; });
+    // (on laisse au film le temps de rejoindre la page : il vient de loin, et sur une machine très lente il lui faut de longues secondes)
+    { const d0 = performance.now(); while (E.boucle() !== '2' && performance.now() - d0 < 45000) await E.att(300); }
+    await E.images(4, 1200); const y0 = scrollY, vide = E.vide(); await E.images(16, 6000); return { cible, ya, vide, dy: Math.round(scrollY - y0), boucle: E.boucle() }; });
   check(Math.abs(t.ya - t.cible) < 40 && !t.vide && Math.abs(t.dy) <= 2 && t.boucle === '2', `${nom} : au milieu du Profil, la page ne bouge pas toute seule et le décor du Profil reste animé pendant qu'on lit (${JSON.stringify(t)})`);
   await ctx.close();
 }
