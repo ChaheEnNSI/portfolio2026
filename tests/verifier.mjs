@@ -53,9 +53,10 @@ await mkdir(OUT, { recursive: true });
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 
 // la visite guidée et l’écran de chargement ne gênent pas les tests
-const QUIET = "try{sessionStorage.setItem('ld-skip','1');localStorage.setItem('tour-offer','no')}catch(e){}";
+// (window.__glLogiciel : ces contrôles tournent sans vraie carte graphique ; sans ce repère, la page ne créerait pas la toile du décor et on ne vérifierait plus rien d'elle)
+const QUIET = "window.__glLogiciel=true;try{sessionStorage.setItem('ld-skip','1');localStorage.setItem('tour-offer','no')}catch(e){}";
 // pour contrôler l'ouverture : la page la joue (pas de « ld-skip »), et un témoin note ce qui s'est montré (faisceau, éclat, place de la lampe, durée)
-const AVEC_OUVERTURE = "try{localStorage.setItem('tour-offer','no')}catch(e){};window.__ouv={vu:false,iMax:0,lampe:null,t0:0,t1:0};new MutationObserver(()=>{const o=window.__ouv,f=document.querySelector('.allum-f'),d=document.querySelector('.allum-l.phare');if(f){if(!o.vu){o.vu=true;o.t0=performance.now()}o.iMax=Math.max(o.iMax,+f.style.opacity||0)}if(d&&!o.lampe){const b=d.getBoundingClientRect();o.lampe={x:Math.round(b.left+b.width/2),y:Math.round(b.top+b.height/2)}}if(o.vu&&!f&&!o.t1)o.t1=performance.now()}).observe(document,{childList:true,subtree:true,attributes:true,attributeFilter:['style']})";
+const AVEC_OUVERTURE = "window.__glLogiciel=true;try{localStorage.setItem('tour-offer','no')}catch(e){};window.__ouv={vu:false,iMax:0,lampe:null,t0:0,t1:0};new MutationObserver(()=>{const o=window.__ouv,f=document.querySelector('.allum-f'),d=document.querySelector('.allum-l.phare');if(f){if(!o.vu){o.vu=true;o.t0=performance.now()}o.iMax=Math.max(o.iMax,+f.style.opacity||0)}if(d&&!o.lampe){const b=d.getBoundingClientRect();o.lampe={x:Math.round(b.left+b.width/2),y:Math.round(b.top+b.height/2)}}if(o.vu&&!f&&!o.t1)o.t1=performance.now()}).observe(document,{childList:true,subtree:true,attributes:true,attributeFilter:['style']})";
 const CSP_SPY = "window.__csp=[];document.addEventListener('securitypolicyviolation',e=>window.__csp.push(e.violatedDirective+' '+e.blockedURI))";
 
 // hors ligne : CDN_LOCAL=<dossier> sert les bibliothèques npm exactes depuis le disque (mêmes octets, mêmes empreintes)
@@ -410,6 +411,13 @@ async function decorVivant(nom, br = browser) {
     if (tv.etat === 'sans WebGL') console.log(`--    ${nom} : pas de WebGL ici, tableau vivant non contrôlé`);
     else check(tv.vu && !tv.err, `${nom} : au Profil, le tableau vivant s'affiche et s'anime (${tv.etat}${tv.taille ? ', ' + tv.taille : ''}${tv.fondu ? ', ' + tv.fondu : ''})`);
     if (tv.vu) { const b = await page.evaluate(() => { const v = document.querySelector('.film-b.on'); return !!v && !v.paused; }); check(b, `${nom} : sous le tableau vivant, la boucle continue (elle reprend la main s'il se retire)`); }
+    // le régulateur de cadence : on reste 22 s sur l'arrêt. Soit la toile tient (elle dessine, à un niveau quelconque), soit la machine est trop lente pour elle et elle
+    // s'éteint : alors elle ne dessine plus du tout, ne couvre plus rien, et la boucle vidéo continue seule. (Avant, « retirée », elle effaçait et présentait encore une
+    // image à chaque tour : sur une machine sans carte graphique, la page restait quatre fois plus lente.)
+    if (tv.vu) { const rg = await page.evaluate(async () => { const att = ms => new Promise(r => setTimeout(r, ms)), c = document.querySelector('.film-eau'); await att(22000);
+        const n0 = c._n | 0, repos = c.classList.contains('repos'); let ips = 0, on = true; const f = () => { ips++; if (on) requestAnimationFrame(f); }; requestAnimationFrame(f); await att(3000); on = false;
+        const b = document.querySelector('.film-b.on'); return { niveau: c.dataset.qualite ?? '2', repos, reposFin: c.classList.contains('repos'), dessins: (c._n | 0) - n0, visible: getComputedStyle(c).visibility, boucle: !!b && !b.paused, ips: +(ips / 3).toFixed(1) }; });
+      check(rg.repos && rg.reposFin ? rg.dessins === 0 && rg.visible === 'hidden' && rg.boucle : rg.repos !== rg.reposFin || rg.dessins > 0, `${nom} : le régulateur de cadence règle la toile sur la machine (${rg.repos && rg.reposFin ? 'trop lente ici : toile éteinte, plus aucun dessin, la boucle continue seule' : 'niveau ' + rg.niveau + ', ' + (rg.dessins / 3).toFixed(0) + ' dessins/s'} ; page à ${rg.ips} images/s)`); }
     // un arrêt retient le film : en avançant la page par petits pas depuis le Profil, le décor reste d'abord sur l'arrêt, puis le quitte pour de bon.
     // (Avant, dès le premier pas hors du palier, le film avançait d'un souffle, s'arrêtait, puis revenait se reposer sur l'arrêt : le décor disparaissait et revenait.)
     await allerA(page, '#profil');

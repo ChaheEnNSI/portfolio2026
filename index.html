@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-4EwKAMFGh0KR/K+LD5Jpktk1NW5Ohp3kLccAXAbQNpA=' 'sha256-2+ohXyHlcWDb/gUzExInoUfAtH5J6a/4pe2hgcffd/g=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1yeOI2RwmicKv658K0Wsdk6wwzp2hyR/zdmXdhMTvUY=' 'sha256-V1mNZq1c2ET3JA1gN86FxuWpHLE3cv+ExQbbU5AbjPk=' 'sha256-AeOpj6FYStoi6e54+ZbDXcpFKw1NIDTL/SsLJyaJQaw=' 'sha256-3A24f7kzNVwQZe02LtjMgj6PUWzlDkrH/nqsogpAAn8=' https://cdn.jsdelivr.net/npm/gsap@3.13.0/ https://cdn.jsdelivr.net/npm/lenis@1.1.20/ https://cdn.jsdelivr.net/npm/three@0.160.0/; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chahé Papazian · Alternant ingénieur sécurité et réseaux</title>
@@ -2372,6 +2372,7 @@ html.nuit.anim:not(.calm):not(.nuit-sans) :is(#profil,#parcours,#projets,#compet
 .film-eau.plein{mix-blend-mode:normal;opacity:0;transition:none}
 .film-eau.plein.on{opacity:1;transition:opacity .6s ease}
 .film-eau.plein.on.net{transition:opacity .14s ease}
+.film-eau.repos{visibility:hidden}
 .film-eau.plein.part{transition:opacity .15s ease}
 .film-lampe.on{opacity:1}
 .film-lampe.on.bouge{opacity:.6}
@@ -8403,7 +8404,7 @@ function creerFilm(calque, opt) {
     if (REDUIT) return RIEN;
     const cv = el('canvas', 'film-m film-eau'); BV[BV.length - 1].after(cv);   // sous la lampe et les bandes
     let gl = null;
-    try { gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' }); } catch (e) {}
+    try { gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'low-power', failIfMajorPerformanceCaveat: !window.__glLogiciel }); } catch (e) {}   // (pas de vraie carte graphique : pas de toile, la boucle vidéo seule)
     if (!gl) { cv.remove(); return RIEN; }
     const VS = 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}';
     // les programmes se compilent sans bloquer la page quand le navigateur le permet ; on n'interroge leur état qu'une fois prêts
@@ -8588,6 +8589,45 @@ float pluie(float t){
     const carte = j => { const e = EAU[j]; if (!e || !e.plein || !CORPS[j] || !pleinOk) return null; if (!PT[j] && performance.now() - tProg > 700) { tProg = performance.now(); tableau(j); } let m = cartes[j]; if (!m) { m = cartes[j] = new Image(); m.decoding = 'async'; m.onload = () => relance(); m.src = `v/vivant-${j}.png`; } return m.complete && m.naturalWidth ? m : null; };
     const TACT = matchMedia('(pointer: coarse)').matches, AR = 16 / 9;
     let raf = 0, a = 0, k = -1, av = 0, haut = calque, txK = '', txMK = -1, txVK = '', plein = false, pleinOk = true, montre = 0, tMontre = 0, ech = 1, gT = 0, gN = 0, lourd = 0, tVis = 0, tDep = 0, echV = 1, vT = 0, vN = 0, vL = 0, gL = 0, sansEau = false, avR = 0, sonde = 0, sT = 0, sN = 0, sL = 0, innocent = false, rechute = 0, tReprise = -1e9, mort = false;
+    // RÉGULATEUR DE CADENCE. La toile part au réglage d'avant (30 images/s, pleine définition), puis s'ajuste seule à la machine : tant que la page tient le rythme de
+    // l'écran, elle monte jusqu'à dessiner à chaque image de l'écran ; si la page ralentit deux secondes de suite, elle descend d'un cran, jusqu'à s'éteindre (la boucle vidéo
+    // reste seule). Un cran descendu doit rendre du rythme : sinon on l'éteint deux secondes pour voir, et si la page n'en va pas plus vite, ce n'était pas elle : on la rend.
+    const NIV = [[0, 1, 1, 0], [13, 1, 1, 0], [27, 1, 1, 0], [27, .8, .8, 0], [27, .65, .67, 0], [27, .5, .5, 0], [45, .4, .5, 1]];   // [écart mini entre deux dessins (ms), définition du tableau, de la mer, reflets coupés]
+    const RG = { q: 2, dMin: 27, P0: 16.7, B: [], t0: 0, pause: 0, nL: 0, nB: 0, pat: 3, mAv: 0, vain: 0, essai: null, gel: 0, gelMs: 20000, monte: 0, urg: 0, regime: false, echecs: 0, fin: false, urgAt: -1e9, haut: 0, rate: {}, tab: false, sansT: false, qT: 2 };
+    const rgPose = q => { RG.q = q; const n = NIV[Math.min(q, 6)]; RG.dMin = n[0]; ech = n[1]; echV = n[2]; sansEau = !!n[3]; pleinOk = q < 7; RG.B.length = 0; RG.t0 = 0; RG.pause = performance.now() + 700; cv.dataset.qualite = q; try { sessionStorage.setItem('rg', q + ',' + RG.haut + ',' + (RG.fin ? 1 : 0)); } catch (e) {} };
+    const rgPareil = (x, y) => NIV[x][1] === NIV[y][1] && NIV[x][3] === NIV[y][3] && NIV[x][0] < RG.P0 * .95 && NIV[y][0] < RG.P0 * .95;   // (à 60 Hz, « à chaque image » et « une sur deux à 144 Hz » sont le même réglage)
+    const rgBas = () => { let q = RG.q + 1; while (q < 7 && rgPareil(RG.q, q)) q++; return Math.min(7, q); }, rgHaut = () => { let q = Math.min(6, RG.q - 1); while (q > 0 && rgPareil(q, q - 1)) q--; return Math.max(RG.haut, q); };
+    etat.rgZero = () => { Object.assign(RG, { P0: 16.7, nL: 0, nB: 0, pat: 3, mAv: 0, vain: 0, essai: null, gel: 0, gelMs: 20000, monte: 0, urg: 0, echecs: 0, fin: false, urgAt: -1e9, haut: 0, rate: {}, sansT: false, qT: 2 }); rgPose(2); RG.pause = 0; };   // (pour les bancs d'essai)
+    try { const m = /^(\d),(\d),([01])$/.exec(sessionStorage.getItem('rg') || ''); if (m && +m[1] <= 7) { RG.haut = Math.min(6, +m[2]); RG.fin = m[3] === '1'; rgPose(+m[1]); RG.pause = 0; } } catch (e) {}   // le réglage appris pendant cette visite est repris après un rechargement
+    const regler = (now, dRaf) => {
+      if (!RG.depart) { RG.depart = 1; RG.pause = now + 3000; }                        // (les trois premières secondes, c'est la page qui se charge : on ne juge pas)
+      if (dRaf <= 0 || RG.fin) return;
+      if ((!RG.regime && RG.q < 7) || document.hidden || now - dRaf <= tVis || now < RG.pause) { RG.B.length = 0; RG.t0 = 0; RG.urg = 0; return; }   // on ne juge que ce qu'on dessine en régime établi (ou la page seule, toile éteinte)
+      // deux images de suite à plus de 0,4 s : on éteint tout de suite et on regarde. Si la page repart, on rallume une fois (c'était peut-être un à-coup passager) ;
+      // une seconde alerte dans les 15 s, et c'est bien elle : elle reste éteinte.
+      if (dRaf > 400) { RG.B.length = 0; RG.t0 = 0; if (RG.q < 7 && ++RG.urg >= 2) { RG.urg = 0; RG.nB = RG.nL = 0;
+          if (now - RG.urgAt < 15000) { RG.essai = null; RG.pat = Math.max(RG.pat, 12); rgPose(7); } else { RG.urgAt = now; RG.essai = { q: RG.q, m: dRaf, urgent: true }; rgPose(7); } } return; }
+      RG.urg = 0; if (!RG.t0) RG.t0 = now - dRaf; RG.B.push(dRaf);
+      if (now - RG.t0 < (RG.monte ? 600 : 1000) || RG.B.length < (RG.monte ? 4 : 6)) return;
+      const B = RG.B.slice().sort((x, y) => x - y), med = B[B.length >> 1], moy = (now - RG.t0) / B.length; RG.B.length = 0; RG.t0 = 0;
+      if (med < RG.P0 && med > 5.5) RG.P0 = med;                                       // le rythme de l'écran : le meilleur rythme tenu jusqu'ici
+      if (RG.q >= 7 && !RG.essai) RG.P0 = Math.min(50, Math.max(5.5, med * .97));     // toile éteinte : la référence, c'est le rythme de la page seule (une machine qui plafonne à 30 images/s sans elle la retrouvera quand même)
+      const P = RG.P0, rates = B.filter(x => x > P * 1.7).length / B.length, lent = moy > P * 1.3 || rates > .3, bon = moy < P * 1.12 && rates < .06;
+      if (RG.essai) {                                                                // la toile est éteinte pour voir : était-ce elle ?
+        if (moy < RG.essai.m * .8 && RG.essai.urgent) { const q0 = RG.essai.q; RG.essai = null; RG.nB = RG.nL = RG.vain = 0; rgPose(q0); }   // (après une alerte : on rallume une fois pour vérifier)
+        else if (moy < RG.essai.m * .8) { const q0 = RG.essai.q; RG.essai = null; RG.pat = Math.max(RG.pat, 12); RG.nB = RG.nL = RG.vain = 0; if (q0 < 6) { RG.monte = 2; rgPose(6); RG.pause = now + 400; } }   // oui, c'était elle : on essaie tout de suite son réglage le plus léger ; s'il est trop lourd aussi, elle reste éteinte
+        else { const q0 = RG.essai.q; RG.essai = null; RG.P0 = Math.min(50, Math.max(RG.P0, med * .97)); RG.gel = now + 3000; RG.nB = RG.nL = RG.vain = 0; rgPose(q0); }   // non : c'est le rythme de la page elle-même, qui devient la référence ; on la rend
+        return; }
+      if (RG.mAv) { RG.vain = moy > RG.mAv * .9 ? RG.vain + 1 : 0; RG.mAv = 0; }      // le cran descendu a-t-il rendu du rythme ?
+      if (RG.monte && lent) { RG.monte = 0; RG.nB = RG.nL = 0; if (RG.q >= 6 && (moy > P * 3 || ++RG.echecs >= 2)) { RG.fin = true; rgPose(7); return; }   // on venait de monter : c'était trop (au réglage le plus léger : elle reste éteinte)
+        const x = RG.q; RG.rate[x] = (RG.rate[x] || 0) + 1; RG.pat = Math.min(48, RG.pat * 2); const b = rgBas(); if (RG.rate[x] >= 2 && b < 7) RG.haut = b; rgPose(b); return; }   // (deux échecs vers le même cran : on n'y retourne plus pendant cette visite)
+      if (RG.monte && bon && --RG.monte === 0) RG.pat = Math.max(3, RG.pat >> 1);
+      if (lent) { RG.nB = 0; if (RG.q < 7 && now > RG.gel && (moy > P * 1.8 || ++RG.nL >= 2)) { RG.nL = 0;   // (deux secondes lentes de suite ; une seule si la page est presque deux fois trop lente)
+          if (moy > P * 3 || RG.vain >= 2) { RG.essai = { q: moy > P * 3 ? RG.q : Math.max(0, RG.q - 2), m: moy }; RG.vain = 0; rgPose(7); }   // très lent, ou deux crans pour rien : est-ce bien elle ?
+          else { RG.mAv = moy; rgPose(rgBas()); } } }
+      else if (bon) { RG.nL = 0; if (++RG.nB >= RG.pat && RG.q > RG.haut) { RG.nB = 0; RG.monte = 2; RG.sansT = !RG.tab; rgPose(rgHaut()); RG.pause = now + 400; } }   // (montée sans tableau à l'écran : elle ne vaudra pas pour lui)
+      else RG.nL = RG.nB = 0;
+    };
     document.addEventListener('visibilitychange', () => { if (!document.hidden) tVis = performance.now(); });
     cv.addEventListener('webglcontextlost', () => { mort = true; etat.tableau = -1; etat.aTab = 0; etat.faisO.i = 0; cv.remove(); });   // contexte perdu (téléphone en veille...) : la boucle seule
     const ecl = { t: 0, prochain: 0 }, met = { t: 0, prochain: 0, p: [0, 0, 0] };
@@ -8631,13 +8671,16 @@ float pluie(float t){
     function tour(now) {
       raf = 0; if (mort) return;
       if (!pret(PV)) { if (PV.ok === false) { mort = true; cv.remove(); } else raf = requestAnimationFrame(tour); return; }
-      // sonde : le tableau a été suspendu après des images très lentes. Était-ce lui, ou la page elle-même est-elle ralentie (fenêtre en arrière-plan : le navigateur
-      // ne dessine plus qu'une image par seconde) ? On regarde la cadence de la page sans lui : rapide -> c'était lui, il reste retiré ; lente -> on attend qu'elle reparte, et il revient.
-      { const dRaf = now - (avR || now); avR = now;
-        if (sonde) { if (now - sonde > 700 && dRaf > 0 && dRaf < 5000) { sT += dRaf; sN++; if (dRaf > 45) sL++; }   // (les 0,7 premières secondes ne comptent pas : la carte graphique finit ses images en retard)
-          if (sN >= 4 && sT >= 1200) { if (sL * 2 < sN) { sonde = 0; if (innocent && rechute < 2) { pleinOk = true; tReprise = now; } innocent = false; } else innocent = true; sT = sN = sL = 0; } } }
+      { const dRaf = now - (avR || now); avR = now; regler(now, dRaf); }
+      if (RG.q >= 7) {   // toile éteinte : plus aucun dessin, elle ne couvre plus rien ; on écoute seulement le rythme de la page, pour revenir si la machine le permet
+        if (!cv.classList.contains('repos')) { cv.classList.add('repos'); cv.classList.remove('plein', 'on', 'part', 'net'); plein = false; montre = 0; a = 0; etat.tableau = -1; etat.aTab = 0;
+          gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); if (etat.faisO.i && !etat.ouv) { etat.faisO.i = 0; F.I = 0; if (etat.surFaisceau) etat.surFaisceau(now); } }
+        { const dv = RG.essai ? 'sonde' : 'retire'; if (cv.dataset.vivant !== dv) cv.dataset.vivant = dv; }
+        av = now; if (!RG.fin && cible() > 0) raf = requestAnimationFrame(tour); return; }
+      if (cv.classList.contains('repos')) { cv.classList.remove('repos'); F.frais = 1; }
       const dR = now - (av || now), dt = Math.min(.1, dR / 1000);
-      if (dR < 27 && av) { raf = requestAnimationFrame(tour); return; }   // 30 images/s suffisent
+      if (av && dR < RG.dMin - 3) { raf = requestAnimationFrame(tour); return; }   // (l'écart entre deux dessins est celui du régulateur : de « à chaque image de l'écran » à 20 images/s)
+      RG.regime = false;
       av = now; const c = cible();
       if (c > 0 && (k !== ici() || a <= 0)) { k = ici(); a = 0; F.frais = 1; tDep = now; }   // nouvel arrêt : tout part de l'image d'arrêt exacte, le mouvement s'installe en douceur
       const e = EAU[k], sortant = !!(e && e.plein && etat.boucle < 0 && etat.sortie);   // on repart : le tableau se calme vite, le film reprend sur l'image d'arrêt
@@ -8651,17 +8694,9 @@ float pluie(float t){
       if (veut !== plein) { plein = veut; cv.classList.toggle('plein', plein); montre = 0; cv.classList.remove('on', 'part', 'net'); gT = gN = 0; }
       etat.tableau = plein && montre === 2 && c > 0 ? k : -1;   // pour la sortie : le film repart de l'image d'arrêt, celle que montre le tableau
       etat.aTab = etat.tableau >= 0 ? a : 0;                    // ... et il attend que le tableau se soit calmé
-      { const dv = plein ? 'tableau' : sonde ? 'sonde' : pleinOk ? 'voile' : 'retire'; if (cv.dataset.vivant !== dv) cv.dataset.vivant = dv; }
-      if (a <= 0 && c <= 0) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); if (etat.faisO.i && !etat.ouv) { etat.faisO.i = 0; if (etat.surFaisceau) etat.surFaisceau(now); } if (sonde) raf = requestAnimationFrame(tour); return; }
-      if (!e) { if (sonde) raf = requestAnimationFrame(tour); return; }
-      // le tableau tient-il la cadence ? sinon sa définition baisse d'un cran, puis il laisse la place à la boucle seule
-      if (plein && montre === 2 && c > 0 && now - tMontre > 800 && now - dR > tVis) {
-        if (dR > 400) { if (++lourd >= 2) { pleinOk = false; sonde = now; sT = sN = sL = 0; innocent = false; rechute = now - tReprise < 6000 ? rechute + 1 : 0; lourd = 0; gT = gN = 0; } }   // très lent : lui, ou la page ? on le suspend et on sonde (s'il rechute aussitôt deux fois après être revenu, c'est lui)
-        else { lourd = 0; gT += dR; gN++; if (gT >= 1000) { if (gT / gN <= 55) gL = 0; else if (++gL >= 2) { gL = 0; if (ech > .8) ech = .75; else if (ech > .65) ech = .6; else pleinOk = false; tMontre = now - 400; } gT = gN = 0; } }   // deux secondes lentes de suite
-      } else lourd = 0;
-      // même garde pour la mer qui scintille et le faisceau (sans tableau) : définition réduite, puis les reflets s'éteignent (le faisceau du phare reste).
-      // Les images à plus de 0,4 s ne comptent pas : c'est la page qui est ralentie (fenêtre en arrière-plan), pas le dessin.
-      if (!plein && c > 0 && a >= c && (e.hor || e.phare) && now - dR > tVis && dR <= 400) { vT += dR; vN++; if (vT >= 1000) { if (vT / vN <= 55) vL = 0; else if (++vL >= 2) { vL = 0; if (echV > .7) echV = .67; else if (echV > .55) echV = .5; else sansEau = true; } vT = vN = 0; } } else vT = vN = 0;
+      { const dv = plein ? 'tableau' : 'voile'; if (cv.dataset.vivant !== dv) cv.dataset.vivant = dv; }
+      if (a <= 0 && c <= 0) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); if (etat.faisO.i && !etat.ouv) { etat.faisO.i = 0; if (etat.surFaisceau) etat.surFaisceau(now); } return; }
+      if (!e) return;
       // définition : celle de l'image, sans dépasser ce que l'écran peut montrer
       const port = suf === '-p', r = cv.getBoundingClientRect();
       let W = Math.round((port ? 405 : 960) * echV), Hh = Math.round(540 * echV);
@@ -8705,9 +8740,13 @@ float pluie(float t){
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       } else {
         if (etat.faisO.i) { etat.faisO.i = 0; F.I = 0; }   // pas de phare à cet arrêt : le nom ne garde pas un vieux faisceau
-        if (!plein) { if (sonde) raf = requestAnimationFrame(tour); else if (e.plein && pleinOk && c > 0 && !(PT[k] && PT[k].ok === false)) setTimeout(relance, 300); return; }   // rien à dessiner (la carte arrive, ou le tableau a été retiré) : plus aucun calcul
+        if (!plein) { if (e.plein && pleinOk && c > 0 && !(PT[k] && PT[k].ok === false)) setTimeout(relance, 300); return; }   // rien à dessiner (la carte arrive, ou le tableau a été retiré) : plus aucun calcul
       }
       cv._n = (cv._n | 0) + 1;   // pour les mesures : images dessinées
+      RG.regime = plein ? montre === 2 && c > 0 && now - tMontre > 800 : c > 0 && a >= c && !!(e.hor || e.phare);
+      // le tableau pèse bien plus que la mer et le faisceau : un réglage monté sans lui ne vaut pas pour lui (il reprend le sien, 30 images/s au départ, et remonte s'il le peut)
+      if (plein && montre === 2) { if (RG.sansT) { RG.sansT = false; if (RG.q < RG.qT) rgPose(RG.qT); } else if (RG.q < 7 && !RG.essai) RG.qT = Math.max(RG.haut, RG.q); }
+      RG.tab = plein;
       raf = requestAnimationFrame(tour);
     }
     function relance() { if (!raf && !mort) raf = requestAnimationFrame(tour); }
@@ -9262,13 +9301,16 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { dr
   if (REDUCE) return;
   const titles = $$('.sec-title'); if (!titles.length) return;
   const BASE = 118, MAX = 125;
+  // lesquels sont à l'écran : un observateur le dit (avant : chaque titre était mesuré à chaque image, entre deux écritures de style, ce qui forçait une mise en page par titre)
+  const vus = new Set(), io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(x => x.isIntersecting ? vus.add(x.target) : vus.delete(x.target)), { rootMargin: '40px 0px' }) : null;
+  if (io) titles.forEach(t => io.observe(t));
   let v = 0, cur = 0, lastY = scrollY, lastT = performance.now(), raf = 0; const last = new Map();
   const put = (t, w) => { if (last.get(t) !== w) { last.set(t, w); t.style.fontStretch = w ? w + '%' : ''; } };
   const tick = () => {
     const target = Math.min(MAX - BASE, Math.abs(v) * 1.1);
     cur += (target - cur) * .18; v *= .82;
     const vh = innerHeight, on = cur > .25;
-    titles.forEach(t => { const r = t.getBoundingClientRect(); if (r.bottom < -40 || r.top > vh + 40) { put(t, 0); return; } put(t, on ? Math.round(BASE + cur) : 0); });
+    titles.forEach(t => { if (io ? !vus.has(t) : (r => r.bottom < -40 || r.top > vh + 40)(t.getBoundingClientRect())) { put(t, 0); return; } put(t, on ? Math.round(BASE + cur) : 0); });
     if (on || Math.abs(v) > 1.5) raf = requestAnimationFrame(tick); else { raf = 0; cur = 0; titles.forEach(t => put(t, 0)); }
   };
   addEventListener('scroll', () => {
@@ -9623,9 +9665,12 @@ vec3 transformed = aC + (position - aC) * smoothstep(0., .22, pA) * (1. + .1 * s
   const OBST = 'main h1, main h2, main h3, main p, main li, main a, main button, main img:not(#xp-img), main canvas.globe, main .pc-card, main .fc, main .fc-end, main .hz-foot, main .stat, main .chips, main .mail, #term-panel';
   const TEXTY = new Set(['H1', 'H2', 'H3', 'P']);
   let obs = [], obsAt = -1e9;
+  // (la liste des obstacles possibles est relue toutes les 4 s seulement, et seuls ceux qui sont à l'écran sont mesurés ; avant : toute la page, relue et mesurée 4 fois par seconde)
+  let obsEls = [], obsElsAt = -1e9, obsPret = false; const obsVus = new Set(), obsIO = 'IntersectionObserver' in window ? new IntersectionObserver(es => { obsPret = true; es.forEach(x => x.isIntersecting ? obsVus.add(x.target) : obsVus.delete(x.target)); }) : null;
+  const obsListe = now => { if (now - obsElsAt > 4000) { obsElsAt = now; obsEls = [...document.querySelectorAll(OBST)]; if (obsIO) { for (const el of obsVus) if (!el.isConnected) obsVus.delete(el); obsEls.forEach(el => obsIO.observe(el)); } } return obsIO && obsPret ? obsVus : obsEls; };
   const collect = (W, H) => {
     const out = [];
-    for (const el of document.querySelectorAll(OBST)) {
+    for (const el of obsListe(performance.now())) {
       let r = el.getBoundingClientRect();
       if (r.width < 2 || r.height < 2 || r.bottom < 0 || r.top > H || r.right < 0 || r.left > W) continue;
       if (getComputedStyle(el).visibility === 'hidden') continue;
@@ -9873,10 +9918,11 @@ vec3 transformed = aC + (position - aC) * smoothstep(0., .22, pA) * (1. + .1 * s
     if (!Q.odd && dt > 0 && dt < .25) Q.ema += (dt * 1000 - Q.ema) * .05;
     if (!Q.since) Q.since = now;
     if (now - Q.since > 2000 && Q.ema > 24) {
-      Q.since = now; Q.ema = 16.7;
+      const e0 = Q.ema; Q.since = now; Q.ema = 16.7;
       if (Q.cap > 1 && (devicePixelRatio || 1) > 1) { Q.cap = 1; curSize = -1; }
-      else Q.skip = true;
-    } else if (Q.ema <= 24) Q.since = now;
+      else if (!Q.skip) Q.skip = true;
+      else if (e0 > 42 && !Q.fige) { Q.fige = true; Q.figeAt = now; }   // toujours sous 16 images/s environ (la moyenne glissante, remise à 16,7 toutes les 2 s, n'atteint 42 ms qu'en dessous) : machine très lente, Root n'est plus redessiné que de loin en loin
+    } else if (Q.ema <= 24) { Q.since = now; if (Q.fige && Q.ema < 20 && now - Q.figeAt > 10000) Q.fige = false; }
     if (!Q.skip || egg.on) return false;
     Q.odd = !Q.odd; return Q.odd;
   };
@@ -9889,7 +9935,7 @@ vec3 transformed = aC + (position - aC) * smoothstep(0., .22, pA) * (1. + .1 * s
     // posé (ni trajet, ni cascade, ni défilement, ni souris) : il flotte à 30 images/s, la moitié du travail pour une différence invisible
     // cadence : 30 images/s au plus en vol ou en cascade, 24 pendant le défilement, 20 posé (il flotte toujours) : la vidéo du décor garde ses 24 images/s
     { const pose = !path && !STN.on && !egg.on && arrivedAt && now - arrivedAt > 400 && now - mouse.t > 800 && Math.abs(scrollV) < 4 && Math.hypot(st.vx, st.vy) < 25 && !(S.chat && S.chat.isOpen());
-      if (now - dessine < (pose ? 49 : Math.abs(scrollV) >= 4 ? 40 : 32)) return; }
+      Q.pose = pose; if (now - dessine < (pose ? 49 : Math.abs(scrollV) >= 4 ? 40 : 32)) return; }
     dessine = now;
     const dt = clamp((now - last) / 1000, 0, .25); last = now;
     // mode calme : Root se repose, un petit bouton fixe garde l’accès aux questions
@@ -10078,7 +10124,7 @@ vec3 transformed = aC + (position - aC) * smoothstep(0., .22, pA) * (1. + .1 * s
       camera.setViewOffset(2 * W, 2 * H, W - vx0, H - vy0, W, H);
     }
     { const au = window.nuitAube ? window.nuitAube() : 1; renderer.toneMappingExposure = .82 + .18 * au; }   // la nuit, Root est éclairé comme le film (plus sombre) ; à l'aube, plein jour
-    renderer.render(scene, camera);
+    if (!Q.fige || egg.on || now - (Q.rendu || 0) > (Q.pose ? 1500 : 250)) { Q.rendu = now; renderer.render(scene, camera); }   // (machine très lente : il garde sa dernière image entre deux dessins)
     wrap.style.transform = full ? 'translate3d(0,0,0)' : `translate3d(${(px - CS2 / 2).toFixed(1)}px,${(py - CS2 / 2).toFixed(1)}px,0) scale(${st.sc.toFixed(3)})`;
     hit.style.transform = `translate3d(${(px - DZ * .25).toFixed(1)}px,${(py - DZ * .25).toFixed(1)}px,0) scale(${st.sc.toFixed(3)})`;
     const teasing = STN.on && STN.kind === 'tease' && TZ.prog > .01;
