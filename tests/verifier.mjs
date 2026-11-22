@@ -289,6 +289,8 @@ async function ouverture(nom, br = browser, tel = false) {
   const { ctx, page, errors } = await open(tel ? { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2, locale: 'fr-FR', intro: true } : { viewport: { width: 1440, height: 900 }, locale: 'fr-FR', intro: true }, '', br);
   const fini = await page.waitForFunction(() => document.getElementById('loader').classList.contains('done'), null, { timeout: 30000 }).then(() => true, () => false);
   await page.waitForTimeout(1800);
+  // (sans toile WebGL — Firefox ici —, aucun faisceau du décor ne prend le relais : celui de l'ouverture s'efface alors en 2,2 s au lieu d'un tiers de seconde ; on lui laisse le temps)
+  await page.waitForFunction(() => !document.querySelector('.allum-f, .allum-l.phare'), null, { timeout: 6000 }).catch(() => {});
   const r = await page.evaluate(() => { const o = window.__ouv || {}, h = document.documentElement, sum = document.querySelector('.hero-sum'), n = document.querySelector('.hero-name');
     return { film: h.classList.contains('film'), vu: !!o.vu, iMax: +(o.iMax || 0).toFixed(2), lampe: o.lampe, suivi: { n: o.n | 0, dx: +((o.u1 - o.u0) * o.w1).toFixed(1), dy: +((o.v1 - o.v0) * o.h1).toFixed(1), zoom: o.w0 > 0 && o.w0 < 1e8 ? +((o.w1 / o.w0 - 1) * 100).toFixed(1) : 0 }, duree: o.t1 && o.t0 ? Math.round(o.t1 - o.t0) : -1, reste: !!document.querySelector('.allum-f, .allum-l.phare'), ldOn: h.classList.contains('ld-on') || h.classList.contains('ld-pre'),
       sum: sum ? +(+getComputedStyle(sum).opacity).toFixed(2) : -1, nom: !!n && n.getBoundingClientRect().height > 20, w: innerWidth, hh: innerHeight }; });
