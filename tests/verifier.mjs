@@ -547,7 +547,10 @@ async function ecransVides(nom, br = browser, tel = false) {
   const t = await page.evaluate(async () => { const E = window.__ev, cible = Math.round(document.querySelector('#profil').getBoundingClientRect().top + scrollY + innerHeight * .45), ya = await E.venir(cible);
     // (on laisse au film le temps de rejoindre la page : il vient de loin, et sur une machine très lente il lui faut de longues secondes)
     { const d0 = performance.now(); while (E.boucle() !== '2' && performance.now() - d0 < 45000) await E.att(300); }
-    await E.images(4, 1200); const y0 = scrollY, vide = E.vide(); await E.images(16, 6000); return { cible, ya, vide, dy: Math.round(scrollY - y0), boucle: E.boucle() }; });
+    // (la boucle du Profil dure 8 s, et on la relit 7,2 s après son départ, parfois plus sur une machine lente : au moment exact où elle reboucle, la vidéo est à zéro pendant
+    //  moins d'un dixième de seconde et la lecture ne la voit pas. Mesuré : 70 à 85 ms tous les 8 s. On relit donc une fois, un peu plus tard, avant de conclure.)
+    await E.images(4, 1200); const y0 = scrollY, vide = E.vide(); await E.images(16, 6000); const dy = Math.round(scrollY - y0); let boucle = E.boucle(); if (boucle !== '2') { await E.att(450); boucle = E.boucle(); }
+    return { cible, ya, vide, dy, boucle }; });
   check(Math.abs(t.ya - t.cible) < 40 && !t.vide && Math.abs(t.dy) <= 2 && t.boucle === '2', `${nom} : au milieu du Profil, la page ne bouge pas toute seule et le décor du Profil reste animé pendant qu'on lit (${JSON.stringify(t)})`);
   await ctx.close();
 }
