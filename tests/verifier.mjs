@@ -47,7 +47,7 @@ const BASE = `http://127.0.0.1:${server.address().port}/portfolio2026/`;
 const fails = [];
 const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'ÉCHEC'}  ${what}`); if (!ok) fails.push(what); };
 // boucles vivantes déclarées dans la page (une par chapitre qui en a une)
-const BOUCLES = (() => { try { const m = /const FILM_BOUCLES = \[([\d, ]*)\]/.exec(readFileSync(path.join(ROOT, 'index.html'), 'utf8')); return m ? m[1].split(',').map(x => x.trim()).filter(Boolean).map(Number) : []; } catch { return []; } })();
+const BOUCLES = (() => { try { const m = /const FILM_BOUCLES ?= ?\[([\d, ]*)\]/.exec(readFileSync(path.join(ROOT, 'index.html'), 'utf8')); return m ? m[1].split(',').map(x => x.trim()).filter(Boolean).map(Number) : []; } catch { return []; } })();
 await mkdir(OUT, { recursive: true });
 // WebGL logiciel : les machines de test n’ont pas de carte graphique, le décor 3D doit quand même tourner
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
