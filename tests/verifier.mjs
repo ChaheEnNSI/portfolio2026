@@ -5,7 +5,7 @@
 // Usage local : npm i --no-save playwright axe-core && npx playwright install chromium firefox webkit && node tests/verifier.mjs
 import http from 'node:http';
 import { readFile, mkdir, stat } from 'node:fs/promises';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,7 +15,7 @@ const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'tests', 'captures');
 const AXE = await readFile(require.resolve('axe-core/axe.min.js'), 'utf8');
-const TYPES = { '.mp4': 'video/mp4', '.webm': 'video/webm', '.webp': 'image/webp', '.woff2': 'font/woff2', '.html': 'text/html; charset=utf-8', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8' };
+const TYPES = { '.mp4': 'video/mp4', '.webm': 'video/webm', '.webp': 'image/webp', '.woff2': 'font/woff2', '.html': 'text/html; charset=utf-8', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.json': 'application/json', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8' };
 
 // --- petit serveur statique, comme GitHub Pages
 const server = http.createServer(async (req, res) => {
@@ -78,7 +78,7 @@ async function open(opts, query = '', br = browser) {
   // fichiers introuvables (sauf la lecture anticipée de Chrome qui prend parfois un modèle JS « ${PHOTO} » pour une image)
   page.on('response', r => { if (r.status() >= 400 && !r.url().includes('%7BPHOTO%7D')) errors.push(`${r.status()} ${r.url().slice(0, 120)}`); });
   // une vidéo dont on interrompt le chargement en fermant la fiche n’est pas une erreur
-  page.on('requestfailed', r => { if (/\/v\/[\w-]+\.(mp4|webm)$/.test(r.url()) && /abort|cancel/i.test((r.failure() || {}).errorText || '')) return; errors.push(`échec ${r.url().slice(0, 120)}`); });
+  page.on('requestfailed', r => { if (/\/v\/[\w-]+\.(mp4|webm)$/.test(r.url()) && /abort|cancel/i.test((r.failure() || {}).errorText || '')) return; errors.push(`échec ${r.url().slice(0, 120)}`); });   // (paquets du film : tous lus jusqu'au bout, jamais interrompus)
   await page.goto(BASE + query);
   await page.waitForFunction(() => document.documentElement.classList.contains('ready'), null, { timeout: 45000 });
   await page.waitForTimeout(1200);
@@ -126,14 +126,16 @@ async function open(opts, query = '', br = browser) {
     if (toileEteinte) console.log('--    nuit de veille : machine trop lente ici, toile du décor éteinte par le régulateur ; faisceau sur le nom non contrôlé');
     else check(lit, 'nuit de veille : le faisceau éclaire les lettres du nom, pas tout le nom d’un coup');
     if (film) {
-      const v0 = await page.evaluate(() => [...document.querySelectorAll('.film-v')].map(v => ((v.querySelector('source') || {}).src || '').split('/').pop()));
-      check(v0.length <= 1 && v0.every(x => /^film-0\.(webm|mp4)$/.test(x)), `film : à l’accueil, seul le premier plan se charge (${v0.join(', ') || 'aucun'})`);
+      // le film est dessiné sur une seule toile, sans aucune vidéo ; à l'accueil, seuls le chapitre en cours et le suivant se chargent en entier (des autres : images d'arrêt et une image sur 8)
+      const v0 = await page.evaluate(() => { const t = document.querySelector('.film-toile'), i = t && t.infos ? t.infos() : null, p = performance.getEntriesByType('resource').map(e => e.name).filter(n => /\/i\/[a-z]{2}-\d-[a-z0-9]+\.webp$/.test(n)).map(n => n.split('/').pop());
+        return { videos: document.querySelectorAll('#film video').length, jeu: i && i.jeu, dessine: i && i.dessine, boucle: i && i.boucle, trop: p.filter(n => { const m = /-(\d)-([a-z0-9]+)\.webp$/.exec(n); return +m[1] > 2 && !/^(tete|f8|b)$/.test(m[2]); }), n: p.length }; });
+      check(v0.videos === 0 && /^d[cl]$/.test(v0.jeu) && v0.dessine && v0.boucle === 0 && v0.trop.length === 0, `film : sur une seule toile, sans vidéo ; à l’accueil la boucle tourne et seuls les chapitres 1 et 2 se chargent en entier (${JSON.stringify(v0)})`);
       // la lampe rejoint le curseur en douceur : on attend qu'elle y soit avant de vérifier qu'elle ne bouge plus
       const lampeFixe = await page.evaluate(async () => { const l = document.querySelector('.film-lampe'); await new Promise(r => setTimeout(r, 2500)); const a = l.style.transform; await new Promise(r => setTimeout(r, 1500)); return l.classList.contains('on') && l.style.transform === a; });
       check(lampeFixe, 'film : la lampe reste allumée sous le curseur immobile');
       if (BOUCLES.includes(2)) {
         await page.evaluate(() => { const y = document.getElementById('profil').getBoundingClientRect().top + scrollY; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); });
-        const b = await page.waitForFunction(() => { const v = document.querySelector('.film-b.on'); return v && !v.paused && /boucle-2\.(webm|mp4)$/.test(v.currentSrc); }, null, { timeout: 20000 }).then(() => true, () => false);
+        const b = await page.waitForFunction(() => { const t = document.querySelector('.film-toile'), i = t && t.infos ? t.infos() : null; return !!i && i.boucle === 2 && i.alpha > .5 && i.tau > .05; }, null, { timeout: 20000 }).then(() => true, () => false);
         check(b, 'film : arrêté sur le Profil, la boucle vivante du chapitre se lance');
       }
     }
@@ -164,10 +166,11 @@ async function open(opts, query = '', br = browser) {
 // 1 bis a. fichiers du film : tout ce que la page peut demander est présent
 {
   const manque = [];
-  for (let i = 0; i < 6; i++) for (const x of ['.webm', '.mp4', '-p.webm', '-p.mp4']) if (!existsSync(path.join(ROOT, 'v', `film-${i}${x}`))) manque.push(`film-${i}${x}`);
+  // le film en paquets d'images (manifeste i/m.json : quatre jeux, six chapitres), et les images d'arrêt (images fixes, textures des tableaux vivants)
+  let jeux = []; try { const m = JSON.parse(readFileSync(path.join(ROOT, 'i', 'm.json'), 'utf8')); jeux = Object.keys(m.jeux); for (const j of jeux) { const J = m.jeux[j]; if (new Set(J.paquets.map(p => p.c)).size !== 6) manque.push(`${j} : chapitres incomplets`);
+    for (const p of J.paquets) { const f = path.join(ROOT, p.u); if (!existsSync(f)) manque.push(p.u); else if (statSync(f).size !== p.n) manque.push(`${p.u} (taille)`); } } } catch (e) { manque.push('i/m.json illisible'); }
   for (let i = 0; i <= 6; i++) for (const x of ['.jpg', '-p.jpg']) if (!existsSync(path.join(ROOT, 'v', `film-${i}${x}`))) manque.push(`film-${i}${x}`);
-  for (const k of BOUCLES) for (const x of ['.webm', '.mp4', '-p.webm', '-p.mp4']) if (!existsSync(path.join(ROOT, 'v', `boucle-${k}${x}`))) manque.push(`boucle-${k}${x}`);
-  check(manque.length === 0, `film : plans, images d’arrêt et boucles (${BOUCLES.join(', ') || 'aucune'}) présents (${manque.join(', ') || 'rien ne manque'})`);
+  check(manque.length === 0 && jeux.join() === 'dc,dl,pc,pl', `film : paquets d’images des six chapitres (${jeux.join(', ')}) et images d’arrêt présents (${manque.join(', ') || 'rien ne manque'})`);
 }
 
 // 1 bis c. téléphone en hauteur : le film est recadré sur le sujet (fichiers portrait)
@@ -176,8 +179,8 @@ async function open(opts, query = '', br = browser) {
   await page.waitForFunction(() => document.documentElement.classList.contains('nuit-ok'), null, { timeout: 30000 }).catch(() => {});
   if (await page.evaluate(() => document.documentElement.classList.contains('film'))) {
     const p = await page.waitForFunction(() => { const im = document.querySelector('.film-i.on'); return im && /film-0-p\.jpg$/.test(im.src) && im.naturalWidth > 0; }, null, { timeout: 15000 }).then(() => true, () => false);
-    const v = await page.evaluate(() => [...document.querySelectorAll('.film-v source')].map(s => s.src.split('/').pop()));
-    check(p && v.every(x => /-p\.(webm|mp4)$/.test(x)), `téléphone : film recadré en hauteur (image ${p ? 'portrait' : 'absente'}, vidéos ${v.join(', ') || 'pas encore'})`);
+    const v = await page.waitForFunction(() => { const t = document.querySelector('.film-toile'), i = t && t.infos ? t.infos() : null; return i && i.dessine && i.recues > 0 ? i.jeu : false; }, null, { timeout: 15000 }).then(h => h.jsonValue(), () => '');
+    check(p && /^p[cl]$/.test(v), `téléphone : film recadré en hauteur (image ${p ? 'portrait' : 'absente'}, images du film : jeu ${v || 'absent'})`);
     check(errors.length === 0, `téléphone : film sans erreur (${errors.join(' | ') || 'rien'})`);
   }
   await ctx.close();
@@ -189,10 +192,10 @@ async function open(opts, query = '', br = browser) {
   await page.waitForFunction(() => document.documentElement.classList.contains('nuit-ok'), null, { timeout: 30000 }).catch(() => {});
   if (await page.evaluate(() => document.documentElement.classList.contains('film'))) {
     await page.waitForTimeout(2500);
-    const a = await page.evaluate(() => [document.documentElement.classList.contains('leger'), document.querySelectorAll('.film-v').length, [...document.querySelectorAll('.film-i')].findIndex(v => v.classList.contains('on'))]);
+    const a = await page.evaluate(() => { const t = document.querySelector('.film-toile'), i = t && t.infos ? t.infos() : null; return [document.documentElement.classList.contains('leger'), document.getElementById('film').dataset.niveau, i && i.jeu, document.querySelectorAll('#film video').length, [...document.querySelectorAll('.film-i')].findIndex(v => v.classList.contains('on'))]; });
     await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-    const fin = await page.waitForFunction(() => [...document.querySelectorAll('.film-i')].findIndex(v => v.classList.contains('on')) === 6 && document.querySelectorAll('.film-v').length === 0, null, { timeout: 10000 }).then(() => true, () => false);
-    check(a[0] && a[1] === 0 && a[2] === 0 && fin, `mode léger : images fixes sans vidéo, de l’accueil au lever du soleil (${a.join(', ')}, fin ${fin})`);
+    const fin = await page.waitForFunction(() => { const t = document.querySelector('.film-toile'), i = t && t.infos ? t.infos() : null; return [...document.querySelectorAll('.film-i')].findIndex(v => v.classList.contains('on')) === 6 && !!i && i.T > 59 && i.dessine; }, null, { timeout: 20000 }).then(() => true, () => false);
+    check(a[0] && a[1] === 'leger' && a[2] === 'pl' && a[3] === 0 && a[4] === 0 && fin, `appareil modeste : film allégé (12 images/s, moins de pixels), sans vidéo, de l’accueil au lever du soleil (${a.join(', ')}, fin ${fin})`);
     check(errors.length === 0, `mode léger : aucune erreur (${errors.join(' | ') || 'rien'})`);
   }
   await ctx.close();
@@ -229,6 +232,9 @@ if (existsSync(path.join(ROOT, 'v', 'vigie.mp4'))) {
   check(tel.errors.length === 0, `boucle sur téléphone sans erreur (${tel.errors.join(' | ') || 'rien'})`);
   await tel.ctx.close();
   const calme = await open({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR', reducedMotion: 'reduce' });
+  // animations réduites : le décor est en images fixes (images d'arrêt), aucun paquet d'images du film n'est demandé
+  const fx = await calme.page.evaluate(() => { const t = document.querySelector('.film-toile'), i = t && t.infos ? t.infos() : null; return { niveau: document.getElementById('film').dataset.niveau, dessine: i && i.dessine, paquets: performance.getEntriesByType('resource').filter(e => /\/i\//.test(e.name)).length, videos: document.querySelectorAll('#film video').length }; });
+  check(fx.niveau === 'fixe' && fx.dessine && fx.paquets === 0 && fx.videos === 0, `animations réduites : décor en images fixes, aucun paquet du film chargé (${JSON.stringify(fx)})`);
   await calme.page.evaluate(() => document.querySelector('.pill-btn[data-open="0"]').click()); await calme.page.waitForTimeout(3000);
   check(await calme.page.evaluate(() => { const a = document.getElementById('ov-art'), v = document.getElementById('ov-art-vid'); return a.classList.contains('on') && !a.classList.contains('play') && !v.firstChild; }), 'animations réduites : image fixe, aucune vidéo chargée');
   await calme.ctx.close();
@@ -390,7 +396,7 @@ for (const [quand, geste, attente] of [['en plein tour', 'clic', 900], ['juste a
 // 5 bis. décor vivant : le film ne se fige pas (il continue seul jusqu'à l'arrêt suivant), les boucles se relaient sans recharger,
 // et le décor repart après un refus de lecture (iPhone en économie d'énergie) ou une coupure réseau
 const allerA = (page, sel, decale = 0) => page.evaluate(([sel, decale]) => { const y = document.querySelector(sel).getBoundingClientRect().top + scrollY + decale * innerHeight; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); }, [sel, decale]);
-const boucleJoue = (page, k, ms) => page.waitForFunction(k => { const v = document.querySelector('.film-b.on'); return !!v && !v.paused && new RegExp(`boucle-${k}(-p)?\\.(webm|mp4)$`).test(v.currentSrc) && v.currentTime > .05; }, k, { timeout: ms }).then(() => true, () => false);
+const boucleJoue = (page, k, ms) => page.waitForFunction(k => { const t = document.querySelector('.film-toile'), i = t && t.infos ? t.infos() : null; return !!i && i.boucle === k && i.alpha > .5 && i.tau > .05; }, k, { timeout: ms }).then(() => true, () => false);
 // Vitesse plafonnée : en insistant sur la molette pendant 2 s (80 crans de 120 px, soit 9 600 px demandés), la page avance sans dépasser une allure de lecture
 // (un écran par seconde, entre 650 et 1100 px/s) ; un cran isolé, lui, défile comme avant. Les crans sont émis dans la page, à cadence exacte.
 async function molette(nom, br = browser) {
@@ -413,9 +419,9 @@ async function decorVivant(nom, br = browser) {
     // arrêté entre l'accueil et le Profil : le film continue seul, sans jamais reculer, jusqu'à l'arrêt du Profil, dont la boucle part
     // au milieu du chapitre entre l'accueil et le Profil (le film y est à mi-chemin entre deux arrêts, quel que soit le navigateur)
     await page.evaluate(() => { const p = document.getElementById('profil').getBoundingClientRect().top + scrollY, y = (innerHeight * .82 + p - innerHeight * .62) / 2; const l = window.__lenis; if (l && l.scrollTo) l.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y); });
-    const suivi = await page.evaluate(async () => { const filmT = () => { const c = document.getElementById('film'); const v = c && [...c.querySelectorAll('.film-v')].find(x => x.classList.contains('on')); const m = v && /film-(\d)/.exec(v.currentSrc || ''); return m ? +m[1] * 10 + v.currentTime : null; }; let av = null, recul = 0; const t0 = performance.now();
+    const suivi = await page.evaluate(async () => { const inf = () => { const t = document.querySelector('.film-toile'); return t && t.infos ? t.infos() : null; }, filmT = () => { const i = inf(); return i && i.T != null ? i.T : null; }; let av = null, recul = 0; const t0 = performance.now();
       while (performance.now() - t0 < 30000) { await new Promise(r => setTimeout(r, 150)); const t = filmT(); if (t !== null && av !== null && t < av - .3) recul++; if (t !== null) av = t;   // (un recalcul des repères des chapitres peut déplacer le film de 0,2 s : ce n'est pas un recul)
-        const b = document.querySelector('.film-b.on'); if (b && !b.paused && /boucle-2(-p)?\./.test(b.currentSrc) && b.currentTime > .05) return { ok: true, recul, t: av }; }
+        const i = inf(); if (i && i.boucle === 2 && i.alpha > .5 && i.tau > .05) return { ok: true, recul, t: av }; }
       return { ok: false, recul, t: av }; });
     check(suivi.ok && suivi.recul === 0, `${nom} : arrêté entre deux chapitres, le film continue seul jusqu'au Profil puis sa boucle part, sans reculer (${JSON.stringify(suivi)})`);
     // le tableau vivant (WebGL, sur la boucle) : à l'arrêt, l'image s'anime d'elle-même. Sur une machine trop lente (rendu logiciel), il se retire et laisse la boucle : c'est prévu.
@@ -427,21 +433,21 @@ async function decorVivant(nom, br = browser) {
       return { etat: 'jamais montré', vu, vivant: c.dataset.vivant, classes: c.className }; });
     if (tv.etat === 'sans WebGL') console.log(`--    ${nom} : pas de WebGL ici, tableau vivant non contrôlé`);
     else check(tv.vu && !tv.err, `${nom} : au Profil, le tableau vivant s'affiche et s'anime (${tv.etat}${tv.taille ? ', ' + tv.taille : ''}${tv.fondu ? ', ' + tv.fondu : ''})`);
-    if (tv.vu) { const b = await page.evaluate(() => { const v = document.querySelector('.film-b.on'); return !!v && !v.paused; }); check(b, `${nom} : sous le tableau vivant, la boucle continue (elle reprend la main s'il se retire)`); }
+    if (tv.vu) { const b = await page.evaluate(async () => { const inf = () => { const t = document.querySelector('.film-toile'); return t && t.infos ? t.infos() : null; }, a = inf(); await new Promise(r => setTimeout(r, 600)); const z = inf(); return !!a && !!z && z.boucle >= 0 && z.tau > a.tau; }); check(b, `${nom} : sous le tableau vivant, la boucle continue (elle reprend la main s'il se retire)`); }
     // le régulateur de cadence : on reste 22 s sur l'arrêt. Soit la toile tient (elle dessine, à un niveau quelconque), soit la machine est trop lente pour elle et elle
     // s'éteint : alors elle ne dessine plus du tout, ne couvre plus rien, et la boucle vidéo continue seule. (Avant, « retirée », elle effaçait et présentait encore une
     // image à chaque tour : sur une machine sans carte graphique, la page restait quatre fois plus lente.)
     if (tv.vu) { const rg = await page.evaluate(async () => { const att = ms => new Promise(r => setTimeout(r, ms)), c = document.querySelector('.film-eau'); await att(22000);
         const n0 = c._n | 0, repos = c.classList.contains('repos'); let ips = 0, on = true; const f = () => { ips++; if (on) requestAnimationFrame(f); }; requestAnimationFrame(f); await att(3000); on = false;
-        const b = document.querySelector('.film-b.on'); return { niveau: c.dataset.qualite ?? '2', repos, reposFin: c.classList.contains('repos'), dessins: (c._n | 0) - n0, visible: getComputedStyle(c).visibility, boucle: !!b && !b.paused, ips: +(ips / 3).toFixed(1),
-          detail: [...document.querySelectorAll('.film-b')].map(v => [...v.classList].filter(x => /^(on|net|coupe)$/.test(x)).join('.') + (v.paused ? ' en pause' : ' en lecture') + ' état ' + v.readyState + ' à ' + v.currentTime.toFixed(1) + ' s').join(' | ') + ' ; y ' + Math.round(scrollY) }; });
+        const t = document.querySelector('.film-toile'), i = t && t.infos ? t.infos() : null; return { niveau: c.dataset.qualite ?? '2', repos, reposFin: c.classList.contains('repos'), dessins: (c._n | 0) - n0, visible: getComputedStyle(c).visibility, boucle: !!i && i.boucle >= 0 && i.dessine, ips: +(ips / 3).toFixed(1),
+          detail: JSON.stringify(i) + ' ; y ' + Math.round(scrollY) }; });
       check(rg.repos && rg.reposFin ? rg.dessins === 0 && rg.visible === 'hidden' && rg.boucle : rg.repos !== rg.reposFin || rg.dessins > 0, `${nom} : le régulateur de cadence règle la toile sur la machine (${rg.repos && rg.reposFin ? 'trop lente ici : toile éteinte (' + rg.visible + '), ' + rg.dessins + ' dessin en 3 s, boucle ' + (rg.boucle ? 'en lecture' : 'ARRÊTÉE OU ABSENTE : ' + rg.detail) : 'niveau ' + rg.niveau + ', ' + (rg.dessins / 3).toFixed(0) + ' dessins/s'} ; page à ${rg.ips} images/s)`); }
     // un arrêt retient le film : en avançant la page par petits pas depuis la fin du Profil, le décor reste d'abord sur l'arrêt, puis le quitte pour de bon.
     // (Le Profil se lit en entier sur son décor : on part donc de 150 px avant l'endroit où le film commence son trajet vers le Parcours.)
     // (Avant, dès le premier pas hors du palier, le film avançait d'un souffle, s'arrêtait, puis revenait se reposer sur l'arrêt : le décor disparaissait et revenait.)
     await allerA(page, '#profil');
     if (await boucleJoue(page, 2, 20000)) {
-      const pas = await page.evaluate(async () => { const surArret = () => { const b = document.querySelector('.film-b.on'); return !!b && /boucle-2(-p)?\./.test(b.currentSrc); }, att = ms => new Promise(r => setTimeout(r, ms));
+      const pas = await page.evaluate(async () => { const surArret = () => { const t = document.querySelector('.film-toile'), i = t && t.infos ? t.infos() : null; return !!i && i.on && i.k === 2; }, att = ms => new Promise(r => setTimeout(r, ms));
         const pf = document.querySelector('#profil'), yFin = Math.round(document.querySelector('#parcours').getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(pf).paddingBottom) || 0) - innerHeight * .45);
         scrollTo(0, yFin - 150); await att(1500); if (!surArret()) return { ok: false, raison: "150 px avant la fin du Profil, le décor n'est déjà plus sur son arrêt", yFin };
         const y0 = scrollY; let parti = 0;
@@ -455,40 +461,39 @@ async function decorVivant(nom, br = browser) {
       // relais : la boucle du Parcours part, puis revenir au Profil retrouve sa boucle sans la recharger
       await allerA(page, '#profil'); await boucleJoue(page, 2, 20000);
       await allerA(page, '#parcours'); const b3 = await boucleJoue(page, 3, 20000);
-      // la balise qui garde la boucle du Profil ne doit ni être vidée ni rechargée (les autres peuvent préparer l'arrêt suivant)
-      await page.evaluate(() => { window.__vide = 0; window.__b2 = [...document.querySelectorAll('.film-b')].find(v => /boucle-2(-p)?\./.test(v.currentSrc)) || null; if (window.__b2) window.__b2.addEventListener('emptied', () => window.__vide++); });
-      await allerA(page, '#profil'); const b2 = await boucleJoue(page, 2, 12000); const vide = await page.evaluate(() => window.__b2 && document.querySelector('.film-b.on') === window.__b2 ? window.__vide : 'autre balise');
-      check(b3 && b2 && vide === 0, `${nom} : les boucles se relaient (Parcours puis retour au Profil) sans recharger la vidéo (${b3}, ${b2}, ${vide} rechargement(s))`);
+      // revenir au Profil ne recharge rien : aucun paquet d'images n'est demandé deux fois
+      await allerA(page, '#profil'); const b2 = await boucleJoue(page, 2, 12000);
+      const deux = await page.evaluate(() => { const n = performance.getEntriesByType('resource').map(e => e.name).filter(x => /\/i\/.*\.webp$/.test(x)); return n.length - new Set(n).size; });
+      check(b3 && b2 && deux === 0, `${nom} : les boucles se relaient (Parcours puis retour au Profil) sans rien recharger (${b3}, ${b2}, ${deux} paquet(s) redemandé(s))`);
     }
   }
   await ctx.close();
 }
 await decorVivant('film');
 if (BOUCLES.includes(0)) {
-  // lecture refusée jusqu'au premier geste (comme un iPhone en économie d'énergie) : au premier toucher, la boucle de l'accueil part
+  // lecture des vidéos refusée tant qu'il n'y a pas eu de geste (comme un iPhone en économie d'énergie) : la toile ne lit aucune vidéo, le décor tourne quand même
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' });
   if (CDN_LOCAL) await ctx.route('https://cdn.jsdelivr.net/npm/**', async route => { const rel = new URL(route.request().url()).pathname.replace('/npm/', ''); try { await route.fulfill({ body: await readFile(path.join(CDN_LOCAL, rel)), contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' } }); } catch { await route.abort(); } });
   await ctx.addInitScript(QUIET); await ctx.addInitScript(`try{Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>8})}catch(e){}`);
   await ctx.addInitScript(() => { let geste = false; addEventListener('click', () => { geste = true; }, true); const p0 = HTMLMediaElement.prototype.play;
     HTMLMediaElement.prototype.play = function () { if (geste) return p0.call(this); return Promise.reject(new DOMException('refus simulé', 'NotAllowedError')); }; });
   const page = await ctx.newPage(); await page.goto(BASE); await page.waitForFunction(() => document.documentElement.classList.contains('ready'), null, { timeout: 45000 }); await page.waitForTimeout(5000);
-  const avant = await page.evaluate(() => !!document.querySelector('.film-b.on'));
-  await page.evaluate(() => document.body.dispatchEvent(new MouseEvent('click', { bubbles: true })));
-  const apres = await boucleJoue(page, 0, 8000);
-  check(!avant && apres, `film : lecture refusée jusqu'au premier geste, la boucle de l'accueil part au premier toucher (${avant} puis ${apres})`);
+  const sansGeste = await boucleJoue(page, 0, 8000);
+  check(sansGeste, `film : lecture des vidéos refusée (iPhone en économie d'énergie) : le décor n'en dépend pas, la boucle de l'accueil tourne sans geste (${sansGeste})`);
   await ctx.close();
 }
 if (BOUCLES.includes(2)) {
-  // coupure réseau : la boucle du Profil échoue une première fois (WebM et MP4), le décor la relance tout seul
+  // coupure réseau : les paquets du chapitre de la boucle du Profil échouent une première fois, la toile les redemande toute seule (et montre l'image d'arrêt en attendant)
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'fr-FR' });
   if (CDN_LOCAL) await ctx.route('https://cdn.jsdelivr.net/npm/**', async route => { const rel = new URL(route.request().url()).pathname.replace('/npm/', ''); try { await route.fulfill({ body: await readFile(path.join(CDN_LOCAL, rel)), contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' } }); } catch { await route.abort(); } });
   await ctx.addInitScript(QUIET); await ctx.addInitScript(`try{Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>8})}catch(e){}`);
-  const vus = new Set(); await ctx.route(/\/v\/boucle-2\.(webm|mp4)$/, route => { const k = route.request().url().split('.').pop(); if (!vus.has(k)) { vus.add(k); return route.abort('connectionreset'); } return route.continue(); });
+  const vus = new Set(); await ctx.route(/\/i\/d[cl]-3-[a-z0-9]+\.webp$/, route => { const k = route.request().url().split('/').pop(); if (!vus.has(k)) { vus.add(k); return route.abort('connectionreset'); } return route.continue(); });
   const page = await ctx.newPage(); await page.goto(BASE); await page.waitForFunction(() => document.documentElement.classList.contains('ready'), null, { timeout: 45000 }); await page.waitForTimeout(2500);
   // (sur une machine très lente, la remise en haut de page du chargement peut arriver après ce saut : on le refait tant que la page n'y est pas)
   for (let i = 0; i < 5; i++) { await allerA(page, '#profil'); await page.waitForTimeout(900); if (await page.evaluate(() => scrollY > 200)) break; }
   const ok = await boucleJoue(page, 2, 25000);
-  check(ok && vus.size > 0, `film : après une coupure réseau sur la boucle du Profil, le décor la relance tout seul (${ok}, ${[...vus].join('+') || 'aucune coupure'})`);
+  const vu = await page.evaluate(() => { const t = document.querySelector('.film-toile'), i = t && t.infos ? t.infos() : null; return !!i && i.dessine; });
+  check(ok && vus.size > 0 && vu, `film : après une coupure réseau sur les images du Profil, la toile les redemande et la boucle part (${ok}, ${vus.size} paquet(s) coupé(s), image à l’écran ${vu})`);
   await ctx.close();
 }
 
@@ -497,7 +502,7 @@ if (BOUCLES.includes(2)) {
 // Un geste rend la main. Avec du texte à l'écran, la page ne bouge jamais seule (mais le décor, lui, continue de vivre).
 async function ecransVides(nom, br = browser, tel = false) {
   const { ctx, page } = await open(tel ? { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2, locale: 'fr-FR' } : { viewport: { width: 1440, height: 900 }, locale: 'fr-FR' }, '', br);
-  if (!(await page.evaluate(() => { const h = document.documentElement; return h.classList.contains('film') && !h.classList.contains('leger') && !!document.querySelector('#film video'); }))) { console.log(`--    ${nom} : pas de film ici, écrans vides non contrôlés`); await ctx.close(); return; }
+  if (!(await page.evaluate(() => { const h = document.documentElement; return h.classList.contains('film') && !h.classList.contains('leger') && !!document.querySelector('#film .film-toile') && document.getElementById('film').dataset.niveau !== 'fixe'; }))) { console.log(`--    ${nom} : pas de film ici, écrans vides non contrôlés`); await ctx.close(); return; }
   // (les gestes du doigt : de vrais événements tactiles quand le moteur sait en fabriquer, sinon des événements qui en ont la forme)
   const OUTILS = `window.__ev = { att: ms => new Promise(r => setTimeout(r, ms)),
     images(n, ms) { const t0 = performance.now(); return new Promise(r => { let k = 0; const f = () => { if (++k >= n && performance.now() - t0 >= ms) r(); else requestAnimationFrame(f); }; requestAnimationFrame(f); }); },   // au moins n images de la page ET ms millisecondes
@@ -505,8 +510,9 @@ async function ecransVides(nom, br = browser, tel = false) {
       try { const pt = new Touch({ identifier: 1, target: el, clientX: 190, clientY: 420 }); ev = new TouchEvent(type, { bubbles: true, cancelable: true, touches: fin ? [] : [pt], targetTouches: fin ? [] : [pt], changedTouches: [pt] }); }
       catch (e) { const pt = { identifier: 1, target: el, clientX: 190, clientY: 420, pageX: 190, pageY: 420 + scrollY }; ev = new Event(type, { bubbles: true, cancelable: true }); for (const [k, v] of [['touches', fin ? [] : [pt]], ['targetTouches', fin ? [] : [pt]], ['changedTouches', [pt]]]) Object.defineProperty(ev, k, { value: v }); }
       el.dispatchEvent(ev); },
-    filmT() { const c = document.getElementById('film'), v = c && [...c.querySelectorAll('.film-v')].find(x => x.classList.contains('on')), m = v && /film-(\\d)/.exec(v.currentSrc || ''); return m ? +m[1] * 10 + v.currentTime : null; },
-    boucle() { const b = document.querySelector('.film-b.on'); return b && !b.paused && b.currentTime > .05 ? (/boucle-(\\d)/.exec(b.currentSrc) || [0, '?'])[1] : ''; },
+    toile() { const t = document.querySelector('.film-toile'); return t && t.infos ? t.infos() : null; },
+    filmT() { const i = this.toile(); return i && i.T != null ? i.T : null; },
+    boucle() { const i = this.toile(); return i && i.boucle >= 0 && i.alpha > .5 && i.tau > .05 ? String(i.boucle) : ''; },
     vide() { const h = innerHeight, a = h * .2, b = h * .8; for (const el of document.querySelectorAll('main h1, main h2, main h3, main h4, main p, main li, main a, main button, main img, main svg, main canvas, main video, main .pc-card, main .fc, main .stat, main .chips, main .mail, footer p, footer a')) { const r = el.getBoundingClientRect(); if (r.width > 2 && r.height > 2 && r.bottom > a && r.top < b) { const c = getComputedStyle(el); if (c.visibility !== 'hidden' && +c.opacity > .05) return false; } } return true; },
     // on arrive à y en descendant, comme quelqu'un qui fait défiler puis s'arrête (le film continue dans le sens où l'on allait)
     aller(y) { try { if (typeof lenis !== 'undefined' && lenis && lenis.scrollTo) { lenis.scrollTo(y, { immediate: true, force: true }); return; } } catch (e) {} scrollTo(0, y); },   // (un saut direct pendant que le défilement doux anime encore une molette serait annulé)
